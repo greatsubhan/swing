@@ -1,7 +1,6 @@
 """Little RZY structure detection."""
 from typing import List, Optional, Tuple
 
-import numpy as np
 import pandas as pd
 
 from .config import EngineConfig
@@ -38,7 +37,7 @@ def detect_candidate(
         impulse_slice = df.iloc[impulse_start_idx : anchor[0] + 1]
         impulse_high = float(impulse_slice["high"].max())
         impulse_size = impulse_high - anchor[1]
-        impulse_peak_offset = int(np.argmax(impulse_slice["high"].to_numpy()))
+        impulse_peak_offset = int(impulse_slice["high"].to_numpy().argmax())
         impulse_peak_idx = impulse_start_idx + impulse_peak_offset
         impulse_bars = anchor[0] - impulse_peak_idx
         retrace = (end_high[1] - anchor[1]) / max(impulse_size, 1e-9)
@@ -90,7 +89,7 @@ def detect_candidate(
     impulse_slice = df.iloc[impulse_start_idx : anchor[0] + 1]
     impulse_low = float(impulse_slice["low"].min())
     impulse_size = anchor[1] - impulse_low
-    impulse_trough_offset = int(np.argmin(impulse_slice["low"].to_numpy()))
+    impulse_trough_offset = int(impulse_slice["low"].to_numpy().argmin())
     impulse_trough_idx = impulse_start_idx + impulse_trough_offset
     impulse_bars = anchor[0] - impulse_trough_idx
     retrace = (anchor[1] - end_low[1]) / max(impulse_size, 1e-9)
