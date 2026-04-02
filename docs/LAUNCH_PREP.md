@@ -65,6 +65,15 @@ Suggested alert payload fields:
 - trend maturity
 - timestamp
 
+The new platform layer already supports:
+
+- strategy registration
+- one webhook route per strategy
+- persisted sent-alert dedupe
+- config-driven execution
+
+See [docs/MULTI_STRATEGY_PLATFORM.md](/C:/Users/Seeker/Documents/swing-pr1/docs/MULTI_STRATEGY_PLATFORM.md).
+
 ## Run Modes
 
 ### Laptop mode

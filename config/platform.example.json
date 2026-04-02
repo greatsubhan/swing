@@ -1,0 +1,18 @@
+{
+  "oanda_environment": "practice",
+  "oanda_price": "M",
+  "routes": [
+    {
+      "strategy_id": "little_rzy",
+      "enabled": true,
+      "watchlist": "primary-4h",
+      "granularity": "H4",
+      "higher_timeframe": "1d",
+      "dispatch": "discord",
+      "discord_webhook_url": "${DISCORD_WEBHOOK_URL_LITTLE_RZY}",
+      "output_dir": "platform_output/little_rzy",
+      "state_file": "platform_output/little_rzy/sent_state.json",
+      "use_market_profile": true
+    }
+  ]
+}
