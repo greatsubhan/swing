@@ -6,6 +6,8 @@ This repo contains the current best Python implementation of the Little RZY stra
 - live signal scanner
 - market-profiled research bot
 
+It also now includes a reusable multi-strategy signal platform so additional strategies can share the same runtime and Discord delivery flow.
+
 It does not place broker orders yet. The current target is a reliable signal bot first, then Discord delivery, then optional live execution later.
 
 ## Current Status
@@ -161,6 +163,31 @@ python -m little_rzy_bot --provider oanda --symbol WTICO_USD --granularity H4 --
 - Research learnings: [docs/RESEARCH_LEARNINGS.md](/C:/Users/Seeker/Documents/swing-pr1/docs/RESEARCH_LEARNINGS.md)
 - Launch prep: [docs/LAUNCH_PREP.md](/C:/Users/Seeker/Documents/swing-pr1/docs/LAUNCH_PREP.md)
 - Portfolio examples: [docs/PORTFOLIO_EXAMPLES.md](/C:/Users/Seeker/Documents/swing-pr1/docs/PORTFOLIO_EXAMPLES.md)
+- Multi-strategy platform: [docs/MULTI_STRATEGY_PLATFORM.md](/C:/Users/Seeker/Documents/swing-pr1/docs/MULTI_STRATEGY_PLATFORM.md)
+
+## Multi-Strategy Platform
+
+The repo now includes a generic signal-platform layer for future strategies.
+
+List strategies:
+
+```bash
+python -m signal_platform list-strategies
+```
+
+Run Little RZY through the platform:
+
+```bash
+python -m signal_platform scan --strategy little_rzy --watchlist primary-4h --granularity H4 --oanda-env practice --out platform_output/little_rzy
+```
+
+Run config-based routes:
+
+```bash
+python -m signal_platform run-config --config config/platform.example.json
+```
+
+The config example is at [config/platform.example.json](/C:/Users/Seeker/Documents/swing-pr1/config/platform.example.json).
 
 ## Repo Layout
 
