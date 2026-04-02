@@ -12,6 +12,7 @@ from .indicators import adx, atr, bollinger, ema
 from .pivots import detect_pivot_highs, detect_pivot_lows
 from .scoring import grade, score_setup
 from .structure_detection import detect_candidate
+from .trendline import line_from_points, line_value
 from .trend_detection import detect_trend_state
 
 logger = logging.getLogger(__name__)
@@ -33,26 +34,117 @@ class SignalEngine:
         out["adx"] = adx(out, self.config.indicator.adx_length)
         return out
 
+    def _compute_trend_states(self, df: pd.DataFrame) -> pd.Series:
+        ph = detect_pivot_highs(df, self.config.pivots.left_bars, self.config.pivots.right_bars)
+        pl = detect_pivot_lows(df, self.config.pivots.left_bars, self.config.pivots.right_bars)
+        states: List[str] = []
+
+        for i in range(len(df)):
+            row = df.iloc[i]
+            ph_i = [p for p in ph if p[0] <= i - self.config.pivots.right_bars]
+            pl_i = [p for p in pl if p[0] <= i - self.config.pivots.right_bars]
+            states.append(
+                detect_trend_state(
+                    row,
+                    ph_i,
+                    pl_i,
+                    self.config.trend.min_hhhl_count,
+                    self.config.trend.min_ma_slope,
+                    self.config.trend.min_adx,
+                )
+            )
+
+        return pd.Series(states, index=df.index, dtype="object")
+
+    def _resample_ohlcv(self, df: pd.DataFrame, timeframe: str) -> pd.DataFrame:
+        freq_map = {
+            "5m": "5min",
+            "15m": "15min",
+            "30m": "30min",
+            "1h": "1H",
+            "4h": "4H",
+            "1d": "1D",
+            "1w": "1W",
+        }
+        rule = freq_map.get(timeframe.lower())
+        if rule is None:
+            raise ValueError(f"Unsupported higher timeframe: {timeframe}")
+
+        return (
+            df.resample(rule, label="right", closed="right")
+            .agg(
+                {
+                    "open": "first",
+                    "high": "max",
+                    "low": "min",
+                    "close": "last",
+                    "volume": "sum",
+                }
+            )
+            .dropna()
+        )
+
+    def _build_higher_timeframe_states(self, df: pd.DataFrame, higher_timeframe: str) -> pd.Series:
+        htf_ohlcv = self._resample_ohlcv(df[["open", "high", "low", "close", "volume"]], higher_timeframe)
+        if htf_ohlcv.empty:
+            return pd.Series(["sideways"] * len(df), index=df.index, dtype="object")
+
+        htf_featured = self.prepare_features(htf_ohlcv)
+        htf_states = self._compute_trend_states(htf_featured).shift(1)
+        return htf_states.reindex(df.index, method="ffill").fillna("sideways")
+
+    def _has_rejection_candle(self, df: pd.DataFrame, trigger_index: int, candidate) -> bool:
+        if trigger_index <= 0:
+            return False
+
+        rejection_index = trigger_index - 1
+        rejection_bar = df.iloc[rejection_index]
+        slope, intercept = line_from_points(
+            (candidate.trendline_start_index, candidate.trendline_start_price),
+            (candidate.trendline_end_index, candidate.trendline_end_price),
+        )
+        trendline_at_rejection = line_value(slope, intercept, rejection_index)
+        tolerance = candidate.trendline_tolerance
+
+        if candidate.side == "short":
+            touched = float(rejection_bar["high"]) >= trendline_at_rejection - tolerance
+            rejected = float(rejection_bar["close"]) < float(rejection_bar["open"]) and float(rejection_bar["close"]) < trendline_at_rejection
+            return touched and rejected
+
+        touched = float(rejection_bar["low"]) <= trendline_at_rejection + tolerance
+        rejected = float(rejection_bar["close"]) > float(rejection_bar["open"]) and float(rejection_bar["close"]) > trendline_at_rejection
+        return touched and rejected
+
     def run(self, df: pd.DataFrame, symbol: str, asset_class: str, timeframe: str, higher_timeframe: str) -> List[Signal]:
         df = self.prepare_features(df)
+        trend_states = self._compute_trend_states(df)
+        htf_states = (
+            self._build_higher_timeframe_states(df, higher_timeframe)
+            if self.config.require_higher_timeframe_confirmation and higher_timeframe
+            else pd.Series(["sideways"] * len(df), index=df.index, dtype="object")
+        )
         ph = detect_pivot_highs(df, self.config.pivots.left_bars, self.config.pivots.right_bars)
         pl = detect_pivot_lows(df, self.config.pivots.left_bars, self.config.pivots.right_bars)
         signals: List[Signal] = []
         used_setups: set[Tuple[int, str]] = set()
         maturity_counter: Dict[str, int] = {"long": 0, "short": 0}
+        active_trend_run: str | None = None
 
         for i in range(max(self.config.indicator.bb_length, self.config.indicator.atr_length), len(df)):
             row = df.iloc[i]
             ph_i = [p for p in ph if p[0] <= i - self.config.pivots.right_bars]
             pl_i = [p for p in pl if p[0] <= i - self.config.pivots.right_bars]
-            trend_state = detect_trend_state(
-                row,
-                ph_i,
-                pl_i,
-                self.config.trend.min_hhhl_count,
-                self.config.trend.min_ma_slope,
-                self.config.trend.min_adx,
-            )
+            trend_state = str(trend_states.iloc[i])
+            higher_trend_state = str(htf_states.iloc[i]) if self.config.require_higher_timeframe_confirmation else trend_state
+
+            if trend_state != active_trend_run:
+                maturity_counter = {"long": 0, "short": 0}
+                active_trend_run = None if trend_state == "sideways" else trend_state
+
+            if self.config.require_higher_timeframe_confirmation:
+                if trend_state == "sideways" or higher_trend_state == "sideways" or trend_state != higher_trend_state:
+                    continue
+
             candidate = detect_candidate(df, i, trend_state, ph_i, pl_i, self.config)
             if not candidate:
                 continue
@@ -61,14 +153,26 @@ class SignalEngine:
                 logger.debug("Duplicate setup skipped at index=%s side=%s", i, candidate.side)
                 continue
 
+            next_maturity = maturity_counter[candidate.side] + 1
+            if next_maturity > self.config.trend.max_trend_maturity:
+                logger.debug("Candidate at index=%s skipped due to maturity=%s", i, next_maturity)
+                continue
+
+            if self.config.require_rejection_candle and not self._has_rejection_candle(df, i, candidate):
+                logger.debug("Candidate at index=%s skipped due to missing rejection candle", i)
+                continue
+
             entry_hit = row["low"] <= candidate.entry_trigger if candidate.side == "short" else row["high"] >= candidate.entry_trigger
             if not entry_hit:
                 logger.debug("Candidate at index=%s not triggered", i)
                 continue
 
-            bb_bias = 1.0 if (candidate.side == "short" and row["close"] >= row["bb_mid"]) or (candidate.side == "long" and row["close"] <= row["bb_mid"]) else 0.4
-            maturity_counter[candidate.side] += 1
-            trend_maturity = maturity_counter[candidate.side]
+            if candidate.side == "short":
+                bb_bias = 1.0 if row["high"] >= row["bb_upper"] else 0.75 if row["high"] >= row["bb_mid"] else 0.35
+            else:
+                bb_bias = 1.0 if row["low"] <= row["bb_lower"] else 0.75 if row["low"] <= row["bb_mid"] else 0.35
+            maturity_counter[candidate.side] = next_maturity
+            trend_maturity = next_maturity
             q_score = score_setup(trend_state, candidate.risk_reward, trend_maturity, bb_bias, self.config)
 
             structure = StructureInfo(
@@ -78,8 +182,12 @@ class SignalEngine:
                 pullback_end_index=candidate.pullback_end,
                 anchor_low=float(df["low"].iloc[candidate.anchor_index]) if candidate.side == "short" else None,
                 anchor_high=float(df["high"].iloc[candidate.anchor_index]) if candidate.side == "long" else None,
-                trendline_points=[TrendlinePoint(index=candidate.pullback_start, price=float(df["high"].iloc[candidate.pullback_start] if candidate.side == "short" else df["low"].iloc[candidate.pullback_start])), TrendlinePoint(index=i, price=float(row["high"] if candidate.side == "short" else row["low"]))],
-                measured_distance=abs(candidate.entry_trigger - candidate.target),
+                trendline_points=[
+                    TrendlinePoint(index=candidate.trendline_start_index, price=candidate.trendline_start_price),
+                    TrendlinePoint(index=candidate.trendline_end_index, price=candidate.trendline_end_price),
+                ],
+                trendline_tolerance=candidate.trendline_tolerance,
+                measured_distance=candidate.measured_distance,
                 projected_target=candidate.target,
             )
             boll_ctx = BollingerContext(
@@ -103,7 +211,7 @@ class SignalEngine:
                 stop_loss=candidate.stop,
                 target_1=candidate.target,
                 target_2=None,
-                invalidation_level=candidate.stop,
+                invalidation_level=candidate.invalidation_level,
                 risk_reward=round(candidate.risk_reward, 2),
                 structure=structure,
                 bollinger_context=boll_ctx,
@@ -111,7 +219,7 @@ class SignalEngine:
                 quality_grade=grade(q_score),
                 trend_maturity=trend_maturity,
                 alerts=["fresh_trend_structure", "pullback_rejected_at_trendline", "good_bb_context"],
-                reason_summary=f"{trend_state.title()} trend. Valid {candidate.side} Little RZY with measured move target.",
+                reason_summary=f"{trend_state.title()} trend. {candidate.validity_reason} with measured move target.",
                 setup_id=f"{symbol}-{timeframe}-{candidate.side}-{candidate.anchor_index}",
             )
             signals.append(signal)

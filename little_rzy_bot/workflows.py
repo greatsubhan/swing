@@ -11,6 +11,7 @@ import pandas as pd
 from .backtest_adapter import simulate_signals, to_trade_log_df
 from .config import EngineConfig
 from .data_interface import load_ohlcv_csv
+from .profiles import apply_market_profile
 from .reporting import summarize
 from .signal_engine import SignalEngine
 
@@ -18,7 +19,7 @@ from .signal_engine import SignalEngine
 def make_synthetic_ohlcv(rows: int = 800, seed: int = 7) -> pd.DataFrame:
     """Generate deterministic synthetic OHLCV for smoke-testing the pipeline."""
     rng = np.random.default_rng(seed)
-    dt = pd.date_range("2023-01-01", periods=rows, freq="4H")
+    dt = pd.date_range("2023-01-01", periods=rows, freq="4h")
     trend = np.linspace(0, 45, rows)
     cyc = 4 * np.sin(np.arange(rows) / 14.0)
     noise = rng.normal(0, 1.2, rows).cumsum() * 0.12
@@ -47,9 +48,12 @@ def run_backtest(
     timeframe: str = "4h",
     higher_timeframe: str = "1d",
     config: Optional[EngineConfig] = None,
+    use_market_profile: bool = True,
 ):
     """Run full signal->trade->summary pipeline and return artifacts."""
     cfg = config or EngineConfig()
+    if use_market_profile:
+        cfg = apply_market_profile(cfg, symbol)
     engine = SignalEngine(cfg)
     signals = engine.run(df, symbol, asset_class, timeframe, higher_timeframe)
     trades = simulate_signals(df, signals, cfg)

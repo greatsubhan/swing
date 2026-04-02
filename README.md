@@ -1,211 +1,185 @@
-# Little RZY Signal Bot v1 (Signal + Backtest Only)
+# Little RZY Signal Bot
 
-This repository provides a **developer-ready, backtest-safe signal provider** for a formalized Little RZY continuation strategy.
-It does **not** connect to brokers and does **not** execute trades.
+This repo contains the current best Python implementation of the Little RZY strategy as a:
 
-## 1) Strategy translation summary
-- Continuation-only strategy: trade with higher-timeframe trend.
-- Detect impulse leg, then controlled pullback.
-- Build pullback trendline from confirmed pivots.
-- Compute measured-move target from anchor-to-trendline distance.
-- Trigger on continuation break (prior-bar break default).
-- Validate structure-based stop, minimum RR, freshness, and non-duplicate conditions.
-- Use Bollinger Bands as context + scoring (not primary trigger).
+- backtest runner
+- live signal scanner
+- market-profiled research bot
 
-## 2) Explicit rules/specification
-### Trend detection
-- Trend = bullish when:
-  - EMA slow slope > `min_ma_slope`
-  - ADX >= `min_adx`
-  - Last pivot highs show HH sequence and lows show HL sequence (`min_hhhl_count`)
-- Trend = bearish inverse. Otherwise sideways (no setups).
+It does not place broker orders yet. The current target is a reliable signal bot first, then Discord delivery, then optional live execution later.
 
-### Impulse definition
-- Impulse magnitude >= `min_impulse_atr * ATR`.
-- Impulse duration between `min_impulse_bars` and `max_impulse_bars`.
+## Current Status
 
-### Pullback definition
-- Pullback retrace between `pullback_min_retrace` and `pullback_max_retrace`.
-- Pullback age <= `max_setup_age_bars`.
+The strategy is now in its strongest tested form so far:
 
-### Little RZY structure
-- **Short**:
-  1. Anchor low = latest confirmed pivot low before evaluation bar.
-  2. Pullback high = latest confirmed pivot high after impulse.
-  3. Trendline from pullback pivot high to current pullback high.
-  4. Measured distance = trendline(at anchor index) - anchor low.
-  5. Target = anchor low - measured distance.
-- **Long**: exact inverse.
+- Fixed the original optimistic backtest behavior
+- Tightened the structure rules to match the written Little RZY process more closely
+- Switched to a hybrid stop model
+- Added market-specific tuning profiles
+- Kept only the ATR stop-width changes that actually improved results
+- Added live watchlists and scan mode for the best 4h markets
 
-### Trendline logic
-- Line from two confirmed points `(i1, p1)` and `(i2, p2)`.
-- Equation: `y = m*x + b`.
-- Slope constraint:
-  - Short pullback trendline must slope down (`m < 0`) and within `trendline_max_abs_slope`.
-  - Long pullback trendline must slope up (`m > 0`) and within limit.
+## Best Current Focus
 
-### Entry / Stop / Target
-- Default entry trigger:
-  - Short: break of prior bar low.
-  - Long: break of prior bar high.
-- Stop:
-  - Structure extreme plus ATR padding (`atr_stop_padding * ATR`).
-- Target:
-  - Measured move projection (primary `target_1`).
-- RR filter:
-  - `risk_reward >= min_rr`.
+Timeframe:
 
-### Bollinger context
-- BB params: `bb_length=20`, `bb_stddev=2.0` (configurable).
-- Favorable short context: pullback near upper/mid zone.
-- Favorable long context: pullback near lower/mid zone.
-- Extension tags: normal / moderately_stretched.
+- `4h`
 
-### Trend maturity
-- Maturity bucket = count of previously triggered same-side setups in trend run.
-- Used as a scoring penalty for late-stage setups.
+Primary assets:
 
-### Invalid conditions
-- Sideways regime.
-- Insufficient impulse or pullback depth.
-- Bad trendline slope.
-- Poor RR.
-- Stale setup.
-- Duplicate setup key `(anchor_index, side)`.
+- `WTICO_USD`
+- `BCO_USD`
+- `XAG_USD`
+- `UK100_GBP`
+- `NAS100_USD`
+- `XAU_USD`
 
-### Signal lifecycle states
-- `candidate_detected -> validated -> triggered -> active -> closed|expired|invalidated`.
+The current working view is that this strategy behaves best as a market-specific 4h continuation model. It did not hold up as a universal all-market, all-timeframe system.
 
-### Edge cases / failure modes
-- Flat ATR or sparse data -> no setup.
-- Ambiguous intrabar stop/target touch -> deterministic policy via `stop_priority_when_both_hit`.
-- Missing HTF confirmation columns -> trend defaults to stricter filters.
+## Final Kept Changes
 
-## 3) Assumptions used
-- Confirmed pivots only (no repainting by default).
-- Entry timestamp uses signal bar and fill starts next bar in backtest.
-- Costs modeled as configurable fee + slippage in bps.
-- No partial TP in v1 (extension-ready).
-- Continuation setups prioritized; reversals only tagged as warnings.
+What we kept:
 
-## 4) Core detection algorithm
-1. Load OHLCV.
-2. Compute ATR, BB, EMA slope, ADX.
-3. Compute confirmed pivot highs/lows.
-4. For each bar: classify trend.
-5. Build Little RZY candidate.
-6. Validate trendline, measured move, stop, RR, freshness.
-7. Trigger if entry condition hit.
-8. Score 0-100 and emit structured signal JSON.
-9. Track uniqueness and maturity counters.
+- stricter structure detection
+- next-bar style backtest fills
+- hybrid stop model
+- family and symbol-specific profiles
+- selective ATR stop tightening
 
-## 5) Backtesting design
-- Bar-by-bar simulation.
-- No lookahead in pivot use (right-bar confirmation applied).
-- Entry at/after signal; exits evaluated each bar.
-- Deterministic stop/target ordering config.
-- Expiration bounded by setup-age windows.
-- Trade log + aggregate metrics + bucketed diagnostics.
+What we tested and rejected as defaults:
 
-## 6) Python project architecture
-- `little_rzy_bot/config.py` — central config.
-- `little_rzy_bot/data_models.py` — signal/setup/trade/summary schemas.
-- `little_rzy_bot/indicators.py` — ATR/BB/EMA/ADX.
-- `little_rzy_bot/pivots.py` — confirmed pivot detection.
-- `little_rzy_bot/trend_detection.py` — trend state rules.
-- `little_rzy_bot/trendline.py` — trendline math.
-- `little_rzy_bot/structure_detection.py` — Little RZY candidate building.
-- `little_rzy_bot/scoring.py` — weighted quality score.
-- `little_rzy_bot/signal_engine.py` — full pipeline + signal emission.
-- `little_rzy_bot/backtest_adapter.py` — trade simulation adapter.
-- `little_rzy_bot/reporting.py` — summary and sweep table utilities.
-- `little_rzy_bot/alerts.py` — concise human alert text.
-- `little_rzy_bot/utils.py` — tick rounding helper.
+- global higher-timeframe confirmation
+- global rejection-candle requirement
+- global early-maturity cap
 
-## 7) Python implementation for core modules
-Implemented in `little_rzy_bot/*` as typed, modular, reusable functions/classes.
+Those ideas were useful to test, but they hurt too many good markets when applied universally.
 
-## 8) Example config
-Use `EngineConfig()` defaults in `config.py`; override per asset/timeframe.
+## Final Profile Layer
 
-## 9) Example signal JSON
-Generated by `Signal.to_dict()` and matches the requested schema fields.
+Current profile settings in [little_rzy_bot/profiles.py](/C:/Users/Seeker/Documents/swing-pr1/little_rzy_bot/profiles.py):
 
-## 10) Example backtest trade log
-Produced via `to_trade_log_df(simulate_signals(...))`.
-Fields include symbol, side, times, entry/exit, pnl_r, maturity, score, setup_id.
+- Energy (`WTICO_USD`, `BCO_USD`)
+  - retrace `0.25 -> 0.65`
+  - `min_rr = 1.0`
+  - `atr_stop_padding = 0.15`
+- Silver (`XAG_USD`)
+  - retrace `0.20 -> 0.60`
+  - `max_setup_age_bars = 8`
+  - `atr_stop_padding = 0.15`
+- Gold (`XAU_USD`)
+  - retrace `0.20 -> 0.60`
+  - `max_setup_age_bars = 8`
+  - `atr_stop_padding = 0.25`
+- Indices (`UK100_GBP`, `NAS100_USD`)
+  - retrace `0.25 -> 0.65`
+  - `min_rr = 1.0`
+  - `atr_stop_padding = 0.05`
 
-## 11) Example performance summary
-`reporting.summarize(trade_log_df)` returns trades, win rate, avg_r, expectancy,
-max drawdown, profit factor, hold time, and grouped breakdowns.
+## Benchmark Snapshot
 
-## 12) Tuning/optimization notes
-- Prefer broad ranges and walk-forward slices.
-- Sweep: `min_impulse_atr`, retrace bounds, RR floor, ADX floor.
-- Validate stability across symbol clusters and timeframes.
-- Optimize for robustness (median OOS expectancy), not top in-sample score.
+Current best long-window benchmark snapshot:
 
-## 13) Extension roadmap
-### Option 1: Python production scanner
-- Add scheduler + multi-symbol data adapters.
-- Persist signals/events in DB.
-- Expose REST/webhook output.
+| Asset | Timeframe | Trades | Win Rate | Avg R | Profit Factor |
+| --- | --- | ---: | ---: | ---: | ---: |
+| `WTICO_USD` | `4h` | 172 | 40.12% | 0.250 | 1.75 |
+| `BCO_USD` | `4h` | 152 | 33.55% | 0.170 | 1.48 |
+| `XAG_USD` | `4h` | 175 | 36.57% | 0.178 | 1.50 |
+| `XAU_USD` | `4h` | 84 | 28.57% | 0.070 | 1.14 |
+| `UK100_GBP` | `4h` | 23 | 43.48% | 1.025 | 2.96 |
+| `NAS100_USD` | `4h` | 14 | 35.71% | 2.184 | 4.40 |
 
-### Option 2: Pine Script port
-- Port deterministic rule subset.
-- Replace backtest adapter with TradingView `strategy.*` simulation.
-- Handle pivot confirmation explicitly with bar offsets.
+Notes:
 
-### Option 3: Telegram/Discord backend
-- Keep engine in Python service.
-- Add message templates + dedupe cache + rate limiting.
-- Push alerts from emitted signals only.
+- `NAS100_USD` uses a longer test window because it is sparse and needed more history.
+- `UK100_GBP` and `NAS100_USD` look strong, but they still have lower sample counts than energy and silver.
+- `WTICO_USD`, `BCO_USD`, and `XAG_USD` are the best balanced candidates today.
 
-## 14) Recommendation (next build)
-Start with **Option 1 (Python production scanner)** first.
-It reuses 100% of core logic, enables rapid validation on many markets, and de-risks later Pine and chat-bot integrations.
+## Portfolio What-If
 
-## Example usage
-```python
-import pandas as pd
-from little_rzy_bot import EngineConfig, SignalEngine
-from little_rzy_bot.backtest_adapter import simulate_signals, to_trade_log_df
-from little_rzy_bot.reporting import summarize
+Using the improved ATR version, if you traded every signal across the primary 4h basket during calendar year 2025 with:
 
-# Expected columns: open, high, low, close, volume; DatetimeIndex
-ohlcv = pd.read_csv("data/sample_ohlcv.csv", parse_dates=["timestamp"]).set_index("timestamp")
+- starting equity = `$100,000`
+- fixed risk per trade = `$500`
 
-cfg = EngineConfig()
-engine = SignalEngine(cfg)
-signals = engine.run(ohlcv, symbol="BTCUSDT", asset_class="crypto", timeframe="4h", higher_timeframe="1d")
+the result was:
 
-trades = simulate_signals(ohlcv, signals, cfg)
-trade_log = to_trade_log_df(trades)
-summary = summarize(trade_log)
+- ending equity = `$118,961.55`
+- total PnL = `$18,961.55`
+- trades = `125`
+- win rate = `39.2%`
+- average trade = `0.303R`
+- max drawdown = `-$4,501.35`
+
+See [docs/PORTFOLIO_EXAMPLES.md](/C:/Users/Seeker/Documents/swing-pr1/docs/PORTFOLIO_EXAMPLES.md) for the full breakdown and the assumption note about `0.5%` versus `0.05%`.
+
+## Quick Start
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
 ```
 
-## Worked examples (logic walk-through)
-- **Short example**: bearish trend + impulse down 2.4 ATR, pullback retrace 0.42, prior-bar-low break triggers short, stop above pullback high + ATR padding, measured move target hit after 9 bars.
-- **Long example**: bullish trend + impulse up 2.1 ATR, pullback retrace 0.38, prior-bar-high break triggers long, stop below pullback low + ATR padding, target hit after 6 bars.
+### Smoke test
 
-## Immediate next step: Backtesting now
-Run the full backtesting workflow immediately with either synthetic data or your own CSV.
-
-### Quick smoke test (synthetic)
 ```bash
 python -m little_rzy_bot --out backtest_output
 ```
 
-### Real historical CSV
+### Backtest a CSV
+
 ```bash
 python -m little_rzy_bot --csv data/your_ohlcv.csv --timestamp-col timestamp --out backtest_output
 ```
 
-### Outputs
-- `backtest_output/trade_log.csv`
-- `backtest_output/summary.json`
+### Fetch Yahoo data and backtest
 
-### What to inspect first
-1. `summary.json` -> expectancy, win rate, max drawdown proxy.
-2. `trade_log.csv` -> false positives (low score + poor context).
-3. Re-run sweeps for `min_impulse_atr` and `min_rr` to check robustness.
+```bash
+python -m little_rzy_bot --provider yahoo --symbol SPY --interval 1d --period 1y --out backtest_output
+```
+
+### Fetch OANDA data and backtest
+
+```bash
+python -m little_rzy_bot --provider oanda --symbol EUR_USD --granularity H4 --start 2024-01-01 --end 2024-06-30 --oanda-env practice --out backtest_output
+```
+
+### Run the current live scan watchlist
+
+```bash
+python -m little_rzy_bot --scan --watchlist primary-4h --granularity H4 --higher-timeframe 1d --oanda-env practice --out live_scan_output
+```
+
+### Disable the auto-profile layer
+
+```bash
+python -m little_rzy_bot --provider oanda --symbol WTICO_USD --granularity H4 --start 2024-01-01 --end 2024-06-30 --disable-auto-profile --out backtest_output
+```
+
+## Docs
+
+- Research learnings: [docs/RESEARCH_LEARNINGS.md](/C:/Users/Seeker/Documents/swing-pr1/docs/RESEARCH_LEARNINGS.md)
+- Launch prep: [docs/LAUNCH_PREP.md](/C:/Users/Seeker/Documents/swing-pr1/docs/LAUNCH_PREP.md)
+- Portfolio examples: [docs/PORTFOLIO_EXAMPLES.md](/C:/Users/Seeker/Documents/swing-pr1/docs/PORTFOLIO_EXAMPLES.md)
+
+## Repo Layout
+
+- [little_rzy_bot/__main__.py](/C:/Users/Seeker/Documents/swing-pr1/little_rzy_bot/__main__.py): CLI entrypoint
+- [little_rzy_bot/market_data.py](/C:/Users/Seeker/Documents/swing-pr1/little_rzy_bot/market_data.py): OANDA and Yahoo fetching
+- [little_rzy_bot/signal_engine.py](/C:/Users/Seeker/Documents/swing-pr1/little_rzy_bot/signal_engine.py): signal generation
+- [little_rzy_bot/structure_detection.py](/C:/Users/Seeker/Documents/swing-pr1/little_rzy_bot/structure_detection.py): Little RZY structure logic
+- [little_rzy_bot/backtest_adapter.py](/C:/Users/Seeker/Documents/swing-pr1/little_rzy_bot/backtest_adapter.py): trade simulation
+- [little_rzy_bot/profiles.py](/C:/Users/Seeker/Documents/swing-pr1/little_rzy_bot/profiles.py): market and symbol-specific tuning
+- [little_rzy_bot/scanner.py](/C:/Users/Seeker/Documents/swing-pr1/little_rzy_bot/scanner.py): watchlist scanning
+- [little_rzy_bot/watchlists.py](/C:/Users/Seeker/Documents/swing-pr1/little_rzy_bot/watchlists.py): current production watchlists
+
+## Next Stage
+
+The next recommended step is:
+
+1. Keep this as a signal bot
+2. Add Discord webhook delivery
+3. Run it live on the primary 4h watchlist
+4. Validate paper/live behavior before any broker execution
+
+The launch prep is documented in [docs/LAUNCH_PREP.md](/C:/Users/Seeker/Documents/swing-pr1/docs/LAUNCH_PREP.md).
