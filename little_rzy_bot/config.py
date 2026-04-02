@@ -23,6 +23,7 @@ class TrendConfig:
     min_ma_slope: float = 0.0
     min_adx: float = 18.0
     min_hhhl_count: int = 2
+    max_trend_maturity: int = 99
 
 
 @dataclass
@@ -37,6 +38,8 @@ class StructureConfig:
     max_setup_age_bars: int = 10
     trendline_max_abs_slope: float = 3.0
     trendline_min_touches: int = 2
+    trendline_touch_tolerance_atr: float = 0.35
+    max_breakout_bars_after_pullback: int = 3
 
 
 @dataclass
@@ -72,3 +75,5 @@ class EngineConfig:
     score_weights: ScoreWeights = field(default_factory=ScoreWeights)
     entry_on_break_of_prior_bar: bool = True
     require_confirmed_candle: bool = True
+    require_higher_timeframe_confirmation: bool = False
+    require_rejection_candle: bool = False

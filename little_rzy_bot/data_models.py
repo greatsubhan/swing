@@ -18,6 +18,7 @@ class StructureInfo:
     anchor_low: Optional[float]
     anchor_high: Optional[float]
     trendline_points: List[TrendlinePoint]
+    trendline_tolerance: float
     measured_distance: float
     projected_target: float
 
@@ -71,9 +72,16 @@ class SetupCandidate:
     pullback_start: int
     pullback_end: int
     anchor_index: int
+    trendline_start_index: int
+    trendline_start_price: float
+    trendline_end_index: int
+    trendline_end_price: float
     entry_trigger: float
     stop: float
+    invalidation_level: float
+    trendline_tolerance: float
     target: float
+    measured_distance: float
     risk_reward: float
     validity_reason: str
 
