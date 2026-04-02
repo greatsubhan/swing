@@ -121,6 +121,12 @@ For the next step, the best balance is:
 - develop locally on the laptop
 - deploy the live signal scheduler to a small VPS once Discord is wired
 
+Recommended sequence:
+
+1. laptop dry-run with `dispatch = none`
+2. laptop live Discord alerts with one strategy
+3. move the same config to a VPS for always-on scanning
+
 Suggested VPS shape:
 
 - 2 vCPU
@@ -140,6 +146,12 @@ Recommended scan cadence:
 Practical example:
 
 - every 4 hours with a small delay to allow the candle to finalize and the API data to settle
+- set `interval_minutes` to `240`
+- run:
+
+```bash
+python -m signal_platform serve --config config/platform.example.json --poll-seconds 30
+```
 
 ## Config Prep
 
@@ -160,6 +172,8 @@ Checklist:
 
 - confirm the OANDA token is rotated and stored securely
 - run the scan manually for several days
+- run the platform in `dispatch = none` mode first
+- then enable the Discord webhook route
 - verify no duplicate alerts are emitted
 - verify every Discord alert matches the stored signal fields
 - store alert history so reconnects do not repost old setups

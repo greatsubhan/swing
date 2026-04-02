@@ -72,6 +72,32 @@ Run config-driven routes:
 python -m signal_platform run-config --config config/platform.example.json
 ```
 
+Run the service loop:
+
+```bash
+python -m signal_platform serve --config config/platform.example.json --poll-seconds 30
+```
+
+Test one immediate cycle:
+
+```bash
+python -m signal_platform serve --config config/platform.example.json --poll-seconds 5 --max-cycles 1
+```
+
+Dry-run without Discord:
+
+- set `dispatch` to `none`
+- keep the same route, watchlist, and output paths
+- run the normal `serve` command
+
+Route config fields:
+
+- `interval_minutes`
+- `dispatch`
+- `discord_webhook_url`
+- `output_dir`
+- `state_file`
+
 ## Current Recommendation
 
 Keep Little RZY running through the platform layer from here onward, so the next strategies can be added without another architecture rewrite.

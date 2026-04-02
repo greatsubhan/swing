@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 
 from .registry import get_strategy, list_strategies
-from .runtime import run_platform_config
+from .runtime import run_platform_config, serve_platform_config
 from .strategies import StrategyScanRequest
 
 
@@ -31,6 +31,13 @@ def main() -> None:
     run_parser = subparsers.add_parser("run-config", help="Run all enabled configured strategy routes")
     run_parser.add_argument("--config", required=True, help="Path to JSON config file")
     run_parser.add_argument("--oanda-token", default=None)
+
+    serve_parser = subparsers.add_parser("serve", help="Run enabled routes repeatedly on their configured intervals")
+    serve_parser.add_argument("--config", required=True, help="Path to JSON config file")
+    serve_parser.add_argument("--oanda-token", default=None)
+    serve_parser.add_argument("--poll-seconds", type=int, default=30, help="How often to wake up and check route schedules")
+    serve_parser.add_argument("--max-cycles", type=int, default=None, help="Optional limit for test runs")
+    serve_parser.add_argument("--no-run-immediately", action="store_true", help="Wait a full interval before first run")
 
     args = parser.parse_args()
 
@@ -71,7 +78,18 @@ def main() -> None:
         print(json.dumps(summary, indent=2))
         return
 
-    results = run_platform_config(args.config, token=args.oanda_token)
+    if args.command == "run-config":
+        results = run_platform_config(args.config, token=args.oanda_token)
+        print(json.dumps(results, indent=2))
+        return
+
+    results = serve_platform_config(
+        args.config,
+        token=args.oanda_token,
+        poll_seconds=args.poll_seconds,
+        max_cycles=args.max_cycles,
+        run_immediately=not args.no_run_immediately,
+    )
     print(json.dumps(results, indent=2))
 
 

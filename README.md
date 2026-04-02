@@ -187,6 +187,14 @@ Run config-based routes:
 python -m signal_platform run-config --config config/platform.example.json
 ```
 
+Run it like a service:
+
+```bash
+python -m signal_platform serve --config config/platform.example.json --poll-seconds 30
+```
+
+For laptop dry-runs, set `dispatch` to `none` in the route config and use the same `serve` command.
+
 The config example is at [config/platform.example.json](/C:/Users/Seeker/Documents/swing-pr1/config/platform.example.json).
 
 ## Repo Layout

@@ -3,7 +3,9 @@ from __future__ import annotations
 
 import json
 import os
+import time
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 
 from .dispatchers import load_sent_setup_ids, new_signals_only, save_sent_setup_ids, send_discord_webhook
@@ -19,6 +21,7 @@ class StrategyRoute:
     watchlist: str
     granularity: str
     higher_timeframe: str
+    interval_minutes: int
     dispatch: str
     discord_webhook_url: str | None
     output_dir: str
@@ -53,6 +56,7 @@ def load_platform_config(path: str | Path) -> PlatformConfig:
             watchlist=str(route["watchlist"]),
             granularity=str(route.get("granularity", "H4")),
             higher_timeframe=str(route.get("higher_timeframe", "1d")),
+            interval_minutes=int(route.get("interval_minutes", 240)),
             dispatch=str(route.get("dispatch", "none")),
             discord_webhook_url=route.get("discord_webhook_url"),
             output_dir=str(route.get("output_dir", f"platform_output/{route['strategy_id']}")),
@@ -94,11 +98,17 @@ def run_route(route: StrategyRoute, environment: str, price: str, token: str | N
             delivered.append(signal)
             sent_setup_ids.add(signal.setup_id)
         save_sent_setup_ids(route.state_file, sent_setup_ids)
+    elif route.dispatch == "none":
+        pass
+    else:
+        raise ValueError(f"Unsupported dispatch type: {route.dispatch}")
 
     summary = {
         "strategy_id": route.strategy_id,
         "strategy_name": strategy.strategy_name,
         "watchlist": route.watchlist,
+        "interval_minutes": route.interval_minutes,
+        "ran_at_utc": datetime.now(timezone.utc).isoformat(),
         "rows": len(result.rows),
         "signals_found": len(result.signals),
         "fresh_signals": len(fresh_signals),
@@ -121,3 +131,40 @@ def run_platform_config(config_path: str | Path, token: str | None) -> list[dict
             continue
         results.append(run_route(route, environment=config.oanda_environment, price=config.oanda_price, token=token))
     return results
+
+
+def serve_platform_config(
+    config_path: str | Path,
+    token: str | None,
+    poll_seconds: int = 30,
+    max_cycles: int | None = None,
+    run_immediately: bool = True,
+) -> list[dict[str, object]]:
+    config = load_platform_config(config_path)
+    last_run_at: dict[str, float] = {}
+    results: list[dict[str, object]] = []
+    cycle = 0
+
+    while True:
+        now = time.time()
+        for route in config.routes:
+            if not route.enabled:
+                continue
+            route_key = f"{route.strategy_id}:{route.watchlist}:{route.output_dir}"
+            interval_seconds = max(60, route.interval_minutes * 60)
+            previous = last_run_at.get(route_key)
+            due = previous is None if run_immediately else previous is not None and (now - previous) >= interval_seconds
+            if previous is not None and (now - previous) >= interval_seconds:
+                due = True
+            if previous is None and not run_immediately:
+                last_run_at[route_key] = now
+                continue
+            if not due:
+                continue
+            summary = run_route(route, environment=config.oanda_environment, price=config.oanda_price, token=token)
+            results.append(summary)
+            last_run_at[route_key] = now
+        cycle += 1
+        if max_cycles is not None and cycle >= max_cycles:
+            return results
+        time.sleep(max(5, poll_seconds))

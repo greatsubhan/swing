@@ -8,6 +8,7 @@
       "watchlist": "primary-4h",
       "granularity": "H4",
       "higher_timeframe": "1d",
+      "interval_minutes": 240,
       "dispatch": "discord",
       "discord_webhook_url": "${DISCORD_WEBHOOK_URL_LITTLE_RZY}",
       "output_dir": "platform_output/little_rzy",
