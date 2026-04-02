@@ -3,8 +3,12 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
 
+from .dispatchers import send_discord_webhook
+from .env import load_dotenv
+from .models import PlatformSignal
 from .registry import get_strategy, list_strategies
 from .runtime import run_platform_config, serve_platform_config
 from .strategies import StrategyScanRequest
@@ -12,6 +16,7 @@ from .strategies import StrategyScanRequest
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Multi-strategy signal platform")
+    parser.add_argument("--env-file", default=".env", help="Optional .env file to load before running commands")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     list_parser = subparsers.add_parser("list-strategies", help="List registered strategies")
@@ -39,7 +44,15 @@ def main() -> None:
     serve_parser.add_argument("--max-cycles", type=int, default=None, help="Optional limit for test runs")
     serve_parser.add_argument("--no-run-immediately", action="store_true", help="Wait a full interval before first run")
 
+    test_parser = subparsers.add_parser("test-discord", help="Send a sample Discord webhook message")
+    test_parser.add_argument("--webhook-url", default=None, help="Discord webhook URL; defaults to DISCORD_WEBHOOK_URL_LITTLE_RZY or DISCORD_WEBHOOK_URL")
+    test_parser.add_argument("--strategy", default="little_rzy")
+    test_parser.add_argument("--symbol", default="WTICO_USD")
+    test_parser.add_argument("--timeframe", default="4h")
+    test_parser.add_argument("--side", choices=["long", "short"], default="long")
+
     args = parser.parse_args()
+    load_dotenv(args.env_file)
 
     if args.command == "list-strategies":
         rows = [
@@ -81,6 +94,32 @@ def main() -> None:
     if args.command == "run-config":
         results = run_platform_config(args.config, token=args.oanda_token)
         print(json.dumps(results, indent=2))
+        return
+
+    if args.command == "test-discord":
+        webhook_url = args.webhook_url or os.getenv("DISCORD_WEBHOOK_URL_LITTLE_RZY") or os.getenv("DISCORD_WEBHOOK_URL")
+        if not webhook_url:
+            raise SystemExit("No Discord webhook URL provided. Pass --webhook-url or set DISCORD_WEBHOOK_URL_LITTLE_RZY.")
+        signal = PlatformSignal(
+            strategy_id=args.strategy,
+            strategy_name=args.strategy.replace("_", " ").title(),
+            symbol=args.symbol,
+            asset_class="test",
+            timeframe=args.timeframe,
+            side=args.side,
+            timestamp="2026-04-03T00:00:00+00:00",
+            setup_id="platform-test-message",
+            summary="This is a test alert from the multi-strategy signal platform.",
+            alert_text="Test Discord alert",
+            quality_score=88,
+            quality_grade="A",
+            risk_reward=2.4,
+            entry=100.0,
+            stop_loss=98.5,
+            target_1=103.6,
+        )
+        send_discord_webhook(webhook_url, signal, username="Signal Platform Test")
+        print(json.dumps({"status": "ok", "message": "Discord test alert sent."}, indent=2))
         return
 
     results = serve_platform_config(

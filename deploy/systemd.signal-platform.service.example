@@ -1,0 +1,14 @@
+[Unit]
+Description=Multi-strategy signal platform
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/swing
+EnvironmentFile=/opt/swing/.env
+ExecStart=/usr/bin/python3 -m signal_platform serve --config /opt/swing/config/platform.example.json --poll-seconds 30
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

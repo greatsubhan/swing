@@ -195,6 +195,12 @@ python -m signal_platform serve --config config/platform.example.json --poll-sec
 
 For laptop dry-runs, set `dispatch` to `none` in the route config and use the same `serve` command.
 
+Send a Discord test message:
+
+```bash
+python -m signal_platform --env-file .env test-discord
+```
+
 The config example is at [config/platform.example.json](/C:/Users/Seeker/Documents/swing-pr1/config/platform.example.json).
 
 ## Repo Layout

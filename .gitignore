@@ -2,6 +2,7 @@ __pycache__/
 *.pyc
 backtest_output/
 .env
+.env.local
 live_scan_output/
 oanda_backtest_output/
 reports/*.json
@@ -10,3 +11,4 @@ runs*/
 symbol_probe*/
 family_profile_search*/
 sweep_results_h4/
+platform.example.dryrun.json

@@ -84,6 +84,12 @@ Test one immediate cycle:
 python -m signal_platform serve --config config/platform.example.json --poll-seconds 5 --max-cycles 1
 ```
 
+Send a Discord test alert:
+
+```bash
+python -m signal_platform --env-file .env test-discord
+```
+
 Dry-run without Discord:
 
 - set `dispatch` to `none`
@@ -97,6 +103,11 @@ Route config fields:
 - `discord_webhook_url`
 - `output_dir`
 - `state_file`
+
+Local secret loading:
+
+- the platform now auto-loads `.env` by default
+- you can override it with `--env-file path/to/file`
 
 ## Current Recommendation
 

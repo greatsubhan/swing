@@ -127,6 +127,24 @@ Recommended sequence:
 2. laptop live Discord alerts with one strategy
 3. move the same config to a VPS for always-on scanning
 
+Useful commands:
+
+```bash
+python -m signal_platform --env-file .env test-discord
+python -m signal_platform serve --config config/platform.example.json --poll-seconds 30
+```
+
+PowerShell helper:
+
+```powershell
+.\scripts\run_signal_platform.ps1 -DryRun -MaxCycles 1 -NoRunImmediately
+```
+
+Note:
+
+- a real scan still needs `OANDA_API_TOKEN`
+- `-NoRunImmediately` is the safest first check because it validates the runner without hitting OANDA yet
+
 Suggested VPS shape:
 
 - 2 vCPU
@@ -162,9 +180,15 @@ Important future environment variables:
 - `OANDA_API_TOKEN`
 - `OANDA_ENV`
 - `DISCORD_WEBHOOK_URL`
+- `DISCORD_WEBHOOK_URL_LITTLE_RZY`
 - `BOT_WATCHLIST`
 - `BOT_GRANULARITY`
 - `BOT_HIGHER_TIMEFRAME`
+
+Helper files:
+
+- laptop runner: [scripts/run_signal_platform.ps1](/C:/Users/Seeker/Documents/swing-pr1/scripts/run_signal_platform.ps1)
+- Linux service example: [deploy/systemd.signal-platform.service.example](/C:/Users/Seeker/Documents/swing-pr1/deploy/systemd.signal-platform.service.example)
 
 ## Before Going Live
 
