@@ -7,6 +7,7 @@ live_scan_output/
 oanda_backtest_output/
 reports/*.json
 platform_output/
+logs/
 runs*/
 symbol_probe*/
 family_profile_search*/
