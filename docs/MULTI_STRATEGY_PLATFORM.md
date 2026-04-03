@@ -4,7 +4,7 @@ This repo now includes a reusable signal-platform layer so future strategies can
 
 ## Why This Was Added
 
-The bot is no longer being built as a one-off Little RZY project.
+The bot is no longer being built as a one-off Measured Drift project.
 
 The new goal is:
 
@@ -128,4 +128,4 @@ Local secret loading:
 
 ## Current Recommendation
 
-Keep Little RZY running through the platform layer from here onward, so the next strategies can be added without another architecture rewrite.
+Keep Measured Drift running through the platform layer from here onward, so the next strategies can be added without another architecture rewrite.

@@ -1,6 +1,6 @@
-# Little RZY Signal Bot
+# Measured Drift Signal Bot
 
-This repo contains the current best Python implementation of the Little RZY strategy as a:
+This repo contains the current best Python implementation of the Measured Drift strategy as a:
 
 - backtest runner
 - live signal scanner
@@ -15,7 +15,7 @@ It does not place broker orders yet. The current target is a reliable signal bot
 The strategy is now in its strongest tested form so far:
 
 - Fixed the original optimistic backtest behavior
-- Tightened the structure rules to match the written Little RZY process more closely
+- Tightened the structure rules to match the written Measured Drift process more closely
 - Switched to a hybrid stop model
 - Added market-specific tuning profiles
 - Kept only the ATR stop-width changes that actually improved results
@@ -175,7 +175,7 @@ List strategies:
 python -m signal_platform list-strategies
 ```
 
-Run Little RZY through the platform:
+Run Measured Drift through the platform:
 
 ```bash
 python -m signal_platform scan --strategy little_rzy --watchlist primary-4h --granularity H4 --oanda-env practice --out platform_output/little_rzy
@@ -228,7 +228,7 @@ This is reflection and performance journaling, not fully automatic strategy opti
 - [little_rzy_bot/__main__.py](/C:/Users/Seeker/Documents/swing-pr1/little_rzy_bot/__main__.py): CLI entrypoint
 - [little_rzy_bot/market_data.py](/C:/Users/Seeker/Documents/swing-pr1/little_rzy_bot/market_data.py): OANDA and Yahoo fetching
 - [little_rzy_bot/signal_engine.py](/C:/Users/Seeker/Documents/swing-pr1/little_rzy_bot/signal_engine.py): signal generation
-- [little_rzy_bot/structure_detection.py](/C:/Users/Seeker/Documents/swing-pr1/little_rzy_bot/structure_detection.py): Little RZY structure logic
+- [little_rzy_bot/structure_detection.py](/C:/Users/Seeker/Documents/swing-pr1/little_rzy_bot/structure_detection.py): Measured Drift structure logic
 - [little_rzy_bot/backtest_adapter.py](/C:/Users/Seeker/Documents/swing-pr1/little_rzy_bot/backtest_adapter.py): trade simulation
 - [little_rzy_bot/profiles.py](/C:/Users/Seeker/Documents/swing-pr1/little_rzy_bot/profiles.py): market and symbol-specific tuning
 - [little_rzy_bot/scanner.py](/C:/Users/Seeker/Documents/swing-pr1/little_rzy_bot/scanner.py): watchlist scanning

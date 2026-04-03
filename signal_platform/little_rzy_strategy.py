@@ -1,4 +1,4 @@
-"""Little RZY adapter for the multi-strategy platform."""
+"""Measured Drift adapter for the multi-strategy platform."""
 from __future__ import annotations
 
 from .models import PlatformSignal, ScanResult
@@ -9,7 +9,7 @@ from little_rzy_bot.watchlists import resolve_watchlist
 
 class LittleRzyStrategy(StrategyPlugin):
     strategy_id = "little_rzy"
-    strategy_name = "Little RZY"
+    strategy_name = "Measured Drift"
     default_watchlist = "primary-4h"
 
     def scan(self, request: StrategyScanRequest) -> ScanResult:
