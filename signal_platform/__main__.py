@@ -118,7 +118,7 @@ def main() -> None:
             stop_loss=98.5,
             target_1=103.6,
         )
-        send_discord_webhook(webhook_url, signal, username="Signal Platform Test")
+        send_discord_webhook(webhook_url, signal, username="Measured Drift Preview")
         print(json.dumps({"status": "ok", "message": "Discord test alert sent."}, indent=2))
         return
 

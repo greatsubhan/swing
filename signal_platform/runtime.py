@@ -129,10 +129,10 @@ def run_route(route: StrategyRoute, environment: str, price: str, token: str | N
         if not route.discord_webhook_url:
             raise ValueError(f"Route {route.strategy_id} uses discord dispatch but has no webhook URL.")
         for outcome in recent_outcomes:
-            send_discord_outcome(route.discord_webhook_url, outcome, username=f"{strategy.strategy_name} Bot")
+            send_discord_outcome(route.discord_webhook_url, outcome, username=f"{strategy.strategy_name} Desk")
             outcome.outcome_notified = True
         for signal in enriched_signals:
-            send_discord_webhook(route.discord_webhook_url, signal, username=f"{strategy.strategy_name} Bot")
+            send_discord_webhook(route.discord_webhook_url, signal, username=f"{strategy.strategy_name} Desk")
             delivered.append(signal)
             sent_setup_ids.add(signal.setup_id)
         report_state = load_report_state(route.report_state_file)
@@ -140,11 +140,11 @@ def run_route(route: StrategyRoute, environment: str, price: str, token: str | N
         weekly_key, monthly_key = report_period_keys(now)
         if route.send_weekly_report and journal_entries and report_state.get("weekly") != weekly_key:
             weekly_summary = journal_summary_data(journal_entries, "Weekly", now - timedelta(days=7))
-            send_discord_report(route.discord_webhook_url, weekly_summary, username=f"{strategy.strategy_name} Reports")
+            send_discord_report(route.discord_webhook_url, weekly_summary, username=f"{strategy.strategy_name} Review")
             report_state["weekly"] = weekly_key
         if route.send_monthly_report and journal_entries and report_state.get("monthly") != monthly_key:
             monthly_summary = journal_summary_data(journal_entries, "Monthly", now - timedelta(days=30))
-            send_discord_report(route.discord_webhook_url, monthly_summary, username=f"{strategy.strategy_name} Reports")
+            send_discord_report(route.discord_webhook_url, monthly_summary, username=f"{strategy.strategy_name} Review")
             report_state["monthly"] = monthly_key
         save_report_state(route.report_state_file, report_state)
     elif route.dispatch == "none":

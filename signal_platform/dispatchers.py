@@ -11,6 +11,10 @@ from urllib import error, request
 
 from .models import JournalEntry, PlatformSignal
 
+BRAND_NAME = "Measured Drift"
+SIGNAL_DESK_NAME = f"{BRAND_NAME} Desk"
+REPORTS_NAME = f"{BRAND_NAME} Review"
+
 
 def load_sent_setup_ids(state_path: str | Path) -> set[str]:
     path = Path(state_path)
@@ -38,11 +42,11 @@ def _discord_color(signal: PlatformSignal) -> int:
     return 0x3498DB
 
 
-def _signal_emoji(side: str) -> str:
-    return "🟢" if side.lower() == "long" else "🔴" if side.lower() == "short" else "🔵"
+def _signal_badge(side: str) -> str:
+    return "LONG" if side.lower() == "long" else "SHORT" if side.lower() == "short" else "SETUP"
 
 
-def discord_payload(signal: PlatformSignal, username: str = "Signal Bot") -> dict[str, object]:
+def discord_payload(signal: PlatformSignal, username: str = SIGNAL_DESK_NAME) -> dict[str, object]:
     rr_text = f"{signal.risk_reward:.2f}" if signal.risk_reward is not None else "n/a"
     entry_text = f"{signal.entry:.5f}" if signal.entry is not None else "n/a"
     stop_text = f"{signal.stop_loss:.5f}" if signal.stop_loss is not None else "n/a"
@@ -60,95 +64,96 @@ def discord_payload(signal: PlatformSignal, username: str = "Signal Bot") -> dic
         if stats
         else "Signals n/a"
     )
-    title_side = signal.side.upper()
-    signal_emoji = _signal_emoji(signal.side)
+    title_side = _signal_badge(signal.side)
     return {
         "username": username,
-        "content": f"{signal_emoji} [{signal.strategy_name}] {signal.symbol} {signal.timeframe.upper()} {title_side}",
+        "content": f"[{signal.strategy_name}] {signal.symbol} {signal.timeframe.upper()} {title_side}",
         "embeds": [
             {
-                "title": f"{signal_emoji} {signal.symbol} {signal.timeframe.upper()} {title_side}",
-                "description": f"**Setup thesis**\n{signal.summary}",
+                "title": f"{signal.symbol} {signal.timeframe.upper()} {title_side}",
+                "description": f"Setup thesis\n{signal.summary}",
                 "color": _discord_color(signal),
                 "fields": [
-                    {"name": "🧠 Strategy", "value": signal.strategy_name, "inline": True},
-                    {"name": "🎯 RR", "value": rr_text, "inline": True},
-                    {"name": "📊 Score", "value": score_text, "inline": True},
-                    {"name": "📈 Entry", "value": entry_text, "inline": True},
-                    {"name": "🛑 Stop", "value": stop_text, "inline": True},
-                    {"name": "🏁 Target", "value": target_text, "inline": True},
-                    {"name": "🪞 Track Record", "value": history_text, "inline": False},
-                    {"name": "🆔 Setup ID", "value": signal.setup_id, "inline": False},
+                    {"name": "Strategy", "value": signal.strategy_name, "inline": True},
+                    {"name": "Risk/Reward", "value": rr_text, "inline": True},
+                    {"name": "Signal Score", "value": score_text, "inline": True},
+                    {"name": "Entry", "value": entry_text, "inline": True},
+                    {"name": "Stop", "value": stop_text, "inline": True},
+                    {"name": "Target", "value": target_text, "inline": True},
+                    {"name": "Live Record", "value": history_text, "inline": False},
+                    {"name": "Setup ID", "value": signal.setup_id, "inline": False},
                 ],
-                "footer": {"text": f"{signal.strategy_id} • {signal.asset_class}"},
+                "footer": {"text": f"{BRAND_NAME} | {signal.asset_class} | {signal.strategy_id}"},
                 "timestamp": signal.timestamp,
             }
         ],
     }
 
 
-def outcome_payload(entry: JournalEntry, username: str = "Signal Bot") -> dict[str, object]:
+def outcome_payload(entry: JournalEntry, username: str = SIGNAL_DESK_NAME) -> dict[str, object]:
     outcome = entry.outcome or "closed"
     outcome_label = "TP hit" if outcome == "tp_hit" else "SL hit" if outcome == "sl_hit" else outcome.replace("_", " ").title()
     hold_hours = entry.hold_hours()
     hold_text = f"{hold_hours:.1f}h" if hold_hours is not None else "n/a"
     color = 0x2ECC71 if outcome == "tp_hit" else 0xE74C3C if outcome == "sl_hit" else 0x3498DB
-    outcome_emoji = "✅" if outcome == "tp_hit" else "🛑" if outcome == "sl_hit" else "📌"
+    outcome_tag = "TP" if outcome == "tp_hit" else "SL" if outcome == "sl_hit" else "CLOSED"
     return {
         "username": username,
-        "content": f"{outcome_emoji} [{entry.strategy_name}] {entry.symbol} {entry.timeframe.upper()} {outcome_label}",
+        "content": f"[{entry.strategy_name}] {entry.symbol} {entry.timeframe.upper()} {outcome_label}",
         "embeds": [
             {
-                "title": f"{outcome_emoji} {entry.symbol} {entry.timeframe.upper()} {outcome_label}",
-                "description": f"Outcome recorded for setup `{entry.setup_id}`.",
+                "title": f"{entry.symbol} {entry.timeframe.upper()} {outcome_label}",
+                "description": f"{outcome_tag} outcome recorded for setup `{entry.setup_id}`.",
                 "color": color,
                 "fields": [
-                    {"name": "↕️ Side", "value": entry.side.upper(), "inline": True},
-                    {"name": "📌 Outcome", "value": outcome_label, "inline": True},
-                    {"name": "💵 Exit Price", "value": f"{entry.exit_price:.5f}" if entry.exit_price is not None else "n/a", "inline": True},
-                    {"name": "⏱️ Signal Time", "value": entry.signal_timestamp, "inline": False},
-                    {"name": "🕓 Outcome Time", "value": entry.outcome_timestamp or "n/a", "inline": False},
-                    {"name": "⌛ Hold Time", "value": hold_text, "inline": True},
-                    {"name": "🧮 Bars Checked", "value": str(entry.bars_checked), "inline": True},
+                    {"name": "Side", "value": entry.side.upper(), "inline": True},
+                    {"name": "Outcome", "value": outcome_label, "inline": True},
+                    {"name": "Exit Price", "value": f"{entry.exit_price:.5f}" if entry.exit_price is not None else "n/a", "inline": True},
+                    {"name": "Signal Time", "value": entry.signal_timestamp, "inline": False},
+                    {"name": "Outcome Time", "value": entry.outcome_timestamp or "n/a", "inline": False},
+                    {"name": "Hold Time", "value": hold_text, "inline": True},
+                    {"name": "Bars Checked", "value": str(entry.bars_checked), "inline": True},
                 ],
+                "footer": {"text": f"{BRAND_NAME} outcome log"},
             }
         ],
     }
 
 
-def simple_text_payload(content: str, username: str = "Signal Bot") -> dict[str, object]:
+def simple_text_payload(content: str, username: str = SIGNAL_DESK_NAME) -> dict[str, object]:
     return {
         "username": username,
         "content": content,
     }
 
 
-def report_payload(summary: dict[str, object], username: str = "Signal Reports") -> dict[str, object]:
+def report_payload(summary: dict[str, object], username: str = REPORTS_NAME) -> dict[str, object]:
     period_label = str(summary["period_label"])
-    title_emoji = "🗓️" if period_label.lower().startswith("weekly") else "📅"
-    tp_list = "\n".join(f"• {item}" for item in summary["tp_list"]) or "• none"
-    sl_list = "\n".join(f"• {item}" for item in summary["sl_list"]) or "• none"
-    open_list = "\n".join(f"• {item}" for item in summary["open_list"]) or "• none"
+    title_prefix = "Weekly" if period_label.lower().startswith("weekly") else "Monthly"
+    tp_list = "\n".join(f"- {item}" for item in summary["tp_list"]) or "- none"
+    sl_list = "\n".join(f"- {item}" for item in summary["sl_list"]) or "- none"
+    open_list = "\n".join(f"- {item}" for item in summary["open_list"]) or "- none"
     return {
         "username": username,
-        "content": f"{title_emoji} {period_label} report",
+        "content": f"{title_prefix} review",
         "embeds": [
             {
-                "title": f"{title_emoji} {period_label} Report Card",
-                "description": "A quick view of signal quality, net result, and what is still open.",
+                "title": f"{period_label} Report Card",
+                "description": "A concise review of signal flow, net result, and outstanding exposure.",
                 "color": 0x5865F2,
                 "fields": [
-                    {"name": "📬 Signals", "value": str(summary["signals_sent"]), "inline": True},
-                    {"name": "🟢 TP Hits", "value": str(summary["tp_hits"]), "inline": True},
-                    {"name": "🔴 SL Hits", "value": str(summary["sl_hits"]), "inline": True},
-                    {"name": "🟡 Still Open", "value": str(summary["open_count"]), "inline": True},
-                    {"name": "💰 Net Realized", "value": f"{summary['total_realized_r']:.2f}R", "inline": True},
-                    {"name": "📈 Avg Closed Trade", "value": str(summary["avg_closed_r_text"]), "inline": True},
-                    {"name": "⏳ Avg Hold", "value": str(summary["avg_hold_text"]), "inline": True},
-                    {"name": "✅ TP List", "value": tp_list, "inline": False},
-                    {"name": "🛑 SL List", "value": sl_list, "inline": False},
-                    {"name": "🟨 Open List", "value": open_list, "inline": False},
+                    {"name": "Signals", "value": str(summary["signals_sent"]), "inline": True},
+                    {"name": "TP Hits", "value": str(summary["tp_hits"]), "inline": True},
+                    {"name": "SL Hits", "value": str(summary["sl_hits"]), "inline": True},
+                    {"name": "Still Open", "value": str(summary["open_count"]), "inline": True},
+                    {"name": "Net Realized", "value": f"{summary['total_realized_r']:.2f}R", "inline": True},
+                    {"name": "Avg Closed Trade", "value": str(summary["avg_closed_r_text"]), "inline": True},
+                    {"name": "Avg Hold", "value": str(summary["avg_hold_text"]), "inline": True},
+                    {"name": "TP List", "value": tp_list, "inline": False},
+                    {"name": "SL List", "value": sl_list, "inline": False},
+                    {"name": "Open List", "value": open_list, "inline": False},
                 ],
+                "footer": {"text": f"{BRAND_NAME} review desk"},
             }
         ],
     }
@@ -227,17 +232,17 @@ def _send_payload(webhook_url: str, payload: dict[str, object]) -> None:
         raise RuntimeError(f"Discord webhook request failed: {exc.reason}") from exc
 
 
-def send_discord_webhook(webhook_url: str, signal: PlatformSignal, username: str = "Signal Bot") -> None:
+def send_discord_webhook(webhook_url: str, signal: PlatformSignal, username: str = SIGNAL_DESK_NAME) -> None:
     _send_payload(webhook_url, discord_payload(signal, username=username))
 
 
-def send_discord_outcome(webhook_url: str, entry: JournalEntry, username: str = "Signal Bot") -> None:
+def send_discord_outcome(webhook_url: str, entry: JournalEntry, username: str = SIGNAL_DESK_NAME) -> None:
     _send_payload(webhook_url, outcome_payload(entry, username=username))
 
 
-def send_discord_text(webhook_url: str, content: str, username: str = "Signal Bot") -> None:
+def send_discord_text(webhook_url: str, content: str, username: str = SIGNAL_DESK_NAME) -> None:
     _send_payload(webhook_url, simple_text_payload(content, username=username))
 
 
-def send_discord_report(webhook_url: str, summary: dict[str, object], username: str = "Signal Reports") -> None:
+def send_discord_report(webhook_url: str, summary: dict[str, object], username: str = REPORTS_NAME) -> None:
     _send_payload(webhook_url, report_payload(summary, username=username))
