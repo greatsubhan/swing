@@ -58,6 +58,8 @@ class SignalStatsSnapshot:
     other_closures: int
     win_rate: float
     avg_hold_hours: float | None = None
+    total_realized_r: float = 0.0
+    avg_closed_r: float | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -98,3 +100,12 @@ class JournalEntry:
         start = datetime.fromisoformat(self.signal_timestamp.replace("Z", "+00:00"))
         end = datetime.fromisoformat(self.outcome_timestamp.replace("Z", "+00:00"))
         return (end - start).total_seconds() / 3600.0
+
+    def realized_r(self) -> float | None:
+        if self.status != "closed" or not self.outcome:
+            return None
+        if self.outcome == "tp_hit":
+            return float(self.risk_reward or 0.0)
+        if self.outcome == "sl_hit":
+            return -1.0
+        return 0.0

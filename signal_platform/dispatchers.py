@@ -51,7 +51,8 @@ def discord_payload(signal: PlatformSignal, username: str = "Signal Bot") -> dic
     stats = signal.raw_signal.get("stats_snapshot", {})
     history_text = (
         f"Signals {stats.get('total_signals', 0)} | TP {stats.get('tp_hits', 0)} | "
-        f"SL {stats.get('sl_hits', 0)} | Open {stats.get('open_signals', 0)}"
+        f"SL {stats.get('sl_hits', 0)} | Open {stats.get('open_signals', 0)} | "
+        f"Net {stats.get('total_realized_r', 0.0):.2f}R"
         if stats
         else "Signals n/a"
     )

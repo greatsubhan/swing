@@ -79,6 +79,8 @@ def build_stats_snapshot(entries: list[JournalEntry]) -> SignalStatsSnapshot:
     win_rate = (tp_hits / closed_with_outcome) if closed_with_outcome else 0.0
     holds = [entry.hold_hours() for entry in entries if entry.status == "closed"]
     hold_values = [value for value in holds if value is not None]
+    realized = [entry.realized_r() for entry in entries if entry.status == "closed"]
+    realized_values = [value for value in realized if value is not None]
     return SignalStatsSnapshot(
         total_signals=total,
         closed_signals=closed,
@@ -88,6 +90,8 @@ def build_stats_snapshot(entries: list[JournalEntry]) -> SignalStatsSnapshot:
         other_closures=max(other, 0),
         win_rate=win_rate,
         avg_hold_hours=mean(hold_values) if hold_values else None,
+        total_realized_r=sum(realized_values) if realized_values else 0.0,
+        avg_closed_r=mean(realized_values) if realized_values else None,
     )
 
 
@@ -181,17 +185,30 @@ def journal_summary_message(entries: list[JournalEntry], period_label: str, sinc
     open_count = sum(1 for entry in period_entries if entry.status == "open")
     tp_hits = sum(1 for entry in resolved if entry.outcome == "tp_hit")
     sl_hits = sum(1 for entry in resolved if entry.outcome == "sl_hit")
+    realized = [entry.realized_r() for entry in resolved]
+    realized_values = [value for value in realized if value is not None]
+    total_realized_r = sum(realized_values) if realized_values else 0.0
+    avg_closed_r = mean(realized_values) if realized_values else None
     holds = [entry.hold_hours() for entry in resolved]
     hold_values = [value for value in holds if value is not None]
     avg_hold = mean(hold_values) if hold_values else None
     avg_hold_text = f"{avg_hold:.1f}h" if avg_hold is not None else "n/a"
+    avg_closed_r_text = f"{avg_closed_r:.2f}R" if avg_closed_r is not None else "n/a"
+    tp_list = ", ".join(f"{entry.symbol} ({entry.realized_r():.2f}R)" for entry in resolved if entry.outcome == "tp_hit") or "none"
+    sl_list = ", ".join(f"{entry.symbol} ({entry.realized_r():.2f}R)" for entry in resolved if entry.outcome == "sl_hit") or "none"
+    open_list = ", ".join(f"{entry.symbol}" for entry in period_entries if entry.status == "open") or "none"
     return (
         f"{period_label} report\n"
         f"Signals sent: {len(period_entries)}\n"
         f"Still open: {open_count}\n"
         f"TP hit: {tp_hits}\n"
         f"SL hit: {sl_hits}\n"
-        f"Average hold time: {avg_hold_text}"
+        f"Net realized: {total_realized_r:.2f}R\n"
+        f"Average closed trade: {avg_closed_r_text}\n"
+        f"Average hold time: {avg_hold_text}\n"
+        f"TP list: {tp_list}\n"
+        f"SL list: {sl_list}\n"
+        f"Open list: {open_list}"
     )
 
 
