@@ -32,6 +32,8 @@ That keeps strategy logic separate from transport and scheduling.
 - strategy-by-strategy watchlists
 - deduped alerts across reruns
 - clean expansion when the next strategy is coded
+- signal journaling and TP/SL outcome tracking
+- weekly and monthly report-card messages
 
 ## Current Registered Strategy
 
@@ -103,6 +105,14 @@ Route config fields:
 - `discord_webhook_url`
 - `output_dir`
 - `state_file`
+
+Reflection behavior:
+
+- sent signals are persisted in a journal file
+- later runs re-check whether TP or SL has been hit
+- each new TP/SL outcome is posted once
+- summary stats are attached to future signal alerts
+- weekly and monthly reports can be posted from the same journal
 
 Local secret loading:
 

@@ -71,6 +71,9 @@ The new platform layer already supports:
 - one webhook route per strategy
 - persisted sent-alert dedupe
 - config-driven execution
+- signal journaling
+- TP/SL outcome updates
+- weekly and monthly report-card messages
 
 See [docs/MULTI_STRATEGY_PLATFORM.md](/C:/Users/Seeker/Documents/swing-pr1/docs/MULTI_STRATEGY_PLATFORM.md).
 

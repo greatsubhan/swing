@@ -9,7 +9,7 @@ import subprocess
 import sys
 from urllib import error, request
 
-from .models import PlatformSignal
+from .models import JournalEntry, PlatformSignal
 
 
 def load_sent_setup_ids(state_path: str | Path) -> set[str]:
@@ -48,6 +48,13 @@ def discord_payload(signal: PlatformSignal, username: str = "Signal Bot") -> dic
         if signal.quality_score is not None and signal.quality_grade is not None
         else "n/a"
     )
+    stats = signal.raw_signal.get("stats_snapshot", {})
+    history_text = (
+        f"Signals {stats.get('total_signals', 0)} | TP {stats.get('tp_hits', 0)} | "
+        f"SL {stats.get('sl_hits', 0)} | Open {stats.get('open_signals', 0)}"
+        if stats
+        else "Signals n/a"
+    )
     title_side = signal.side.upper()
     return {
         "username": username,
@@ -61,6 +68,7 @@ def discord_payload(signal: PlatformSignal, username: str = "Signal Bot") -> dic
                     {"name": "Strategy", "value": signal.strategy_name, "inline": True},
                     {"name": "RR", "value": rr_text, "inline": True},
                     {"name": "Score", "value": score_text, "inline": True},
+                    {"name": "History", "value": history_text, "inline": False},
                     {"name": "Entry", "value": entry_text, "inline": True},
                     {"name": "Stop", "value": stop_text, "inline": True},
                     {"name": "Target", "value": target_text, "inline": True},
@@ -70,6 +78,41 @@ def discord_payload(signal: PlatformSignal, username: str = "Signal Bot") -> dic
                 "timestamp": signal.timestamp,
             }
         ],
+    }
+
+
+def outcome_payload(entry: JournalEntry, username: str = "Signal Bot") -> dict[str, object]:
+    outcome = entry.outcome or "closed"
+    outcome_label = "TP hit" if outcome == "tp_hit" else "SL hit" if outcome == "sl_hit" else outcome.replace("_", " ").title()
+    hold_hours = entry.hold_hours()
+    hold_text = f"{hold_hours:.1f}h" if hold_hours is not None else "n/a"
+    color = 0x2ECC71 if outcome == "tp_hit" else 0xE74C3C if outcome == "sl_hit" else 0x3498DB
+    return {
+        "username": username,
+        "content": f"[{entry.strategy_name}] {entry.symbol} {entry.timeframe.upper()} {outcome_label}",
+        "embeds": [
+            {
+                "title": f"{entry.symbol} {entry.timeframe.upper()} {outcome_label}",
+                "description": f"Outcome recorded for setup `{entry.setup_id}`.",
+                "color": color,
+                "fields": [
+                    {"name": "Side", "value": entry.side.upper(), "inline": True},
+                    {"name": "Outcome", "value": outcome_label, "inline": True},
+                    {"name": "Exit Price", "value": f"{entry.exit_price:.5f}" if entry.exit_price is not None else "n/a", "inline": True},
+                    {"name": "Signal Time", "value": entry.signal_timestamp, "inline": False},
+                    {"name": "Outcome Time", "value": entry.outcome_timestamp or "n/a", "inline": False},
+                    {"name": "Hold Time", "value": hold_text, "inline": True},
+                    {"name": "Bars Checked", "value": str(entry.bars_checked), "inline": True},
+                ],
+            }
+        ],
+    }
+
+
+def simple_text_payload(content: str, username: str = "Signal Bot") -> dict[str, object]:
+    return {
+        "username": username,
+        "content": content,
     }
 
 
@@ -119,8 +162,7 @@ def _post_json_external(webhook_url: str, payload: dict[str, object]) -> bool:
     return False
 
 
-def send_discord_webhook(webhook_url: str, signal: PlatformSignal, username: str = "Signal Bot") -> None:
-    payload = discord_payload(signal, username=username)
+def _send_payload(webhook_url: str, payload: dict[str, object]) -> None:
     if _post_json_external(webhook_url, payload):
         return
 
@@ -145,3 +187,15 @@ def send_discord_webhook(webhook_url: str, signal: PlatformSignal, username: str
         raise RuntimeError(f"Discord webhook failed with HTTP {exc.code}: {detail}") from exc
     except error.URLError as exc:
         raise RuntimeError(f"Discord webhook request failed: {exc.reason}") from exc
+
+
+def send_discord_webhook(webhook_url: str, signal: PlatformSignal, username: str = "Signal Bot") -> None:
+    _send_payload(webhook_url, discord_payload(signal, username=username))
+
+
+def send_discord_outcome(webhook_url: str, entry: JournalEntry, username: str = "Signal Bot") -> None:
+    _send_payload(webhook_url, outcome_payload(entry, username=username))
+
+
+def send_discord_text(webhook_url: str, content: str, username: str = "Signal Bot") -> None:
+    _send_payload(webhook_url, simple_text_payload(content, username=username))

@@ -203,6 +203,19 @@ python -m signal_platform --env-file .env test-discord
 
 The config example is at [config/platform.example.json](/C:/Users/Seeker/Documents/swing-pr1/config/platform.example.json).
 
+## Reflection Layer
+
+The platform now includes a signal journal layer that can:
+
+- persist sent signals
+- re-check open signals on later runs
+- post TP/SL outcome updates
+- keep a running TP vs SL history
+- generate weekly and monthly report-card messages
+- track average hold time for closed signals
+
+This is reflection and performance journaling, not fully automatic strategy optimization. It gives us the right data foundation for later improvement work without letting the bot mutate strategy rules on its own.
+
 ## Repo Layout
 
 - [little_rzy_bot/__main__.py](/C:/Users/Seeker/Documents/swing-pr1/little_rzy_bot/__main__.py): CLI entrypoint

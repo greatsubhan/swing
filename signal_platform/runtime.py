@@ -5,10 +5,31 @@ import json
 import os
 import time
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from .dispatchers import load_sent_setup_ids, new_signals_only, save_sent_setup_ids, send_discord_webhook
+from .dispatchers import (
+    load_sent_setup_ids,
+    new_signals_only,
+    save_sent_setup_ids,
+    send_discord_outcome,
+    send_discord_text,
+    send_discord_webhook,
+)
+from .journal import (
+    append_new_signals,
+    backfill_known_signals,
+    build_stats_snapshot,
+    journal_summary_message,
+    load_journal,
+    load_report_state,
+    refresh_open_entries,
+    report_period_keys,
+    resolved_entries_since,
+    save_journal,
+    save_report_state,
+    signal_with_stats,
+)
 from .models import PlatformSignal
 from .registry import get_strategy
 from .strategies import StrategyScanRequest
@@ -26,6 +47,10 @@ class StrategyRoute:
     discord_webhook_url: str | None
     output_dir: str
     state_file: str
+    journal_file: str
+    report_state_file: str
+    send_weekly_report: bool = True
+    send_monthly_report: bool = True
     use_market_profile: bool = True
 
 
@@ -61,6 +86,10 @@ def load_platform_config(path: str | Path) -> PlatformConfig:
             discord_webhook_url=route.get("discord_webhook_url"),
             output_dir=str(route.get("output_dir", f"platform_output/{route['strategy_id']}")),
             state_file=str(route.get("state_file", f"platform_output/{route['strategy_id']}/sent_state.json")),
+            journal_file=str(route.get("journal_file", f"platform_output/{route['strategy_id']}/signal_journal.json")),
+            report_state_file=str(route.get("report_state_file", f"platform_output/{route['strategy_id']}/report_state.json")),
+            send_weekly_report=bool(route.get("send_weekly_report", True)),
+            send_monthly_report=bool(route.get("send_monthly_report", True)),
             use_market_profile=bool(route.get("use_market_profile", True)),
         )
         for route in payload.get("routes", [])
@@ -87,21 +116,46 @@ def run_route(route: StrategyRoute, environment: str, price: str, token: str | N
     )
     result = strategy.scan(scan_request)
     sent_setup_ids = load_sent_setup_ids(route.state_file)
+    journal_entries = load_journal(route.journal_file)
+    journal_entries = backfill_known_signals(journal_entries, result.signals, sent_setup_ids)
+    journal_entries = refresh_open_entries(journal_entries, token=token, environment=environment, price=price)
+    recent_outcomes = resolved_entries_since(journal_entries, datetime.now(timezone.utc) - timedelta(minutes=max(route.interval_minutes * 2, 15)))
     fresh_signals = new_signals_only(result.signals, sent_setup_ids)
+    stats = build_stats_snapshot(journal_entries)
+    enriched_signals = [signal_with_stats(signal, stats) for signal in fresh_signals]
 
     delivered: list[PlatformSignal] = []
     if route.dispatch == "discord":
         if not route.discord_webhook_url:
             raise ValueError(f"Route {route.strategy_id} uses discord dispatch but has no webhook URL.")
-        for signal in fresh_signals:
+        for outcome in recent_outcomes:
+            send_discord_outcome(route.discord_webhook_url, outcome, username=f"{strategy.strategy_name} Bot")
+            outcome.outcome_notified = True
+        for signal in enriched_signals:
             send_discord_webhook(route.discord_webhook_url, signal, username=f"{strategy.strategy_name} Bot")
             delivered.append(signal)
             sent_setup_ids.add(signal.setup_id)
-        save_sent_setup_ids(route.state_file, sent_setup_ids)
+        report_state = load_report_state(route.report_state_file)
+        now = datetime.now(timezone.utc)
+        weekly_key, monthly_key = report_period_keys(now)
+        if route.send_weekly_report and journal_entries and report_state.get("weekly") != weekly_key:
+            weekly_message = journal_summary_message(journal_entries, "Weekly", now - timedelta(days=7))
+            send_discord_text(route.discord_webhook_url, weekly_message, username=f"{strategy.strategy_name} Reports")
+            report_state["weekly"] = weekly_key
+        if route.send_monthly_report and journal_entries and report_state.get("monthly") != monthly_key:
+            monthly_message = journal_summary_message(journal_entries, "Monthly", now - timedelta(days=30))
+            send_discord_text(route.discord_webhook_url, monthly_message, username=f"{strategy.strategy_name} Reports")
+            report_state["monthly"] = monthly_key
+        save_report_state(route.report_state_file, report_state)
     elif route.dispatch == "none":
         pass
     else:
         raise ValueError(f"Unsupported dispatch type: {route.dispatch}")
+
+    journal_entries = append_new_signals(journal_entries, delivered)
+    save_journal(route.journal_file, journal_entries)
+    save_sent_setup_ids(route.state_file, sent_setup_ids)
+    latest_stats = build_stats_snapshot(journal_entries)
 
     summary = {
         "strategy_id": route.strategy_id,
@@ -113,9 +167,13 @@ def run_route(route: StrategyRoute, environment: str, price: str, token: str | N
         "signals_found": len(result.signals),
         "fresh_signals": len(fresh_signals),
         "delivered": len(delivered),
+        "new_outcomes": len(recent_outcomes),
         "dispatch": route.dispatch,
         "output_dir": str(output_dir),
         "state_file": route.state_file,
+        "journal_file": route.journal_file,
+        "report_state_file": route.report_state_file,
+        "stats_snapshot": latest_stats.to_dict(),
     }
     summary_path = output_dir / "platform_run_summary.json"
     output_dir.mkdir(parents=True, exist_ok=True)

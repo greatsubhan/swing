@@ -59,11 +59,14 @@ def scan_oanda_symbols(
             timeframe=timeframe_label,
             higher_timeframe=higher_timeframe,
         )
-        latest_signal = signals[-1] if signals else None
+        latest_bar_timestamp = fetched.df.index[-1].isoformat() if not fetched.df.empty else None
+        current_bar_signals = [signal for signal in signals if signal.timestamp == latest_bar_timestamp]
+        latest_signal = current_bar_signals[-1] if current_bar_signals else None
         results.append(
             {
                 "symbol": symbol,
                 "signal_count": len(signals),
+                "current_bar_signal_count": len(current_bar_signals),
                 "latest_signal": latest_signal.to_dict() if latest_signal else None,
                 "alert": concise_alert(latest_signal) if latest_signal else None,
             }
