@@ -203,6 +203,13 @@ python -m signal_platform --env-file .env test-discord
 
 The config example is at [config/platform.example.json](/C:/Users/Seeker/Documents/swing-pr1/config/platform.example.json).
 
+The example config now includes:
+
+- `little_rzy` on its own route and channel
+- `strategy_two_template` as a disabled second-strategy slot with its own channel variable
+
+That second slot is intentionally a scaffold until its trading rules are defined.
+
 ## Reflection Layer
 
 The platform now includes a signal journal layer that can:

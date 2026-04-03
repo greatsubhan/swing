@@ -38,6 +38,7 @@ That keeps strategy logic separate from transport and scheduling.
 ## Current Registered Strategy
 
 - `little_rzy`
+- `strategy_two_template`
 
 ## How Future Strategies Plug In
 
@@ -53,6 +54,12 @@ That means future strategies do not need to reimplement:
 - sent-alert dedupe
 - runtime config parsing
 - scheduler entrypoints
+
+The current second strategy is a placeholder scaffold only:
+
+- its route is disabled by default
+- it has its own Discord webhook variable
+- it exists so the platform is ready for strategy #2 without inventing rules prematurely
 
 ## Commands
 

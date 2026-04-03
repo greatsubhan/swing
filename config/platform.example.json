@@ -14,6 +14,21 @@
       "output_dir": "platform_output/little_rzy",
       "state_file": "platform_output/little_rzy/sent_state.json",
       "use_market_profile": true
+    },
+    {
+      "strategy_id": "strategy_two_template",
+      "enabled": false,
+      "watchlist": "template-empty",
+      "granularity": "H4",
+      "higher_timeframe": "1d",
+      "interval_minutes": 240,
+      "dispatch": "discord",
+      "discord_webhook_url": "${DISCORD_WEBHOOK_URL_STRATEGY_TWO}",
+      "output_dir": "platform_output/strategy_two_template",
+      "state_file": "platform_output/strategy_two_template/sent_state.json",
+      "journal_file": "platform_output/strategy_two_template/signal_journal.json",
+      "report_state_file": "platform_output/strategy_two_template/report_state.json",
+      "use_market_profile": false
     }
   ]
 }

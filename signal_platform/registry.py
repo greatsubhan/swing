@@ -3,10 +3,12 @@ from __future__ import annotations
 
 from .little_rzy_strategy import LittleRzyStrategy
 from .strategies import StrategyPlugin
+from .template_strategy import StrategyTwoTemplate
 
 
 _STRATEGIES: dict[str, StrategyPlugin] = {
     "little_rzy": LittleRzyStrategy(),
+    "strategy_two_template": StrategyTwoTemplate(),
 }
 
 
