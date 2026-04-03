@@ -2,7 +2,11 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
+import shutil
+import subprocess
+import sys
 from urllib import error, request
 
 from .models import PlatformSignal
@@ -69,13 +73,66 @@ def discord_payload(signal: PlatformSignal, username: str = "Signal Bot") -> dic
     }
 
 
+def _post_json_external(webhook_url: str, payload: dict[str, object]) -> bool:
+    body = json.dumps(payload)
+
+    if sys.platform.startswith("win"):
+        command = (
+            "$payload = [Console]::In.ReadToEnd(); "
+            "Invoke-RestMethod -Uri $env:WEBHOOK_URL -Method Post -Body $payload -ContentType 'application/json' | Out-Null"
+        )
+        completed = subprocess.run(
+            ["powershell", "-NoProfile", "-Command", command],
+            input=body,
+            text=True,
+            capture_output=True,
+            env={**os.environ, "WEBHOOK_URL": webhook_url},
+        )
+        if completed.returncode != 0:
+            stderr = completed.stderr.strip() or completed.stdout.strip()
+            raise RuntimeError(f"Discord webhook via PowerShell failed: {stderr}")
+        return True
+
+    curl_path = shutil.which("curl")
+    if curl_path:
+        completed = subprocess.run(
+            [
+                curl_path,
+                "-sS",
+                "-X",
+                "POST",
+                "-H",
+                "Content-Type: application/json",
+                "--data-binary",
+                "@-",
+                webhook_url,
+            ],
+            input=body,
+            text=True,
+            capture_output=True,
+        )
+        if completed.returncode != 0:
+            stderr = completed.stderr.strip() or completed.stdout.strip()
+            raise RuntimeError(f"Discord webhook via curl failed: {stderr}")
+        return True
+
+    return False
+
+
 def send_discord_webhook(webhook_url: str, signal: PlatformSignal, username: str = "Signal Bot") -> None:
     payload = discord_payload(signal, username=username)
+    if _post_json_external(webhook_url, payload):
+        return
+
     body = json.dumps(payload).encode("utf-8")
     req = request.Request(
         webhook_url,
         data=body,
-        headers={"Content-Type": "application/json"},
+        headers={
+            "Content-Type": "application/json",
+            "User-Agent": "signal-platform/1.0",
+            "Accept": "application/json",
+        },
         method="POST",
     )
     try:
