@@ -180,6 +180,23 @@ def resolved_entries_since(entries: list[JournalEntry], since_utc: datetime) -> 
 
 
 def journal_summary_message(entries: list[JournalEntry], period_label: str, since_utc: datetime) -> str:
+    data = journal_summary_data(entries, period_label, since_utc)
+    return (
+        f"{data['period_label']} report\n"
+        f"Signals sent: {data['signals_sent']}\n"
+        f"Still open: {data['open_count']}\n"
+        f"TP hit: {data['tp_hits']}\n"
+        f"SL hit: {data['sl_hits']}\n"
+        f"Net realized: {data['total_realized_r']:.2f}R\n"
+        f"Average closed trade: {data['avg_closed_r_text']}\n"
+        f"Average hold time: {data['avg_hold_text']}\n"
+        f"TP list: {data['tp_list_text']}\n"
+        f"SL list: {data['sl_list_text']}\n"
+        f"Open list: {data['open_list_text']}"
+    )
+
+
+def journal_summary_data(entries: list[JournalEntry], period_label: str, since_utc: datetime) -> dict[str, object]:
     period_entries = [entry for entry in entries if datetime.fromisoformat(entry.dispatched_at_utc.replace("Z", "+00:00")) >= since_utc]
     resolved = [entry for entry in period_entries if entry.status == "closed"]
     open_count = sum(1 for entry in period_entries if entry.status == "open")
@@ -194,22 +211,27 @@ def journal_summary_message(entries: list[JournalEntry], period_label: str, sinc
     avg_hold = mean(hold_values) if hold_values else None
     avg_hold_text = f"{avg_hold:.1f}h" if avg_hold is not None else "n/a"
     avg_closed_r_text = f"{avg_closed_r:.2f}R" if avg_closed_r is not None else "n/a"
-    tp_list = ", ".join(f"{entry.symbol} ({entry.realized_r():.2f}R)" for entry in resolved if entry.outcome == "tp_hit") or "none"
-    sl_list = ", ".join(f"{entry.symbol} ({entry.realized_r():.2f}R)" for entry in resolved if entry.outcome == "sl_hit") or "none"
-    open_list = ", ".join(f"{entry.symbol}" for entry in period_entries if entry.status == "open") or "none"
-    return (
-        f"{period_label} report\n"
-        f"Signals sent: {len(period_entries)}\n"
-        f"Still open: {open_count}\n"
-        f"TP hit: {tp_hits}\n"
-        f"SL hit: {sl_hits}\n"
-        f"Net realized: {total_realized_r:.2f}R\n"
-        f"Average closed trade: {avg_closed_r_text}\n"
-        f"Average hold time: {avg_hold_text}\n"
-        f"TP list: {tp_list}\n"
-        f"SL list: {sl_list}\n"
-        f"Open list: {open_list}"
-    )
+    tp_list = [f"{entry.symbol} ({entry.realized_r():.2f}R)" for entry in resolved if entry.outcome == "tp_hit"]
+    sl_list = [f"{entry.symbol} ({entry.realized_r():.2f}R)" for entry in resolved if entry.outcome == "sl_hit"]
+    open_list = [f"{entry.symbol}" for entry in period_entries if entry.status == "open"]
+    return {
+        "period_label": period_label,
+        "signals_sent": len(period_entries),
+        "open_count": open_count,
+        "tp_hits": tp_hits,
+        "sl_hits": sl_hits,
+        "total_realized_r": total_realized_r,
+        "avg_closed_r": avg_closed_r,
+        "avg_closed_r_text": avg_closed_r_text,
+        "avg_hold_hours": avg_hold,
+        "avg_hold_text": avg_hold_text,
+        "tp_list": tp_list,
+        "sl_list": sl_list,
+        "open_list": open_list,
+        "tp_list_text": ", ".join(tp_list) or "none",
+        "sl_list_text": ", ".join(sl_list) or "none",
+        "open_list_text": ", ".join(open_list) or "none",
+    }
 
 
 def load_report_state(path: str | Path) -> dict[str, str]:

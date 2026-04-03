@@ -13,14 +13,14 @@ from .dispatchers import (
     new_signals_only,
     save_sent_setup_ids,
     send_discord_outcome,
-    send_discord_text,
+    send_discord_report,
     send_discord_webhook,
 )
 from .journal import (
     append_new_signals,
     backfill_known_signals,
     build_stats_snapshot,
-    journal_summary_message,
+    journal_summary_data,
     load_journal,
     load_report_state,
     refresh_open_entries,
@@ -139,12 +139,12 @@ def run_route(route: StrategyRoute, environment: str, price: str, token: str | N
         now = datetime.now(timezone.utc)
         weekly_key, monthly_key = report_period_keys(now)
         if route.send_weekly_report and journal_entries and report_state.get("weekly") != weekly_key:
-            weekly_message = journal_summary_message(journal_entries, "Weekly", now - timedelta(days=7))
-            send_discord_text(route.discord_webhook_url, weekly_message, username=f"{strategy.strategy_name} Reports")
+            weekly_summary = journal_summary_data(journal_entries, "Weekly", now - timedelta(days=7))
+            send_discord_report(route.discord_webhook_url, weekly_summary, username=f"{strategy.strategy_name} Reports")
             report_state["weekly"] = weekly_key
         if route.send_monthly_report and journal_entries and report_state.get("monthly") != monthly_key:
-            monthly_message = journal_summary_message(journal_entries, "Monthly", now - timedelta(days=30))
-            send_discord_text(route.discord_webhook_url, monthly_message, username=f"{strategy.strategy_name} Reports")
+            monthly_summary = journal_summary_data(journal_entries, "Monthly", now - timedelta(days=30))
+            send_discord_report(route.discord_webhook_url, monthly_summary, username=f"{strategy.strategy_name} Reports")
             report_state["monthly"] = monthly_key
         save_report_state(route.report_state_file, report_state)
     elif route.dispatch == "none":
