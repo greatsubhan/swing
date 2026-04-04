@@ -11,9 +11,9 @@ from urllib import error, request
 
 from .models import JournalEntry, PlatformSignal
 
-BRAND_NAME = "Measured Drift"
-SIGNAL_DESK_NAME = f"{BRAND_NAME} Desk"
-REPORTS_NAME = f"{BRAND_NAME} Review"
+DEFAULT_BRAND_NAME = "Signal Platform"
+SIGNAL_DESK_NAME = "Signal Desk"
+REPORTS_NAME = "Signal Review"
 
 
 def load_sent_setup_ids(state_path: str | Path) -> set[str]:
@@ -88,7 +88,7 @@ def discord_payload(signal: PlatformSignal, username: str = SIGNAL_DESK_NAME) ->
                     {"name": "🪞 Live Record", "value": history_text, "inline": False},
                     {"name": "🆔 Setup ID", "value": signal.setup_id, "inline": False},
                 ],
-                "footer": {"text": f"{BRAND_NAME} ✦ {signal.asset_class} ✦ {signal.strategy_id}"},
+                "footer": {"text": f"{signal.strategy_name} ✦ {signal.asset_class} ✦ {signal.strategy_id}"},
                 "timestamp": signal.timestamp,
             }
         ],
@@ -120,7 +120,7 @@ def outcome_payload(entry: JournalEntry, username: str = SIGNAL_DESK_NAME) -> di
                     {"name": "⌛ Hold Time", "value": hold_text, "inline": True},
                     {"name": "🧮 Bars Checked", "value": str(entry.bars_checked), "inline": True},
                 ],
-                "footer": {"text": f"{BRAND_NAME} outcome log"},
+                "footer": {"text": f"{entry.strategy_name} outcome log"},
             }
         ],
     }
@@ -133,7 +133,11 @@ def simple_text_payload(content: str, username: str = SIGNAL_DESK_NAME) -> dict[
     }
 
 
-def report_payload(summary: dict[str, object], username: str = REPORTS_NAME) -> dict[str, object]:
+def report_payload(
+    summary: dict[str, object],
+    username: str = REPORTS_NAME,
+    strategy_name: str = DEFAULT_BRAND_NAME,
+) -> dict[str, object]:
     period_label = str(summary["period_label"])
     title_prefix = "Weekly" if period_label.lower().startswith("weekly") else "Monthly"
     title_emoji = "🗓️" if title_prefix == "Weekly" else "📅"
@@ -160,7 +164,7 @@ def report_payload(summary: dict[str, object], username: str = REPORTS_NAME) -> 
                     {"name": "⚠️ SL List", "value": sl_list, "inline": False},
                     {"name": "🧷 Open List", "value": open_list, "inline": False},
                 ],
-                "footer": {"text": f"{BRAND_NAME} review desk"},
+                "footer": {"text": f"{strategy_name} review desk"},
             }
         ],
     }
@@ -251,5 +255,10 @@ def send_discord_text(webhook_url: str, content: str, username: str = SIGNAL_DES
     _send_payload(webhook_url, simple_text_payload(content, username=username))
 
 
-def send_discord_report(webhook_url: str, summary: dict[str, object], username: str = REPORTS_NAME) -> None:
-    _send_payload(webhook_url, report_payload(summary, username=username))
+def send_discord_report(
+    webhook_url: str,
+    summary: dict[str, object],
+    username: str = REPORTS_NAME,
+    strategy_name: str = DEFAULT_BRAND_NAME,
+) -> None:
+    _send_payload(webhook_url, report_payload(summary, username=username, strategy_name=strategy_name))

@@ -97,12 +97,18 @@ def main() -> None:
         return
 
     if args.command == "test-discord":
-        webhook_url = args.webhook_url or os.getenv("DISCORD_WEBHOOK_URL_LITTLE_RZY") or os.getenv("DISCORD_WEBHOOK_URL")
+        webhook_url = (
+            args.webhook_url
+            or os.getenv("DISCORD_WEBHOOK_URL_LITTLE_RZY")
+            or os.getenv("DISCORD_WEBHOOK_URL_STRATEGY_TWO")
+            or os.getenv("DISCORD_WEBHOOK_URL")
+        )
         if not webhook_url:
             raise SystemExit("No Discord webhook URL provided. Pass --webhook-url or set DISCORD_WEBHOOK_URL_LITTLE_RZY.")
+        strategy = get_strategy(args.strategy)
         signal = PlatformSignal(
             strategy_id=args.strategy,
-            strategy_name=args.strategy.replace("_", " ").title(),
+            strategy_name=strategy.strategy_name,
             symbol=args.symbol,
             asset_class="test",
             timeframe=args.timeframe,
@@ -118,7 +124,7 @@ def main() -> None:
             stop_loss=98.5,
             target_1=103.6,
         )
-        send_discord_webhook(webhook_url, signal, username="Measured Drift Preview")
+        send_discord_webhook(webhook_url, signal, username=f"{strategy.strategy_name} Preview")
         print(json.dumps({"status": "ok", "message": "Discord test alert sent."}, indent=2))
         return
 

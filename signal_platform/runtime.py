@@ -140,11 +140,21 @@ def run_route(route: StrategyRoute, environment: str, price: str, token: str | N
         weekly_key, monthly_key = report_period_keys(now)
         if route.send_weekly_report and journal_entries and report_state.get("weekly") != weekly_key:
             weekly_summary = journal_summary_data(journal_entries, "Weekly", now - timedelta(days=7))
-            send_discord_report(route.discord_webhook_url, weekly_summary, username=f"{strategy.strategy_name} Review")
+            send_discord_report(
+                route.discord_webhook_url,
+                weekly_summary,
+                username=f"{strategy.strategy_name} Review",
+                strategy_name=strategy.strategy_name,
+            )
             report_state["weekly"] = weekly_key
         if route.send_monthly_report and journal_entries and report_state.get("monthly") != monthly_key:
             monthly_summary = journal_summary_data(journal_entries, "Monthly", now - timedelta(days=30))
-            send_discord_report(route.discord_webhook_url, monthly_summary, username=f"{strategy.strategy_name} Review")
+            send_discord_report(
+                route.discord_webhook_url,
+                monthly_summary,
+                username=f"{strategy.strategy_name} Review",
+                strategy_name=strategy.strategy_name,
+            )
             report_state["monthly"] = monthly_key
         save_report_state(route.report_state_file, report_state)
     elif route.dispatch == "none":

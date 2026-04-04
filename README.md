@@ -1,10 +1,10 @@
-# Measured Drift Signal Bot
+# Multi-Strategy Signal Bot
 
-This repo contains the current best Python implementation of the Measured Drift strategy as a:
+This repo contains:
 
-- backtest runner
-- live signal scanner
-- market-profiled research bot
+- Measured Drift, the current live strategy
+- Trend Current, the locked strategy #2 candidate
+- a shared multi-strategy signal platform
 
 It also now includes a reusable multi-strategy signal platform so additional strategies can share the same runtime and Discord delivery flow.
 
@@ -181,6 +181,12 @@ Run Measured Drift through the platform:
 python -m signal_platform scan --strategy little_rzy --watchlist primary-4h --granularity H4 --oanda-env practice --out platform_output/little_rzy
 ```
 
+Run Trend Current through the platform:
+
+```bash
+python -m signal_platform scan --strategy strategy_two --watchlist core-4h --granularity H4 --higher-timeframe 1d --oanda-env practice --out platform_output/strategy_two
+```
+
 Run config-based routes:
 
 ```bash
@@ -206,9 +212,9 @@ The config example is at [config/platform.example.json](/C:/Users/Seeker/Documen
 The example config now includes:
 
 - `little_rzy` on its own route and channel
-- `strategy_two_template` as a disabled second-strategy slot with its own channel variable
+- `strategy_two` as a disabled Trend Current route with its own channel variable
 
-That second slot is intentionally a scaffold until its trading rules are defined.
+Trend Current currently uses the locked strategy #2 rules documented in [docs/SECULAR_BEAR_STRATEGY.md](/C:/Users/Seeker/Documents/swing-pr1/docs/SECULAR_BEAR_STRATEGY.md) and benchmarked in [STRATEGY2_READINESS.md](/C:/Users/Seeker/Documents/swing-pr1/reports/secular_bear_static_funded/STRATEGY2_READINESS.md).
 
 ## Reflection Layer
 

@@ -35,10 +35,10 @@ That keeps strategy logic separate from transport and scheduling.
 - signal journaling and TP/SL outcome tracking
 - weekly and monthly report-card messages
 
-## Current Registered Strategy
+## Current Registered Strategies
 
 - `little_rzy`
-- `strategy_two_template`
+- `strategy_two`
 
 ## How Future Strategies Plug In
 
@@ -55,11 +55,12 @@ That means future strategies do not need to reimplement:
 - runtime config parsing
 - scheduler entrypoints
 
-The current second strategy is a placeholder scaffold only:
+The current second strategy is now wired as `Trend Current`:
 
-- its route is disabled by default
+- it uses the locked strategy #2 research rules
+- its route is disabled by default until a real webhook is assigned
 - it has its own Discord webhook variable
-- it exists so the platform is ready for strategy #2 without inventing rules prematurely
+- its current production candidate watchlist is `core-4h`
 
 ## Commands
 
@@ -73,6 +74,12 @@ Run a one-off strategy scan:
 
 ```bash
 python -m signal_platform scan --strategy little_rzy --watchlist primary-4h --granularity H4 --oanda-env practice --out platform_output/little_rzy
+```
+
+Run Trend Current once:
+
+```bash
+python -m signal_platform scan --strategy strategy_two --watchlist core-4h --granularity H4 --higher-timeframe 1d --oanda-env practice --out platform_output/strategy_two
 ```
 
 Run config-driven routes:
