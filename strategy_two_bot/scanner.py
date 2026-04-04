@@ -3,12 +3,15 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import time
 
 import pandas as pd
 
 from little_rzy_bot.market_data import fetch_oanda_ohlcv
 
 from .watchlists import asset_class_for
+
+OANDA_CACHE_DIR = Path("research_data/oanda")
 
 TIMEFRAME_TO_OANDA = {
     "H4": "H4",
@@ -126,6 +129,35 @@ def _timeframe_label(value: str) -> str:
     return TIMEFRAME_LABEL[_granularity_code(value)]
 
 
+def _load_history(symbol: str, granularity: str, environment: str, token: str | None, price: str) -> pd.DataFrame:
+    cache_dir = OANDA_CACHE_DIR / symbol
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    cache_path = cache_dir / f"{granularity}_live.csv"
+    if cache_path.exists():
+        try:
+            cached = pd.read_csv(cache_path, parse_dates=["timestamp"])
+            if not cached.empty:
+                return cached.set_index("timestamp")
+        except Exception:
+            pass
+
+    last_error: Exception | None = None
+    for attempt in range(4):
+        try:
+            fetched = fetch_oanda_ohlcv(symbol, granularity, token=token, environment=environment, price=price)
+            df = fetched.df
+            df.reset_index().to_csv(cache_path, index=False)
+            return df
+        except Exception as exc:
+            last_error = exc
+            time.sleep(2 + attempt * 2)
+    if cache_path.exists():
+        cached = pd.read_csv(cache_path, parse_dates=["timestamp"])
+        if not cached.empty:
+            return cached.set_index("timestamp")
+    raise RuntimeError(f"Failed fetching {symbol} {granularity}") from last_error
+
+
 def scan_oanda_symbols(
     symbols: list[str],
     granularity: str,
@@ -140,13 +172,6 @@ def scan_oanda_symbols(
     rows: list[dict[str, object]] = []
 
     for symbol in symbols:
-        execution = with_indicators(
-            fetch_oanda_ohlcv(symbol, exec_code, token=token, environment=environment, price=price).df
-        )
-        trend_view = with_indicators(
-            fetch_oanda_ohlcv(symbol, trend_code, token=token, environment=environment, price=price).df
-        )
-
         row: dict[str, object] = {
             "symbol": symbol,
             "asset_class": asset_class_for(symbol),
@@ -155,6 +180,14 @@ def scan_oanda_symbols(
             "alert": "",
             "latest_signal": None,
         }
+        try:
+            execution = with_indicators(_load_history(symbol, exec_code, environment=environment, token=token, price=price))
+            trend_view = with_indicators(_load_history(symbol, trend_code, environment=environment, token=token, price=price))
+        except Exception as exc:
+            row["error"] = str(exc)
+            rows.append(row)
+            continue
+
         if len(execution) < 220 or len(trend_view) < 220:
             row["error"] = "Not enough history"
             rows.append(row)
@@ -221,4 +254,3 @@ def save_scan_outputs(output_dir: str | Path, rows: list[dict[str, object]]) -> 
     (out / "scan_results.json").write_text(json.dumps(rows, indent=2))
     alerts = [str(row["alert"]) for row in rows if row.get("alert")]
     (out / "alerts.txt").write_text("\n".join(alerts))
-

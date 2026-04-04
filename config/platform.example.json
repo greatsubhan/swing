@@ -17,7 +17,7 @@
     },
     {
       "strategy_id": "strategy_two",
-      "enabled": false,
+      "enabled": true,
       "watchlist": "core-4h",
       "granularity": "H4",
       "higher_timeframe": "1d",
