@@ -35,6 +35,14 @@ def new_signals_only(signals: list[PlatformSignal], sent_setup_ids: set[str]) ->
 
 
 def _discord_color(signal: PlatformSignal) -> int:
+    event_type = str(signal.raw_signal.get("event_type", "entry")).lower()
+    if event_type == "move_stop":
+        return 0xF1C40F
+    if event_type == "basket_exit":
+        reason = str(signal.raw_signal.get("exit_reason", ""))
+        return 0x3498DB if reason == "trend_break" else 0xE67E22
+    if event_type == "cooldown":
+        return 0x95A5A6
     if signal.side.lower() == "long":
         return 0x2ECC71
     if signal.side.lower() == "short":
@@ -50,7 +58,23 @@ def _signal_emoji(side: str) -> str:
     return "🟢" if side.lower() == "long" else "🔴" if side.lower() == "short" else "🔵"
 
 
+def _event_badge(signal: PlatformSignal) -> tuple[str, str]:
+    event_type = str(signal.raw_signal.get("event_type", "entry")).lower()
+    if event_type == "entry":
+        return ("NEW BASKET", "🧭")
+    if event_type == "add":
+        return ("ADD", "➕")
+    if event_type == "move_stop":
+        return ("MOVE STOP", "🛡️")
+    if event_type == "basket_exit":
+        return ("BASKET EXIT", "📦")
+    if event_type == "cooldown":
+        return ("COOLDOWN", "⏳")
+    return (_signal_badge(signal.side), _signal_emoji(signal.side))
+
+
 def discord_payload(signal: PlatformSignal, username: str = SIGNAL_DESK_NAME) -> dict[str, object]:
+    badge, event_emoji = _event_badge(signal)
     rr_text = f"{signal.risk_reward:.2f}" if signal.risk_reward is not None else "n/a"
     entry_text = f"{signal.entry:.5f}" if signal.entry is not None else "n/a"
     stop_text = f"{signal.stop_loss:.5f}" if signal.stop_loss is not None else "n/a"
@@ -68,8 +92,48 @@ def discord_payload(signal: PlatformSignal, username: str = SIGNAL_DESK_NAME) ->
         if stats
         else "Signals n/a"
     )
-    title_side = _signal_badge(signal.side)
-    signal_emoji = _signal_emoji(signal.side)
+    risk_fraction = signal.raw_signal.get("risk_fraction")
+    risk_fraction_text = f"{float(risk_fraction) * 100:.2f}%" if risk_fraction is not None else "n/a"
+    title_side = badge
+    signal_emoji = event_emoji
+    event_type = str(signal.raw_signal.get("event_type", "entry")).lower()
+    base_fields = [
+        {"name": "🧭 Strategy", "value": signal.strategy_name, "inline": True},
+        {"name": "📊 Signal Score", "value": score_text, "inline": True},
+        {"name": "🧮 Idea Risk", "value": risk_fraction_text, "inline": True},
+        {"name": "🆔 Setup ID", "value": signal.setup_id, "inline": False},
+    ]
+    if event_type in {"entry", "add"}:
+        event_fields = [
+            {"name": "🎯 Risk/Reward", "value": rr_text, "inline": True},
+            {"name": "📍 Entry", "value": entry_text, "inline": True},
+            {"name": "🛑 Stop", "value": stop_text, "inline": True},
+            {"name": "🏁 Target", "value": target_text, "inline": True},
+            {"name": "🪞 Live Record", "value": history_text, "inline": False},
+        ]
+    elif event_type == "move_stop":
+        event_fields = [
+            {"name": "🛡️ New Stop", "value": stop_text, "inline": True},
+            {"name": "⌛ Bars Held", "value": str(signal.raw_signal.get("bars_held", "n/a")), "inline": True},
+            {"name": "📍 Tranche", "value": str(signal.raw_signal.get("tranche_id", "n/a")), "inline": True},
+        ]
+    elif event_type == "basket_exit":
+        event_fields = [
+            {"name": "📌 Exit Reason", "value": str(signal.raw_signal.get("exit_reason", "n/a")), "inline": True},
+            {"name": "📦 Tranches", "value": str(signal.raw_signal.get("tranche_count", "n/a")), "inline": True},
+            {"name": "📈 Basket Result", "value": f"{float(signal.raw_signal.get('basket_result_r', 0.0)):.2f}R", "inline": True},
+        ]
+    elif event_type == "cooldown":
+        event_fields = [
+            {"name": "⏳ Cooldown Until", "value": str(signal.raw_signal.get("cooldown_until", "n/a")), "inline": False},
+        ]
+    else:
+        event_fields = [
+            {"name": "🎯 Risk/Reward", "value": rr_text, "inline": True},
+            {"name": "📍 Entry", "value": entry_text, "inline": True},
+            {"name": "🛑 Stop", "value": stop_text, "inline": True},
+            {"name": "🏁 Target", "value": target_text, "inline": True},
+        ]
     return {
         "username": username,
         "content": f"{signal_emoji} [{signal.strategy_name}] {signal.symbol} {signal.timeframe.upper()} {title_side}",
@@ -78,16 +142,7 @@ def discord_payload(signal: PlatformSignal, username: str = SIGNAL_DESK_NAME) ->
                 "title": f"{signal_emoji} {signal.symbol} {signal.timeframe.upper()} {title_side}",
                 "description": f"🧠 Setup thesis\n{signal.summary}",
                 "color": _discord_color(signal),
-                "fields": [
-                    {"name": "🧭 Strategy", "value": signal.strategy_name, "inline": True},
-                    {"name": "🎯 Risk/Reward", "value": rr_text, "inline": True},
-                    {"name": "📊 Signal Score", "value": score_text, "inline": True},
-                    {"name": "📍 Entry", "value": entry_text, "inline": True},
-                    {"name": "🛑 Stop", "value": stop_text, "inline": True},
-                    {"name": "🏁 Target", "value": target_text, "inline": True},
-                    {"name": "🪞 Live Record", "value": history_text, "inline": False},
-                    {"name": "🆔 Setup ID", "value": signal.setup_id, "inline": False},
-                ],
+                "fields": [*base_fields[:1], *event_fields, *base_fields[1:]],
                 "footer": {"text": f"{signal.strategy_name} ✦ {signal.asset_class} ✦ {signal.strategy_id}"},
                 "timestamp": signal.timestamp,
             }

@@ -28,6 +28,8 @@
       "state_file": "platform_output/strategy_two/sent_state.json",
       "journal_file": "platform_output/strategy_two/signal_journal.json",
       "report_state_file": "platform_output/strategy_two/report_state.json",
+      "send_weekly_report": false,
+      "send_monthly_report": false,
       "use_market_profile": false
     }
   ]

@@ -103,6 +103,7 @@ def load_platform_config(path: str | Path) -> PlatformConfig:
 
 def run_route(route: StrategyRoute, environment: str, price: str, token: str | None) -> dict[str, object]:
     strategy = get_strategy(route.strategy_id)
+    managed_events = bool(getattr(strategy, "managed_events", False))
     output_dir = Path(route.output_dir)
     scan_request = StrategyScanRequest(
         watchlist=route.watchlist,
@@ -116,13 +117,23 @@ def run_route(route: StrategyRoute, environment: str, price: str, token: str | N
     )
     result = strategy.scan(scan_request)
     sent_setup_ids = load_sent_setup_ids(route.state_file)
-    journal_entries = load_journal(route.journal_file)
-    journal_entries = backfill_known_signals(journal_entries, result.signals, sent_setup_ids)
-    journal_entries = refresh_open_entries(journal_entries, token=token, environment=environment, price=price)
-    recent_outcomes = resolved_entries_since(journal_entries, datetime.now(timezone.utc) - timedelta(minutes=max(route.interval_minutes * 2, 15)))
-    fresh_signals = new_signals_only(result.signals, sent_setup_ids)
-    stats = build_stats_snapshot(journal_entries)
-    enriched_signals = [signal_with_stats(signal, stats) for signal in fresh_signals]
+    if managed_events:
+        journal_entries = []
+        recent_outcomes = []
+        fresh_signals = new_signals_only(result.signals, sent_setup_ids)
+        enriched_signals = fresh_signals
+        latest_stats = None
+    else:
+        journal_entries = load_journal(route.journal_file)
+        journal_entries = backfill_known_signals(journal_entries, result.signals, sent_setup_ids)
+        journal_entries = refresh_open_entries(journal_entries, token=token, environment=environment, price=price)
+        recent_outcomes = resolved_entries_since(
+            journal_entries, datetime.now(timezone.utc) - timedelta(minutes=max(route.interval_minutes * 2, 15))
+        )
+        fresh_signals = new_signals_only(result.signals, sent_setup_ids)
+        stats = build_stats_snapshot(journal_entries)
+        enriched_signals = [signal_with_stats(signal, stats) for signal in fresh_signals]
+        latest_stats = build_stats_snapshot(journal_entries)
 
     delivered: list[PlatformSignal] = []
     if route.dispatch == "discord":
@@ -135,37 +146,38 @@ def run_route(route: StrategyRoute, environment: str, price: str, token: str | N
             send_discord_webhook(route.discord_webhook_url, signal, username=f"{strategy.strategy_name} Desk")
             delivered.append(signal)
             sent_setup_ids.add(signal.setup_id)
-        report_state = load_report_state(route.report_state_file)
-        now = datetime.now(timezone.utc)
-        weekly_key, monthly_key = report_period_keys(now)
-        if route.send_weekly_report and journal_entries and report_state.get("weekly") != weekly_key:
-            weekly_summary = journal_summary_data(journal_entries, "Weekly", now - timedelta(days=7))
-            send_discord_report(
-                route.discord_webhook_url,
-                weekly_summary,
-                username=f"{strategy.strategy_name} Review",
-                strategy_name=strategy.strategy_name,
-            )
-            report_state["weekly"] = weekly_key
-        if route.send_monthly_report and journal_entries and report_state.get("monthly") != monthly_key:
-            monthly_summary = journal_summary_data(journal_entries, "Monthly", now - timedelta(days=30))
-            send_discord_report(
-                route.discord_webhook_url,
-                monthly_summary,
-                username=f"{strategy.strategy_name} Review",
-                strategy_name=strategy.strategy_name,
-            )
-            report_state["monthly"] = monthly_key
-        save_report_state(route.report_state_file, report_state)
+        if not managed_events:
+            report_state = load_report_state(route.report_state_file)
+            now = datetime.now(timezone.utc)
+            weekly_key, monthly_key = report_period_keys(now)
+            if route.send_weekly_report and journal_entries and report_state.get("weekly") != weekly_key:
+                weekly_summary = journal_summary_data(journal_entries, "Weekly", now - timedelta(days=7))
+                send_discord_report(
+                    route.discord_webhook_url,
+                    weekly_summary,
+                    username=f"{strategy.strategy_name} Review",
+                    strategy_name=strategy.strategy_name,
+                )
+                report_state["weekly"] = weekly_key
+            if route.send_monthly_report and journal_entries and report_state.get("monthly") != monthly_key:
+                monthly_summary = journal_summary_data(journal_entries, "Monthly", now - timedelta(days=30))
+                send_discord_report(
+                    route.discord_webhook_url,
+                    monthly_summary,
+                    username=f"{strategy.strategy_name} Review",
+                    strategy_name=strategy.strategy_name,
+                )
+                report_state["monthly"] = monthly_key
+            save_report_state(route.report_state_file, report_state)
     elif route.dispatch == "none":
         pass
     else:
         raise ValueError(f"Unsupported dispatch type: {route.dispatch}")
 
-    journal_entries = append_new_signals(journal_entries, delivered)
-    save_journal(route.journal_file, journal_entries)
+    if not managed_events:
+        journal_entries = append_new_signals(journal_entries, delivered)
+        save_journal(route.journal_file, journal_entries)
     save_sent_setup_ids(route.state_file, sent_setup_ids)
-    latest_stats = build_stats_snapshot(journal_entries)
 
     summary = {
         "strategy_id": route.strategy_id,
@@ -183,7 +195,8 @@ def run_route(route: StrategyRoute, environment: str, price: str, token: str | N
         "state_file": route.state_file,
         "journal_file": route.journal_file,
         "report_state_file": route.report_state_file,
-        "stats_snapshot": latest_stats.to_dict(),
+        "stats_snapshot": latest_stats.to_dict() if latest_stats is not None else None,
+        "managed_events": managed_events,
     }
     summary_path = output_dir / "platform_run_summary.json"
     output_dir.mkdir(parents=True, exist_ok=True)
