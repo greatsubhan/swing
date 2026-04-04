@@ -14,6 +14,15 @@ from .runtime import run_platform_config, serve_platform_config
 from .strategies import StrategyScanRequest
 
 
+def _default_test_webhook(strategy_id: str) -> str | None:
+    normalized = strategy_id.lower()
+    if normalized == "little_rzy":
+        return os.getenv("DISCORD_WEBHOOK_URL_LITTLE_RZY") or os.getenv("DISCORD_WEBHOOK_URL")
+    if normalized == "strategy_two":
+        return os.getenv("DISCORD_WEBHOOK_URL_STRATEGY_TWO") or os.getenv("DISCORD_WEBHOOK_URL")
+    return os.getenv("DISCORD_WEBHOOK_URL")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Multi-strategy signal platform")
     parser.add_argument("--env-file", default=".env", help="Optional .env file to load before running commands")
@@ -97,14 +106,9 @@ def main() -> None:
         return
 
     if args.command == "test-discord":
-        webhook_url = (
-            args.webhook_url
-            or os.getenv("DISCORD_WEBHOOK_URL_LITTLE_RZY")
-            or os.getenv("DISCORD_WEBHOOK_URL_STRATEGY_TWO")
-            or os.getenv("DISCORD_WEBHOOK_URL")
-        )
+        webhook_url = args.webhook_url or _default_test_webhook(args.strategy)
         if not webhook_url:
-            raise SystemExit("No Discord webhook URL provided. Pass --webhook-url or set DISCORD_WEBHOOK_URL_LITTLE_RZY.")
+            raise SystemExit("No Discord webhook URL provided. Pass --webhook-url or set the strategy webhook in .env.")
         strategy = get_strategy(args.strategy)
         signal = PlatformSignal(
             strategy_id=args.strategy,
