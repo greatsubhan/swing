@@ -31,6 +31,7 @@ The core idea is simple:
 | [signal_platform/registry.py](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/registry.py) | Registered strategy adapters |
 | [signal_platform/strategies.py](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/strategies.py) | Strategy plugin interface and scan request model |
 | [signal_platform/models.py](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/models.py) | Shared signal and journal data models |
+| [signal_platform/reinforcement.py](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/reinforcement.py) | Structure tracking, root-signal detection, and reinforcement updates |
 | [signal_platform/dispatchers.py](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/dispatchers.py) | Discord payload formatting and webhook sending |
 | [signal_platform/journal.py](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/journal.py) | Signal journals, outcome refresh, stats snapshots, and report summaries |
 | [signal_platform/command_content.py](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/command_content.py) | Inbound command bot content and status and recent views |
@@ -80,6 +81,9 @@ Common route fields:
 - `max_catch_up_entries_per_run`
 - `health_log_file`
 - `health_snapshot_file`
+- `reinforcement_state_file`
+- `reinforcement_log_file`
+- `extra.signal_reinforcement.*`
 
 ## Data Sources and External Integrations
 
@@ -104,12 +108,49 @@ When the runtime executes a route, the flow is:
 4. Run the scanner through the route adapter.
 5. Normalize scanner output into `PlatformSignal` objects.
 6. Compare signals against `sent_state.json`.
-7. Recover unnotified outcomes from the journal.
-8. Recover recent missed entries inside the catch-up window.
-9. Dispatch outcomes first, then fresh entries, then recovered entries.
-10. Append newly dispatched signals to the journal.
-11. Write `platform_run_summary.json`.
-12. Write `health_snapshot.json` and append `route_cycle_log.csv`.
+7. Optionally collapse duplicate same-structure signals into:
+   - one root signal
+   - reinforcement updates
+8. Recover unnotified outcomes from the journal.
+9. Recover recent missed entries inside the catch-up window.
+10. Dispatch outcomes first, then fresh entries, then recovered entries.
+11. Append newly dispatched tradable signals to the journal.
+12. Write `platform_run_summary.json`.
+13. Write `health_snapshot.json` and append `route_cycle_log.csv`.
+
+## Reinforcement Layer
+
+The platform now supports a structure-aware reinforcement layer for tactical routes.
+
+Current production use:
+
+- `strategy_four` / CWT
+
+Behavior:
+
+- first signal in a structure stays tradable
+- later same-structure signals become reinforcement updates
+- reinforcements can still be sent to Discord
+- only root signals are journaled as trades
+
+Persistent files:
+
+- `reinforcement_state.json`
+- `reinforcement_decisions.jsonl`
+
+Data model impact:
+
+- `PlatformSignal` now carries:
+  - `is_tradable`
+  - `structure_id`
+  - `root_signal_id`
+  - `reinforcement_count`
+  - `strength_score`
+- `JournalEntry` stores root-structure references for tradable signals
+
+See:
+
+- [SIGNAL_REINFORCEMENT_SYSTEM.md](/C:/Users/Seeker/Documents/swing-pr1/docs/SIGNAL_REINFORCEMENT_SYSTEM.md)
 
 ## Scanner Integration
 
@@ -157,6 +198,7 @@ The journal stores:
 - status (`open` or `closed`)
 - closure outcome (`tp_hit`, `sl_hit`, `break_even`, and similar)
 - whether the outcome notification was already sent
+- structure references for root signals
 
 This enables:
 
@@ -164,6 +206,7 @@ This enables:
 - later performance summaries
 - current route stats snapshots
 - recovery of missed closure notifications after downtime
+- clean trade counts even when reinforcement updates are sent live
 
 ## Recovery and Catch-Up Logic
 
@@ -207,9 +250,12 @@ These files make it easier to distinguish:
 Useful health fields:
 
 - `signals_found`
+- `tradable_signals`
+- `reinforcement_signals`
 - `fresh_signals`
 - `recovered_entries_found`
 - `recovered_entries_sent`
+- `reinforcements_sent`
 - `pending_unnotified_outcomes_count`
 - `outcomes_sent`
 - `suppressed_duplicates`
