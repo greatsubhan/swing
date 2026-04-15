@@ -35,6 +35,8 @@ def append_new_signals(entries: list[JournalEntry], signals: list[PlatformSignal
     existing_ids = {entry.setup_id for entry in entries}
     now = utc_now_iso()
     for signal in signals:
+        if not signal.is_tradable:
+            continue
         if signal.setup_id in existing_ids:
             continue
         entries.append(
@@ -55,6 +57,11 @@ def append_new_signals(entries: list[JournalEntry], signals: list[PlatformSignal
                 quality_score=signal.quality_score,
                 quality_grade=signal.quality_grade,
                 status="open",
+                is_root_signal=True,
+                structure_id=signal.structure_id,
+                root_signal_id=signal.root_signal_id or signal.setup_id,
+                reinforcement_count_at_dispatch=signal.reinforcement_count,
+                strength_score_at_dispatch=signal.strength_score,
                 raw_signal=signal.raw_signal,
             )
         )
@@ -102,9 +109,20 @@ def signal_with_stats(signal: PlatformSignal, stats: SignalStatsSnapshot) -> Pla
 
 
 def _find_outcome(entry: JournalEntry, token: str | None, environment: str, price: str) -> tuple[str, str, float, int] | None:
+    timeframe_key = entry.timeframe.lower()
+    granularity = {
+        "5m": "M5",
+        "15m": "M15",
+        "1h": "H1",
+        "h1": "H1",
+        "4h": "H4",
+        "h4": "H4",
+        "1d": "D",
+        "d": "D",
+    }.get(timeframe_key, "H1")
     fetched = fetch_oanda_ohlcv(
         instrument=entry.symbol,
-        granularity="H4" if entry.timeframe == "4h" else "D" if entry.timeframe == "1d" else "H1",
+        granularity=granularity,
         start=entry.signal_timestamp,
         end=None,
         price=price,
@@ -166,6 +184,24 @@ def refresh_open_entries(
 
 def unresolved_entries(entries: list[JournalEntry]) -> list[JournalEntry]:
     return [entry for entry in entries if entry.status == "open"]
+
+
+def pending_outcome_notifications(entries: list[JournalEntry], limit: int | None = None) -> list[JournalEntry]:
+    pending = [
+        entry
+        for entry in entries
+        if entry.status == "closed" and entry.outcome_timestamp and not entry.outcome_notified
+    ]
+    pending.sort(
+        key=lambda entry: (
+            entry.outcome_timestamp or "",
+            entry.dispatched_at_utc,
+            entry.setup_id,
+        )
+    )
+    if limit is not None:
+        return pending[:limit]
+    return pending
 
 
 def resolved_entries_since(entries: list[JournalEntry], since_utc: datetime) -> list[JournalEntry]:

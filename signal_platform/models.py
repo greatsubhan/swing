@@ -24,6 +24,11 @@ class PlatformSignal:
     entry: float | None = None
     stop_loss: float | None = None
     target_1: float | None = None
+    is_tradable: bool = True
+    structure_id: str | None = None
+    root_signal_id: str | None = None
+    reinforcement_count: int = 0
+    strength_score: int | None = None
     raw_signal: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -83,6 +88,11 @@ class JournalEntry:
     quality_score: int | None
     quality_grade: str | None
     status: str
+    is_root_signal: bool = True
+    structure_id: str | None = None
+    root_signal_id: str | None = None
+    reinforcement_count_at_dispatch: int = 0
+    strength_score_at_dispatch: int | None = None
     outcome: str | None = None
     outcome_timestamp: str | None = None
     exit_price: float | None = None
@@ -108,4 +118,52 @@ class JournalEntry:
             return float(self.risk_reward or 0.0)
         if self.outcome == "sl_hit":
             return -1.0
+        if self.outcome in {"break_even", "breakeven"}:
+            return 0.0
         return 0.0
+
+
+@dataclass
+class SignalStructure:
+    structure_id: str
+    strategy_id: str
+    symbol: str
+    timeframe: str
+    side: str
+    start_timestamp: str
+    last_update_timestamp: str
+    status: str
+    root_signal_id: str
+    reinforcement_count: int
+    strength_score: int
+    best_quality_score: int | None
+    current_status: str
+    entry: float | None
+    stop_loss: float | None
+    target_1: float | None
+    last_signal_timestamp: str
+    last_signal_id: str | None = None
+    htf_alignment_active: bool = True
+    effective_r_exposure: float = 1.0
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass
+class ReinforcementConfig:
+    enabled: bool = False
+    state_file: str | None = None
+    decision_log_file: str | None = None
+    base_strength_score: int = 50
+    max_strength_score: int = 100
+    quality_improvement_points: int = 5
+    continuation_points: int = 5
+    structure_holds_points: int = 3
+    htf_alignment_points: int = 3
+    enable_r_scaling: bool = False
+    r_scale_per_reinforcement: float = 0.25
+    max_effective_r_exposure: float = 2.0
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
