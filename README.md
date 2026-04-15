@@ -1,18 +1,27 @@
 # swing-pr1
 
-`swing-pr1` is a multi-strategy trading signal workspace centered on a shared
-Discord-first runtime. The project contains:
+`swing-pr1` is a multi-strategy trading signal workspace centered on a shared Discord-first runtime. The repository combines:
 
-- a reusable orchestration layer in [`signal_platform`](/C:/Users/Seeker/Documents/swing-pr1/signal_platform)
+- a reusable orchestration layer in [signal_platform](/C:/Users/Seeker/Documents/swing-pr1/signal_platform)
 - several strategy-specific bots and research modules
 - Discord webhook delivery for outbound alerts
-- a lightweight inbound Discord command bot for `boards`, `strategy`, `status`,
-  `recent`, `scan`, and `help`
-- journaling, outcome tracking, missed-alert recovery, startup automation, and
-  research/backtest tooling
+- a lightweight inbound Discord command bot for `boards`, `strategy`, `status`, `recent`, `scan`, and `help`
+- journaling, outcome tracking, missed-alert recovery, startup automation, and research tooling
 
-This repo mixes production-style signal delivery with ongoing research. Some
-strategies are live-facing boards; others are still research-only.
+This repo mixes production-style signal delivery with ongoing research. Some strategies are live-facing boards; others remain research-only.
+
+## Project Purpose
+
+The project exists to let multiple strategy boards share one operational runtime without duplicating:
+
+- scheduling
+- data loading conventions
+- Discord dispatch
+- duplicate suppression
+- signal journaling
+- outcome tracking
+- recovery after downtime
+- health logging and status reporting
 
 ## Tech Stack
 
@@ -25,45 +34,30 @@ Primary stack:
 - `discord.py` for the inbound command bot
 - JSON-based route configuration
 
-Important supporting packages are defined in
-[requirements.txt](/C:/Users/Seeker/Documents/swing-pr1/requirements.txt).
-
-## Project Purpose
-
-The goal of the project is to let multiple strategy boards share one operational
-runtime without duplicating:
-
-- scheduling
-- data loading conventions
-- Discord dispatch
-- deduplication
-- signal journaling
-- outcome tracking
-- recovery after downtime
-- health logging and status reporting
+Important supporting packages are defined in [requirements.txt](/C:/Users/Seeker/Documents/swing-pr1/requirements.txt).
 
 ## Main Components
 
 | Area | Purpose |
 |---|---|
-| [`signal_platform`](/C:/Users/Seeker/Documents/swing-pr1/signal_platform) | Shared runtime, route config loader, dispatchers, journaling, command bot |
-| [`little_rzy_bot`](/C:/Users/Seeker/Documents/swing-pr1/little_rzy_bot) | Measured Drift / Little RZY signal engine, backtesting, research configs |
-| [`strategy_two_bot`](/C:/Users/Seeker/Documents/swing-pr1/strategy_two_bot) | Trend Current managed-basket logic |
-| [`strategy_four_bot`](/C:/Users/Seeker/Documents/swing-pr1/strategy_four_bot) | Cambist With Trend (CWT) live scanner |
-| [`strategy_five_bot`](/C:/Users/Seeker/Documents/swing-pr1/strategy_five_bot) | Secular Bull SIP monthly allocation board |
-| [`parabolic-exhaustion-bot`](/C:/Users/Seeker/Documents/swing-pr1/parabolic-exhaustion-bot) | Separate paper-forward research/alerting codebase |
-| [`config`](/C:/Users/Seeker/Documents/swing-pr1/config) | Route configs, research configs, market constraints |
-| [`scripts`](/C:/Users/Seeker/Documents/swing-pr1/scripts) | PowerShell launchers, watchdogs, startup helpers |
-| [`docs`](/C:/Users/Seeker/Documents/swing-pr1/docs) | Architecture, strategy, operations, and research docs |
-| [`platform_output`](/C:/Users/Seeker/Documents/swing-pr1/platform_output) | Per-route live state, health snapshots, journals, signal files |
-| [`reports`](/C:/Users/Seeker/Documents/swing-pr1/reports) | Backtest and research outputs |
+| [signal_platform](/C:/Users/Seeker/Documents/swing-pr1/signal_platform) | Shared runtime, route config loader, dispatchers, journaling, command bot |
+| [little_rzy_bot](/C:/Users/Seeker/Documents/swing-pr1/little_rzy_bot) | Measured Drift and Little RZY signal engine, backtesting, and research configs |
+| [strategy_two_bot](/C:/Users/Seeker/Documents/swing-pr1/strategy_two_bot) | Trend Current managed-basket logic |
+| [strategy_four_bot](/C:/Users/Seeker/Documents/swing-pr1/strategy_four_bot) | Cambist With Trend live scanner |
+| [strategy_five_bot](/C:/Users/Seeker/Documents/swing-pr1/strategy_five_bot) | Secular Bull SIP monthly allocation board |
+| [parabolic-exhaustion-bot](/C:/Users/Seeker/Documents/swing-pr1/parabolic-exhaustion-bot) | Separate paper-forward research and alerting codebase |
+| [config](/C:/Users/Seeker/Documents/swing-pr1/config) | Route configs, research configs, and market constraints |
+| [scripts](/C:/Users/Seeker/Documents/swing-pr1/scripts) | PowerShell launchers, watchdogs, startup helpers, and scan wrappers |
+| [docs](/C:/Users/Seeker/Documents/swing-pr1/docs) | Architecture, strategy, operations, and research documentation |
+| [platform_output](/C:/Users/Seeker/Documents/swing-pr1/platform_output) | Per-route live state, journals, health snapshots, and cycle logs |
+| [reports](/C:/Users/Seeker/Documents/swing-pr1/reports) | Research and backtest outputs |
 
 ## Live Boards
 
-| Route ID | Strategy Name | Role | Cadence | Default Watchlist | Status |
+| Route ID | Strategy Name | Role | Cadence | Default watchlist | Status |
 |---|---|---|---|---|---|
-| `little_rzy` | Measured Drift | Tactical 4h signals | `H4` | `primary-4h` | Live route |
-| `little_rzy_1h` | Measured Drift 1H | Lower-timeframe research route | `H1` | `research-1h` | Research-only, disabled by default |
+| `little_rzy` | Measured Drift | Tactical 4h continuation board | `H4` | `primary-4h` | Live route |
+| `little_rzy_1h` | Measured Drift 1H | Lower-timeframe research route | `H1` | `research-1h` | Disabled by default |
 | `strategy_two` | Trend Current | Managed basket board | `H4` | `core-4h` | Live route |
 | `strategy_four` | Cambist With Trend | Tactical continuation board | `M5/M15` with `H1` bias | `core-mixed` | Live route |
 | `strategy_five` | Secular Bull SIP | Monthly allocation board | `D` with monthly logic | `full-classic` | Live route |
@@ -79,8 +73,7 @@ python -m pip install -r requirements.txt
 
 ### 2. Create `.env`
 
-Copy [`.env.example`](/C:/Users/Seeker/Documents/swing-pr1/.env.example) to
-`.env` and populate the values you need.
+Copy [`.env.example`](/C:/Users/Seeker/Documents/swing-pr1/.env.example) to `.env` and populate the values you need.
 
 Minimum operational variables:
 
@@ -93,20 +86,20 @@ DISCORD_WEBHOOK_URL_SIP=https://discord.com/api/webhooks/...
 DISCORD_BOT_TOKEN=your-discord-bot-token
 ```
 
-Optional / route-specific:
+Optional or route-specific:
 
 ```env
 DISCORD_WEBHOOK_URL_LITTLE_RZY_1H=https://discord.com/api/webhooks/...
 DISCORD_WEBHOOK_URL=generic-fallback-webhook
 ```
 
-### 3. Start the main platform
+### 3. Start the shared signal platform
 
 ```powershell
 python -m signal_platform --env-file .env serve --config config/platform.example.json --poll-seconds 30
 ```
 
-Or use the Windows launcher:
+Windows launcher:
 
 - [RUN_signal_platform.bat](/C:/Users/Seeker/Documents/swing-pr1/RUN_signal_platform.bat)
 
@@ -116,86 +109,81 @@ Or use the Windows launcher:
 python -m signal_platform --env-file .env command-bot --config config/platform.example.json
 ```
 
-Or use:
+Windows launcher:
 
 - [RUN_signal_platform_command_bot.bat](/C:/Users/Seeker/Documents/swing-pr1/RUN_signal_platform_command_bot.bat)
 
-### 5. Use the desktop watchdog
+### 5. Use the watchdog and desktop launcher
 
 To check and start both the main runner and the command bot:
 
 - [Start All Bots.cmd](/C:/Users/Seeker/Documents/swing-pr1/Start%20All%20Bots.cmd)
-
-The same logic is also used by:
-
 - [scripts/ensure_signal_platform.ps1](/C:/Users/Seeker/Documents/swing-pr1/scripts/ensure_signal_platform.ps1)
 
 ## Architecture Summary
 
-At a high level, the system works like this:
+At a high level, the shared runtime works like this:
 
 1. A configured route wakes up on schedule.
 2. The route adapter calls the underlying strategy scanner.
 3. The scanner reads current market data from OANDA or another local provider.
 4. Signals are normalized into `PlatformSignal` records.
 5. The runtime filters duplicates against the route state file.
-6. The route journal is refreshed to detect TP / SL / break-even closures.
+6. The route journal is refreshed to detect TP, SL, and break-even closures.
 7. Pending outcomes are posted before new entries.
 8. Fresh signals and short-window recovered signals are dispatched to Discord.
-9. Summary files, health snapshots, journals, and logs are written to
-   [`platform_output`](/C:/Users/Seeker/Documents/swing-pr1/platform_output).
+9. Summary files, health snapshots, journals, and logs are written to [platform_output](/C:/Users/Seeker/Documents/swing-pr1/platform_output).
 
-## Data Providers and Delivery Flow
+The repo also contains a separate standalone runtime in [parabolic-exhaustion-bot](/C:/Users/Seeker/Documents/swing-pr1/parabolic-exhaustion-bot). It has its own backtesting, replay, live scan, and paper-forward flow and is not part of the root `signal_platform` registry.
+
+## Data Providers and Alert Flow
 
 ### Market data
 
 - Tactical live routes primarily use OANDA.
-- `little_rzy_bot` research can also run through its own research/backtest
-  inputs and provider-specific flows.
-- `parabolic-exhaustion-bot` has its own local-parquet and OANDA-oriented stack.
+- `little_rzy_bot` research can also run through its own research and backtest inputs.
+- `parabolic-exhaustion-bot` has its own local historical and OANDA-oriented stack.
 
 ### Outbound delivery
 
-- Webhook posts are formatted in
-  [signal_platform/dispatchers.py](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/dispatchers.py)
-- Route summaries, health snapshots, and state files are written locally after
-  each cycle
+- Webhook posts are formatted in [signal_platform/dispatchers.py](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/dispatchers.py)
+- Route summaries, health snapshots, and state files are written locally after each cycle
 
 ### Inbound interaction
 
 - The Discord command bot reads platform config and route health snapshots
-- It does not place orders or manage trades; it surfaces board information and
-  safe scans
+- It does not place orders or manage trades
+- It surfaces board information, status, recent activity, and safe scans
 
 Core runtime files:
 
-- [`signal_platform/__main__.py`](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/__main__.py)
-- [`signal_platform/runtime.py`](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/runtime.py)
-- [`signal_platform/dispatchers.py`](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/dispatchers.py)
-- [`signal_platform/journal.py`](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/journal.py)
-- [`signal_platform/registry.py`](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/registry.py)
-- [`signal_platform/models.py`](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/models.py)
-- [`signal_platform/discord_command_bot.py`](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/discord_command_bot.py)
-- [`signal_platform/command_content.py`](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/command_content.py)
+- [signal_platform/__main__.py](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/__main__.py)
+- [signal_platform/runtime.py](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/runtime.py)
+- [signal_platform/dispatchers.py](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/dispatchers.py)
+- [signal_platform/journal.py](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/journal.py)
+- [signal_platform/registry.py](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/registry.py)
+- [signal_platform/models.py](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/models.py)
+- [signal_platform/discord_command_bot.py](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/discord_command_bot.py)
+- [signal_platform/command_content.py](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/command_content.py)
 
-## Strategy Summary
+## Strategy Boards and Bots
 
 ### Measured Drift (`little_rzy`)
 
-- Tactical `4h` continuation board
+- Tactical `H4` continuation board
 - Strongest as the mature baseline system in this repo
-- Also has a research-only `1h` variant with session and volatility filters
+- Also has a research-only `H1` variant with session and volatility filters
 
 ### Trend Current (`strategy_two`)
 
 - Managed basket strategy
-- Uses basket lifecycle events like new basket, add, stop move, and basket exit
+- Uses basket lifecycle events such as new basket, add, stop move, and basket exit
 - Quieter by design than the tactical boards
 
 ### Cambist With Trend (`strategy_four`)
 
 - Lower-timeframe continuation board
-- Uses `H1` bias and executes on `5m` / `15m`
+- Uses `H1` bias and executes on `M5` and `M15`
 - Supports recovery posting for missed recent entries and missed outcomes
 
 ### Secular Bull SIP (`strategy_five`)
@@ -206,10 +194,9 @@ Core runtime files:
 
 ### Parabolic Exhaustion Bot
 
-- Separate project under
-  [`parabolic-exhaustion-bot`](/C:/Users/Seeker/Documents/swing-pr1/parabolic-exhaustion-bot)
+- Separate project under [parabolic-exhaustion-bot](/C:/Users/Seeker/Documents/swing-pr1/parabolic-exhaustion-bot)
 - Not wired into `signal_platform`
-- Maintains its own research, live scan, and Discord publication workflow
+- Maintains its own research, live scan, and paper-forward workflow
 
 ## CLI Usage
 
@@ -218,8 +205,8 @@ Core runtime files:
 | Command | Purpose |
 |---|---|
 | `list-strategies` | Show registered route IDs |
-| `scan` | One strategy analysis scan, no route state side effects |
-| `scan-route` | One configured route run with dispatch/state/recovery behavior |
+| `scan` | One strategy analysis scan with no route state side effects |
+| `scan-route` | One configured route run with dispatch, journaling, and recovery behavior |
 | `run-config` | Run all enabled routes once |
 | `serve` | Poll enabled routes continuously |
 | `command-bot` | Run the inbound Discord command bot |
@@ -235,7 +222,7 @@ python -m signal_platform --env-file .env scan-route --config config/platform.ex
 python -m signal_platform --env-file .env test-discord --strategy strategy_four
 ```
 
-### `little_rzy_bot`
+### Standalone `little_rzy_bot`
 
 `little_rzy_bot` remains the standalone research and scan CLI for Measured Drift.
 
@@ -247,10 +234,9 @@ python -m little_rzy_bot research --config config/research/research.little_rzy_4
 python -m little_rzy_bot research --config config/research/research.little_rzy_1h.json
 ```
 
-## Discord Command Bot
+## Discord Command Bot Flow
 
-The command bot is a separate inbound listener. It does not replace webhook
-alerts; it complements them.
+The command bot is a separate inbound listener. It complements outbound webhook alerts rather than replacing them.
 
 Supported text commands:
 
@@ -267,11 +253,10 @@ Supported text commands:
 
 Notes:
 
-- `scan` is safe by default and does **not** dispatch trade alerts.
-- `recent` reads the latest journaled signal / outcome or latest managed event.
-- `status` reads route health snapshots written by the live runtime.
-- Discord requires **Message Content Intent** to be enabled for plain text
-  commands to work.
+- `scan` is safe by default and does not dispatch trade alerts
+- `recent` reads the latest journaled signal or outcome, or the latest managed event
+- `status` reads route health snapshots written by the live runtime
+- Discord requires **Message Content Intent** to be enabled for plain text commands to work
 
 ## Scan Modes
 
@@ -279,8 +264,7 @@ There are two important scan styles:
 
 ### Strategy-only analysis scan
 
-Use `signal_platform scan` when you want an analysis pass without route-state
-side effects.
+Use `signal_platform scan` when you want an analysis pass without route-state side effects.
 
 ### Route scan
 
@@ -293,12 +277,19 @@ Use `signal_platform scan-route` when you want a one-shot operational pass that:
 - recovers recent missed entries inside the route catch-up window
 - updates route state files
 
-## Journaling and Recovery
+The repo also includes Windows wrappers for one-shot scans:
 
-For tactical boards, the runtime maintains a journal with open and closed signal
-records. That powers:
+- [RUN_little_rzy_scan.bat](/C:/Users/Seeker/Documents/swing-pr1/RUN_little_rzy_scan.bat)
+- [RUN_strategy_two_scan.bat](/C:/Users/Seeker/Documents/swing-pr1/RUN_strategy_two_scan.bat)
+- [RUN_strategy_four_scan.bat](/C:/Users/Seeker/Documents/swing-pr1/RUN_strategy_four_scan.bat)
+- [RUN_strategy_five_scan.bat](/C:/Users/Seeker/Documents/swing-pr1/RUN_strategy_five_scan.bat)
+- [RUN_nas100_parabolic_scan.bat](/C:/Users/Seeker/Documents/swing-pr1/RUN_nas100_parabolic_scan.bat)
 
-- TP / SL / break-even outcome updates
+## Journaling, Outcome Tracking, and Recovery
+
+For tactical boards, the runtime maintains a journal with open and closed signal records. That powers:
+
+- TP, SL, and break-even outcome updates
 - realized-R reporting
 - weekly and monthly report cards
 - catch-up recovery after short downtime windows
@@ -306,12 +297,10 @@ records. That powers:
 Recovery behavior today:
 
 - all closed journal entries with `outcome_notified = false` are recoverable
-- recent missed entries can be recovered inside the route’s `catch_up_hours`
-  window
-- each route writes a `health_snapshot.json` and `route_cycle_log.csv` so quiet
-  boards can be explained quickly
+- recent missed entries can be recovered inside the route's `catch_up_hours` window
+- each route writes a `health_snapshot.json` and `route_cycle_log.csv` so quiet boards can be explained quickly
 
-## Configuration
+## Configuration System
 
 Important config files:
 
@@ -342,28 +331,29 @@ Common route fields:
 - `health_log_file`
 - `health_snapshot_file`
 
-## Deployment and Runtime Notes
+## Startup Automation, Launchers, and Watchdogs
 
 Current deployment style is desktop-first:
 
 - Windows launchers
-- PowerShell watchdog
+- PowerShell watchdogs
 - startup-folder automation
 
-There is no VPS-first deployment baked in yet, but the runtime is structured so
-it can be moved later if needed. For now, the safest routine is:
+Important operator entrypoints:
 
-1. keep `.env` local and secure
-2. use the watchdog / desktop launcher
-3. monitor `logs/` and `platform_output/`
-4. use `scan-route --dispatch none` for health checks before assuming a route is broken
+- [RUN_signal_platform.bat](/C:/Users/Seeker/Documents/swing-pr1/RUN_signal_platform.bat)
+- [RUN_signal_platform_command_bot.bat](/C:/Users/Seeker/Documents/swing-pr1/RUN_signal_platform_command_bot.bat)
+- [Start All Bots.cmd](/C:/Users/Seeker/Documents/swing-pr1/Start%20All%20Bots.cmd)
+- [scripts/ensure_signal_platform.ps1](/C:/Users/Seeker/Documents/swing-pr1/scripts/ensure_signal_platform.ps1)
+- [scripts/install_signal_platform_startup.ps1](/C:/Users/Seeker/Documents/swing-pr1/scripts/install_signal_platform_startup.ps1)
 
-## Output and Logs
+There is no VPS-first deployment baked in yet, but the runtime is structured so it can be moved later if needed.
+
+## Logging, Health Snapshots, and Output Folders
 
 ### Runtime outputs
 
-Per-route operational files usually live under
-[`platform_output`](/C:/Users/Seeker/Documents/swing-pr1/platform_output):
+Per-route operational files usually live under [platform_output](/C:/Users/Seeker/Documents/swing-pr1/platform_output):
 
 - `platform_run_summary.json`
 - `signals.json`
@@ -376,16 +366,24 @@ Per-route operational files usually live under
 
 ### Logs
 
-Top-level runtime logs live in
-[`logs`](/C:/Users/Seeker/Documents/swing-pr1/logs):
+Top-level runtime logs live in [logs](/C:/Users/Seeker/Documents/swing-pr1/logs):
 
 - `signal_platform.log`
 - `signal_platform_command_bot.log`
 
-## Testing and Verification
+## Setup and Installation Notes
 
-The repo contains both unit-style and integration-style tests under
-[`tests`](/C:/Users/Seeker/Documents/swing-pr1/tests).
+Recommended install routine:
+
+1. Install [requirements.txt](/C:/Users/Seeker/Documents/swing-pr1/requirements.txt).
+2. Copy [`.env.example`](/C:/Users/Seeker/Documents/swing-pr1/.env.example) to `.env`.
+3. Populate OANDA and Discord credentials.
+4. Validate config paths in [config/platform.example.json](/C:/Users/Seeker/Documents/swing-pr1/config/platform.example.json).
+5. Run a silent `scan-route --dispatch none` before relying on live posting.
+
+## Testing and Verification Workflow
+
+The repo contains both unit-style and integration-style tests under [tests](/C:/Users/Seeker/Documents/swing-pr1/tests).
 
 Useful checks:
 
@@ -394,48 +392,54 @@ python -m compileall signal_platform little_rzy_bot strategy_two_bot strategy_fo
 python -m pytest tests -q
 python -m signal_platform --env-file .env list-strategies
 python -m signal_platform --env-file .env test-discord --strategy strategy_four
+python -m signal_platform --env-file .env scan-route --config config/platform.example.json --strategy strategy_four --dispatch none
 ```
 
 ## Troubleshooting
 
 | Problem | What to check |
 |---|---|
-| No signals at all | Check the runner is alive, then inspect the route’s `health_snapshot.json` and `platform_run_summary.json` |
-| Bot not posting to Discord | Verify the route webhook in `.env`, then check [`logs/signal_platform.log`](/C:/Users/Seeker/Documents/swing-pr1/logs/signal_platform.log) |
+| No signals at all | Check the runner is alive, then inspect the route's `health_snapshot.json` and `platform_run_summary.json` |
+| Bot not posting to Discord | Verify the route webhook in `.env`, then check [logs/signal_platform.log](/C:/Users/Seeker/Documents/swing-pr1/logs/signal_platform.log) |
 | Command bot not replying | Check `DISCORD_BOT_TOKEN`, server invite, channel permissions, and Message Content Intent |
 | Quiet board | Look at `quiet_reason`, `fresh_signals`, `recovered_entries_sent`, and `pending_unnotified_outcomes_count` in the route health snapshot |
-| Stale or old-looking route behavior | Confirm the route is still running and review recent `route_cycle_log.csv` entries |
-| Duplicate-looking suppression | Check the route’s `sent_state.json` and `suppressed_duplicates` count |
+| Stale route behavior | Confirm the route is still running and review recent `route_cycle_log.csv` entries |
+| Duplicate-looking suppression | Check the route's `sent_state.json` and `suppressed_duplicates` count |
 
 ## Known Limitations
 
-- Strategy quality is not uniform across all research branches; some strategies
-  remain experimental.
+- Strategy quality is not uniform across all research branches; some strategies remain experimental.
 - `little_rzy_1h` is research-only and disabled by default.
-- The command bot is lightweight and text-command oriented; it is not a full
-  Discord app with slash commands.
-- The parabolic exhaustion bot is still a separate codebase with its own
-  packaging and output conventions.
-- Many reports under [`reports`](/C:/Users/Seeker/Documents/swing-pr1/reports)
-  are research artifacts and should not be mistaken for live production claims.
+- The command bot is lightweight and text-command oriented; it is not a full Discord app with slash commands.
+- The parabolic exhaustion bot is still a separate codebase with its own packaging and output conventions.
+- Many reports under [reports](/C:/Users/Seeker/Documents/swing-pr1/reports) are research artifacts and should not be mistaken for live production claims.
+
+## TODOs and Future Improvements
+
+- Fold more route-specific ops guidance into structured docs as the bot suite grows.
+- Keep the route config examples aligned with the actual enabled production boards.
+- Decide whether the parabolic project should remain separate long term or graduate into the shared platform.
+- Improve deployment automation if the project moves from desktop-first operation to a hosted environment.
 
 ## Documentation Map
 
 Start here for deeper documentation:
 
 - [docs/README.md](/C:/Users/Seeker/Documents/swing-pr1/docs/README.md)
+- [docs/platform/ARCHITECTURE.md](/C:/Users/Seeker/Documents/swing-pr1/docs/platform/ARCHITECTURE.md)
+- [docs/platform/OPERATIONS_AND_RECOVERY.md](/C:/Users/Seeker/Documents/swing-pr1/docs/platform/OPERATIONS_AND_RECOVERY.md)
+- [docs/platform/COMMAND_BOT.md](/C:/Users/Seeker/Documents/swing-pr1/docs/platform/COMMAND_BOT.md)
 - [docs/platform/MULTI_STRATEGY_PLATFORM.md](/C:/Users/Seeker/Documents/swing-pr1/docs/platform/MULTI_STRATEGY_PLATFORM.md)
 - [docs/platform/LAUNCH_PREP.md](/C:/Users/Seeker/Documents/swing-pr1/docs/platform/LAUNCH_PREP.md)
+- [docs/strategies/BOARDS_OVERVIEW.md](/C:/Users/Seeker/Documents/swing-pr1/docs/strategies/BOARDS_OVERVIEW.md)
 - [docs/strategies/README.md](/C:/Users/Seeker/Documents/swing-pr1/docs/strategies/README.md)
 - [CHANGELOG.md](/C:/Users/Seeker/Documents/swing-pr1/CHANGELOG.md)
 
-## Git / Contribution Notes
+## Git and Contribution Notes
 
-This repository currently contains live-route code, research code, and generated
-research outputs. Be careful to:
+This repository contains live-route code, research code, and generated research outputs. Before opening a commit or pull request:
 
-- review `git status` before staging
+- review `git status`
 - stage only the files intended for the commit
 - avoid committing `.env` or secrets
-- avoid mixing documentation-only changes with strategy logic unless the purpose
-  of the commit is explicit
+- avoid mixing documentation-only changes with strategy logic unless the purpose of the commit is explicit

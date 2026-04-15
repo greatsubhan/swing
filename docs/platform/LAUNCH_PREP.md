@@ -1,8 +1,6 @@
 # Launch and Operations Runbook
 
-This file covers the practical operational side of `swing-pr1`: how the bots
-are started, how to keep them running, and where to look when something feels
-quiet or broken.
+This file covers the practical operational side of `swing-pr1`: how the bots are started, how to keep them running, and where to look when something feels quiet or broken.
 
 ## Operational Modes
 
@@ -93,8 +91,7 @@ The current Windows pattern is:
 - start at login via the startup-folder launcher
 - use the watchdog to make sure the main runner and command bot are both alive
 
-That gives a practical always-on workflow on a desktop machine without needing a
-full external deployment stack.
+That gives a practical always-on workflow on a desktop machine without needing a full external deployment stack.
 
 ## Main Runner Script
 
@@ -163,8 +160,8 @@ Most useful files:
 When a board looks dead, check in this order:
 
 1. Is the main runner alive?
-2. Does the route’s `health_snapshot.json` exist?
-3. What is the route’s `quiet_reason`?
+2. Does the route's `health_snapshot.json` exist?
+3. What is the route's `quiet_reason`?
 4. Did `signals_found` stay at `0`, or were they suppressed?
 5. Are there pending outcomes that have not been posted?
 6. Did the route recover any recent missed entries?
@@ -206,7 +203,7 @@ Check:
 - route scan summary
 - whether the route is enabled
 
-### One signal posted but no TP/SL follow-up
+### One signal posted but no TP or SL follow-up
 
 Check:
 
@@ -239,12 +236,11 @@ Recommended habits:
 - use `scan-route --dispatch none` before assuming a live route is broken
 - use the watchdog rather than starting many separate PowerShell windows manually
 - review `git status` before editing configs on a live machine
-- keep strategy logic changes separate from ops/doc changes when possible
+- keep strategy logic changes separate from ops and doc changes when possible
 
 ## Current Limits
 
 - The project is still desktop-oriented rather than VPS-first.
 - There is no broker execution layer.
-- Some routes are naturally quiet and should not be treated as dead just because
-  they do not alert frequently.
+- Some routes are naturally quiet and should not be treated as dead just because they do not alert frequently.
 - The command bot is intentionally lightweight and text-command based.

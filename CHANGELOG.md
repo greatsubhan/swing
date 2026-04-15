@@ -6,14 +6,14 @@ than pretending to reconstruct a perfect historical release process.
 
 ## Current Documentation Pass
 
-- Added a comprehensive top-level project README
-- Expanded the docs index
-- Reworked platform architecture and launch/operations documentation
-- Added strategy reference pages for:
-  - Measured Drift
-  - Trend Current
-  - Parabolic Exhaustion
-- Added a repo-level changelog
+- Expanded the top-level project README to better document architecture,
+  operations, setup, scans, journaling, and troubleshooting
+- Expanded the docs index and added dedicated documentation for:
+  - platform architecture
+  - operations and recovery
+  - the Discord command bot
+  - the live boards and strategy surfaces
+- Added a repo-level changelog summarizing the major visible capability phases
 
 ## Discord and Presentation Layer
 

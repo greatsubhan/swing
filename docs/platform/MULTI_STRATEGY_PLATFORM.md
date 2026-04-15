@@ -1,7 +1,6 @@
 # Multi-Strategy Platform
 
-This document describes the shared runtime that powers the live boards in
-`swing-pr1`.
+This document describes the shared runtime that powers the live boards in `swing-pr1`.
 
 ## Purpose
 
@@ -16,7 +15,7 @@ The platform exists so new strategies do not need to rebuild:
 - recovery after downtime
 - health snapshots and cycle logs
 
-The core idea is:
+The core idea is simple:
 
 - many strategies
 - one runtime
@@ -28,13 +27,13 @@ The core idea is:
 | File | Responsibility |
 |---|---|
 | [signal_platform/__main__.py](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/__main__.py) | CLI entrypoint |
-| [signal_platform/runtime.py](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/runtime.py) | Route execution, dispatch, health snapshots, summaries |
+| [signal_platform/runtime.py](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/runtime.py) | Route execution, dispatch, health snapshots, and summaries |
 | [signal_platform/registry.py](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/registry.py) | Registered strategy adapters |
 | [signal_platform/strategies.py](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/strategies.py) | Strategy plugin interface and scan request model |
 | [signal_platform/models.py](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/models.py) | Shared signal and journal data models |
 | [signal_platform/dispatchers.py](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/dispatchers.py) | Discord payload formatting and webhook sending |
-| [signal_platform/journal.py](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/journal.py) | Signal journals, outcome refresh, stats snapshots, report summaries |
-| [signal_platform/command_content.py](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/command_content.py) | Inbound command bot content and status/recent views |
+| [signal_platform/journal.py](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/journal.py) | Signal journals, outcome refresh, stats snapshots, and report summaries |
+| [signal_platform/command_content.py](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/command_content.py) | Inbound command bot content and status and recent views |
 | [signal_platform/discord_command_bot.py](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/discord_command_bot.py) | Lightweight inbound Discord command bot |
 
 ## Registered Routes
@@ -45,12 +44,11 @@ The core idea is:
 | `little_rzy_1h` | Measured Drift 1H | No | Research-only 1h route |
 | `strategy_two` | Trend Current | Yes | Basket lifecycle board |
 | `strategy_four` | Cambist With Trend | No | Tactical CWT route |
-| `strategy_five` | Secular Bull SIP | Yes | Monthly allocation/review board |
+| `strategy_five` | Secular Bull SIP | Yes | Monthly allocation and review board |
 
 ## Route Configuration Model
 
-Routes are defined in
-[config/platform.example.json](/C:/Users/Seeker/Documents/swing-pr1/config/platform.example.json).
+Routes are defined in [config/platform.example.json](/C:/Users/Seeker/Documents/swing-pr1/config/platform.example.json).
 
 Each route config controls:
 
@@ -59,9 +57,9 @@ Each route config controls:
 - timeframe
 - dispatch mode
 - output paths
-- journaling/reporting paths
+- journaling and reporting paths
 - catch-up behavior
-- health/log file locations
+- health and log file locations
 
 Common route fields:
 
@@ -89,7 +87,7 @@ Main external integrations:
 
 - OANDA for tactical live route market data
 - Discord webhooks for outbound message delivery
-- Discord bot token + gateway connection for inbound text commands
+- Discord bot token and gateway connection for inbound text commands
 
 Important distinction:
 
@@ -115,19 +113,18 @@ When the runtime executes a route, the flow is:
 
 ## Scanner Integration
 
-The platform does not implement the strategy logic itself. Each adapter wraps a
-scanner from the underlying strategy package.
+The platform does not implement the strategy logic itself. Each adapter wraps a scanner from the underlying strategy package.
 
 Examples:
 
 - [signal_platform/little_rzy_strategy.py](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/little_rzy_strategy.py)
-  wraps [`little_rzy_bot.scanner`](/C:/Users/Seeker/Documents/swing-pr1/little_rzy_bot/scanner.py)
+  wraps [little_rzy_bot/scanner.py](/C:/Users/Seeker/Documents/swing-pr1/little_rzy_bot/scanner.py)
 - [signal_platform/trend_current_strategy.py](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/trend_current_strategy.py)
-  wraps [`strategy_two_bot.scanner`](/C:/Users/Seeker/Documents/swing-pr1/strategy_two_bot/scanner.py)
+  wraps [strategy_two_bot/scanner.py](/C:/Users/Seeker/Documents/swing-pr1/strategy_two_bot/scanner.py)
 - [signal_platform/cwt_strategy.py](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/cwt_strategy.py)
-  wraps [`strategy_four_bot.scanner`](/C:/Users/Seeker/Documents/swing-pr1/strategy_four_bot/scanner.py)
+  wraps [strategy_four_bot/scanner.py](/C:/Users/Seeker/Documents/swing-pr1/strategy_four_bot/scanner.py)
 - [signal_platform/secular_bull_sip_strategy.py](/C:/Users/Seeker/Documents/swing-pr1/signal_platform/secular_bull_sip_strategy.py)
-  wraps [`strategy_five_bot.scanner`](/C:/Users/Seeker/Documents/swing-pr1/strategy_five_bot/scanner.py)
+  wraps [strategy_five_bot/scanner.py](/C:/Users/Seeker/Documents/swing-pr1/strategy_five_bot/scanner.py)
 
 ## Discord Delivery
 
@@ -135,9 +132,9 @@ Outbound delivery is webhook-based.
 
 The dispatcher layer currently supports:
 
-- tactical entry/add/stop/basket-exit cards
+- tactical entry, add, stop, and basket-exit cards
 - outcome cards
-- weekly/monthly report cards
+- weekly and monthly report cards
 - SIP allocation cards
 - SIP review cards
 - generic text payloads
@@ -145,8 +142,7 @@ The dispatcher layer currently supports:
 Route behavior:
 
 - tactical routes use journals and outcome tracking
-- managed-event routes post stateful event cards but do not rely on TP/SL
-  journals in the same way
+- managed-event routes post stateful event cards but do not rely on TP and SL journals in the same way
 
 ## Journaling and Outcome Tracking
 
@@ -157,21 +153,21 @@ Tactical routes use a persistent journal file, typically:
 The journal stores:
 
 - signal identity
-- entry / stop / target values
-- status (`open` / `closed`)
-- closure outcome (`tp_hit`, `sl_hit`, `break_even`, etc.)
+- entry, stop, and target values
+- status (`open` or `closed`)
+- closure outcome (`tp_hit`, `sl_hit`, `break_even`, and similar)
 - whether the outcome notification was already sent
 
 This enables:
 
-- TP / SL / break-even Discord updates
+- TP, SL, and break-even Discord updates
 - later performance summaries
 - current route stats snapshots
 - recovery of missed closure notifications after downtime
 
 ## Recovery and Catch-Up Logic
 
-The runtime now supports two important recovery paths:
+The runtime now supports two important recovery paths.
 
 ### Missed outcomes
 
@@ -184,8 +180,7 @@ is eligible to be posted on the next healthy route cycle.
 
 ### Recent missed entries
 
-For tactical routes, recent missed entries can be recovered inside the route’s
-`catch_up_hours` window.
+For tactical routes, recent missed entries can be recovered inside the route's `catch_up_hours` window.
 
 Important boundaries:
 
@@ -240,8 +235,7 @@ python -m signal_platform --env-file .env test-discord --strategy strategy_four
 
 ## Command Bot
 
-The inbound Discord command bot is intentionally lightweight. It currently
-supports:
+The inbound Discord command bot is intentionally lightweight. It currently supports:
 
 - `boards`
 - `strategy`
@@ -269,7 +263,7 @@ What it does not do:
 
 ## Managed Events vs Tactical Routes
 
-There are two route styles in the platform:
+There are two route styles in the platform.
 
 ### Tactical routes
 
@@ -282,8 +276,8 @@ Examples:
 Characteristics:
 
 - journal-backed
-- entry + outcome lifecycle
-- TP/SL/BE follow-ups
+- entry and outcome lifecycle
+- TP, SL, and break-even follow-ups
 - report cards
 
 ### Managed-event routes
@@ -295,9 +289,9 @@ Examples:
 
 Characteristics:
 
-- state/event board
-- not purely TP/SL driven
-- basket lifecycle or monthly allocation/review logic
+- state and event board
+- not purely TP and SL driven
+- basket lifecycle or monthly allocation and review logic
 
 ## Known Limitations
 
