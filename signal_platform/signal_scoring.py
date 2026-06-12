@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -39,7 +40,7 @@ def score_signal_with_ml(
     
     # Try to load models and make predictions
     try:
-        predictor = ModelPredictor(model_dir)
+        predictor = _load_model_predictor(model_dir)
         
         # Check if any models are available
         if predictor.outcome_model is None and predictor.realized_r_model is None:
@@ -65,6 +66,11 @@ def score_signal_with_ml(
         score["error"] = str(exc)
     
     return score
+
+
+@lru_cache(maxsize=8)
+def _load_model_predictor(model_dir: Path | str) -> ModelPredictor:
+    return ModelPredictor(model_dir)
 
 
 def _extract_features_from_signal(signal: PlatformSignal) -> dict[str, float | int | str]:

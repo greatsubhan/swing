@@ -19,6 +19,7 @@ from .dispatchers import (
     save_sent_setup_ids,
     send_discord_outcome,
     send_discord_report,
+    send_discord_text,
     send_discord_webhook,
 )
 from .journal import (
@@ -40,6 +41,9 @@ from .journal import (
 from .metrics import compute_strategy_metrics, performance_summary_text
 from .ml_features import build_feature_vectors, vectors_to_numpy
 from .ml_models import train_outcome_classifier, train_realized_r_regressor, save_model_metadata, save_model
+from .signal_scoring import score_signal_with_ml
+from .discord_predictions import format_signal_with_prediction, format_report_with_predictions
+from .prediction_tracking import record_prediction, load_predictions, match_predictions_with_outcomes, evaluate_predictions, generate_prediction_report
 from .models import PlatformSignal
 from .reinforcement import (
     append_reinforcement_decisions,
@@ -194,6 +198,47 @@ def _append_dispatch_failures(path: Path, rows: list[dict[str, object]]) -> None
 def _write_service_heartbeat(path: Path, payload: dict[str, object]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2))
+
+
+def _predictions_log_path(output_dir: Path) -> Path:
+    return output_dir / "predictions.jsonl"
+
+
+def _send_discord_signal_with_ml(
+    route: StrategyRoute,
+    strategy: Any,
+    signal: PlatformSignal,
+    model_dir: Path,
+    predictions_path: Path,
+) -> dict[str, object]:
+    score = score_signal_with_ml(signal, model_dir)
+    record_prediction(
+        signal.setup_id,
+        score.get("outcome_prediction") or {},
+        score.get("realized_r_prediction") or {},
+        predictions_path,
+    )
+    message = format_signal_with_prediction(signal, score)
+    send_discord_text(route.discord_webhook_url, message, username=f"{strategy.strategy_name} Desk")
+    return score
+
+
+def _send_weekly_prediction_performance(
+    route: StrategyRoute,
+    strategy: Any,
+    predictions_path: Path,
+    journal_entries: list[Any],
+) -> None:
+    predictions = load_predictions(predictions_path)
+    if not predictions:
+        return
+    matched = match_predictions_with_outcomes(predictions, journal_entries)
+    evaluation = evaluate_predictions(matched)
+    if evaluation.get("closed_trades", 0) <= 0:
+        return
+    report_text = generate_prediction_report(evaluation)
+    formatted_text = format_report_with_predictions(report_text, evaluation)
+    send_discord_text(route.discord_webhook_url, formatted_text, username=f"{strategy.strategy_name} Model Review")
 
 
 def _derive_quiet_reason(rows: list[dict[str, object]], suppressed_duplicates: int) -> str | None:
@@ -533,9 +578,11 @@ def run_route(route: StrategyRoute, environment: str, price: str, token: str | N
             outcome.outcome_notified = True
             outcomes_sent += 1
             last_successful_discord_post_utc = datetime.now(timezone.utc).isoformat()
+        model_dir = Path(route.output_dir) / "ml_models"
+        predictions_path = _predictions_log_path(output_dir)
         for signal in enriched_fresh_signals:
             try:
-                send_discord_webhook(route.discord_webhook_url, signal, username=f"{strategy.strategy_name} Desk")
+                _send_discord_signal_with_ml(route, strategy, signal, model_dir, predictions_path)
             except Exception as exc:
                 dispatch_errors.append(f"signal:{signal.setup_id}:{exc}")
                 dispatch_failure_rows.append(
@@ -559,7 +606,7 @@ def run_route(route: StrategyRoute, environment: str, price: str, token: str | N
             last_successful_discord_post_utc = datetime.now(timezone.utc).isoformat()
         for signal in enriched_recovered_signals:
             try:
-                send_discord_webhook(route.discord_webhook_url, signal, username=f"{strategy.strategy_name} Desk")
+                _send_discord_signal_with_ml(route, strategy, signal, model_dir, predictions_path)
             except Exception as exc:
                 dispatch_errors.append(f"signal:{signal.setup_id}:{exc}")
                 dispatch_failure_rows.append(
@@ -596,6 +643,7 @@ def run_route(route: StrategyRoute, environment: str, price: str, token: str | N
                         username=f"{strategy.strategy_name} Review",
                         strategy_name=strategy.strategy_name,
                     )
+                    _send_weekly_prediction_performance(route, strategy, predictions_path, journal_entries)
                 except Exception as exc:
                     dispatch_errors.append(f"report:weekly:{exc}")
                     dispatch_failure_rows.append(
