@@ -1,0 +1,42 @@
+provider: oanda
+selection_mode: scanner
+instruments:
+  - symbol: XAU_USD
+    display_name: Gold
+    asset_class: metal
+    point_size: 0.01
+    round_number_step: 10.0
+  - symbol: XAG_USD
+    display_name: Silver
+    asset_class: metal
+    point_size: 0.001
+    round_number_step: 1.0
+  - symbol: WTICO_USD
+    display_name: WTI Crude
+    asset_class: energy
+    point_size: 0.01
+    round_number_step: 1.0
+  - symbol: NAS100_USD
+    display_name: NAS100
+    asset_class: index
+    point_size: 0.1
+    round_number_step: 100.0
+  - symbol: UK100_GBP
+    display_name: UK100
+    asset_class: index
+    point_size: 0.1
+    round_number_step: 100.0
+  - symbol: US30_USD
+    display_name: US30
+    asset_class: index
+    point_size: 0.1
+    round_number_step: 100.0
+  - symbol: SPX500_USD
+    display_name: US500
+    asset_class: index
+    point_size: 0.1
+    round_number_step: 50.0
+
+scanner:
+  max_daily_candidates: 5
+  prefer_highest_score: true

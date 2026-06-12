@@ -54,6 +54,7 @@ class BasketTranche:
 
 @dataclass
 class BasketState:
+    basket_id: str | None = None
     active_symbol: str | None = None
     active_asset_class: str | None = None
     timeframe: str = "4h"
@@ -177,6 +178,7 @@ def load_state(output_dir: str | Path) -> BasketState:
     payload = json.loads(path.read_text() or "{}")
     tranches = [BasketTranche(**tranche) for tranche in payload.get("tranches", [])]
     return BasketState(
+        basket_id=payload.get("basket_id"),
         active_symbol=payload.get("active_symbol"),
         active_asset_class=payload.get("active_asset_class"),
         timeframe=payload.get("timeframe", "4h"),
@@ -192,6 +194,7 @@ def save_state(output_dir: str | Path, state: BasketState) -> None:
     out.mkdir(parents=True, exist_ok=True)
     path = _state_path(out)
     payload = {
+        "basket_id": state.basket_id,
         "active_symbol": state.active_symbol,
         "active_asset_class": state.active_asset_class,
         "timeframe": state.timeframe,
@@ -207,19 +210,34 @@ def _load_history(symbol: str, granularity: str, environment: str, token: str | 
     cache_dir = OANDA_CACHE_DIR / symbol
     cache_dir.mkdir(parents=True, exist_ok=True)
     cache_path = cache_dir / f"{granularity}_live.csv"
+    cached: pd.DataFrame | None = None
     if cache_path.exists():
         try:
             cached = pd.read_csv(cache_path, parse_dates=["timestamp"])
-            if not cached.empty:
-                return cached.set_index("timestamp")
         except Exception:
-            pass
+            cached = None
+
+    fetch_kwargs: dict[str, object] = {
+        "instrument": symbol,
+        "granularity": granularity,
+        "token": token,
+        "environment": environment,
+        "price": price,
+    }
+    if cached is not None and not cached.empty:
+        latest_cached = pd.Timestamp(cached["timestamp"].max())
+        fetch_kwargs["start"] = (latest_cached - pd.Timedelta(days=10)).date().isoformat()
 
     last_error: Exception | None = None
     for attempt in range(4):
         try:
-            fetched = fetch_oanda_ohlcv(symbol, granularity, token=token, environment=environment, price=price)
+            fetched = fetch_oanda_ohlcv(**fetch_kwargs)
             df = fetched.df
+            if cached is not None and not cached.empty:
+                merged = pd.concat([cached.set_index("timestamp"), df]).sort_index()
+                merged = merged[~merged.index.duplicated(keep="last")]
+                merged.reset_index().to_csv(cache_path, index=False)
+                return merged
             df.reset_index().to_csv(cache_path, index=False)
             return df
         except Exception as exc:
@@ -338,7 +356,9 @@ def _process_active_basket(
                     event_type="move_stop",
                     stop_loss=tranche.entry_price,
                     extra={
+                        "basket_id": state.basket_id,
                         "tranche_id": tranche.tranche_id,
+                        "original_entry_time": tranche.entry_time,
                         "bars_held": tranche.bars_held,
                         "current_close": round(current_close, 6),
                     },
@@ -373,6 +393,7 @@ def _process_active_basket(
                 event_type="basket_exit",
                 entry=current_close,
                 extra={
+                    "basket_id": state.basket_id,
                     "exit_reason": reason,
                     "tranche_count": len(state.tranches),
                     "basket_result_r": round(total_r, 3),
@@ -396,9 +417,10 @@ def _process_active_basket(
                     ),
                     side="short",
                     event_type="cooldown",
-                    extra={"cooldown_until": cooldown_until},
+                    extra={"cooldown_until": cooldown_until, "basket_id": state.basket_id},
                 )
             )
+        state.basket_id = None
         state.active_symbol = None
         state.active_asset_class = None
         state.basket_opened_at = None
@@ -447,7 +469,9 @@ def _process_active_basket(
                     quality_score=score,
                     quality_grade=grade,
                     extra={
+                        "basket_id": state.basket_id,
                         "tranche_id": tranche_id,
+                        "original_entry_time": tranche.entry_time,
                         "risk_fraction": round(remaining_risk, 5),
                         "open_basket_risk_fraction": round(sum(t.open_risk_fraction() for t in state.tranches), 5),
                     },
@@ -589,6 +613,7 @@ def run_live_cycle(
             score, grade = _quality(signal, bar)
             target_1 = entry_price - (risk_per_unit * 2.0)
             tranche_id = f"{row['symbol']}-1-{bar_time.strftime('%Y%m%d%H%M')}"
+            state.basket_id = tranche_id
             state.active_symbol = str(row["symbol"])
             state.active_asset_class = str(row["asset_class"])
             state.timeframe = timeframe
@@ -624,7 +649,9 @@ def run_live_cycle(
                 quality_score=score,
                 quality_grade=grade,
                 extra={
+                    "basket_id": state.basket_id,
                     "tranche_id": tranche_id,
+                    "original_entry_time": bar_time.isoformat(),
                     "risk_fraction": round(BASKET_RISK_FRACTION, 5),
                     "pullback_size": signal["pullback_size"],
                     "zone_low": signal["zone_low"],
@@ -647,6 +674,7 @@ def save_scan_outputs(output_dir: str | Path, rows: list[dict[str, object]], eve
     (out / "basket_state.json").write_text(
         json.dumps(
             {
+                "basket_id": state.basket_id,
                 "active_symbol": state.active_symbol,
                 "active_asset_class": state.active_asset_class,
                 "timeframe": state.timeframe,

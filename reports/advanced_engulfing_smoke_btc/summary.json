@@ -1,0 +1,49 @@
+{
+  "config": {
+    "start": "2025-01-01",
+    "end": "2026-04-01",
+    "universe_config": "config\\advanced_engulfing_market_constraints.json",
+    "assets": [
+      "BTC_USD"
+    ],
+    "groups": [
+      "crypto"
+    ],
+    "ema_slope_filter": false,
+    "target": "1R",
+    "max_bars_held": 48
+  },
+  "group_summary": {
+    "crypto": {
+      "symbols": 1,
+      "symbols_with_trades": 1,
+      "promising": 0,
+      "mixed": 1,
+      "weak": 0,
+      "mean_avg_r": 0.0778,
+      "mean_profit_factor": 1.1743
+    }
+  },
+  "rows": [
+    {
+      "symbol": "BTC_USD",
+      "group": "crypto",
+      "timeframe": "15m",
+      "trades": 84,
+      "wins": 46,
+      "losses": 38,
+      "win_rate": 0.5476,
+      "avg_r": 0.0778,
+      "profit_factor": 1.1743,
+      "max_drawdown_r": 11.0,
+      "max_win_streak": 7,
+      "max_loss_streak": 7,
+      "total_r": 6.5393,
+      "tp_hits": 43,
+      "sl_hits": 37,
+      "time_exits": 4,
+      "eod_exits": 0
+    }
+  ],
+  "unavailable": []
+}

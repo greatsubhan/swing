@@ -56,24 +56,37 @@ def _signal_badge(side: str) -> str:
     return "LONG" if side.lower() == "long" else "SHORT" if side.lower() == "short" else "SETUP"
 
 
+def _structure_badge(side: str) -> str:
+    if side.lower() == "long":
+        return "\u2197 HH/HL"
+    if side.lower() == "short":
+        return "\u2198 LH/LL"
+    return "STRUCTURE"
+
+
 def _signal_emoji(side: str) -> str:
-    return "🟢" if side.lower() == "long" else "🔴" if side.lower() == "short" else "🔵"
+    if side.lower() == "long":
+        return "\U0001F4C8"
+    if side.lower() == "short":
+        return "\U0001F4C9"
+    return "\U0001F4CD"
 
 
 def _event_badge(signal: PlatformSignal) -> tuple[str, str]:
     event_type = str(signal.raw_signal.get("event_type", "entry")).lower()
+    structure_badge = _structure_badge(signal.side)
     if event_type == "reinforcement":
-        return ("REINFORCEMENT", "UPDATE")
+        return (f"{structure_badge} REINFORCEMENT", _signal_emoji(signal.side))
     if event_type == "entry":
-        return ("NEW BASKET", "NEW")
+        return (f"{structure_badge} NEW SIGNAL", _signal_emoji(signal.side))
     if event_type == "add":
-        return ("ADD", "ADD")
+        return (f"{structure_badge} ADD", "\u2795")
     if event_type == "move_stop":
-        return ("MOVE STOP", "STOP")
+        return (f"{structure_badge} MOVE STOP", "\U0001F6D1")
     if event_type == "basket_exit":
-        return ("BASKET EXIT", "EXIT")
+        return ("BASKET EXIT", "\U0001F4E6")
     if event_type == "cooldown":
-        return ("COOLDOWN", "WAIT")
+        return ("COOLDOWN", "\u23F3")
     return (_signal_badge(signal.side), _signal_emoji(signal.side))
 
 
@@ -90,7 +103,15 @@ def _format_money(value: float | int | None) -> str:
 
 
 def _bullet_lines(items: list[str]) -> str:
-    return "\n".join(f"• {item}" for item in items) if items else "None"
+    return "\n".join(f"\u2022 {item}" for item in items) if items else "None"
+
+
+def _join_lines(items: list[str]) -> str:
+    return "\n".join(item for item in items if item)
+
+
+def _footer_text(signal: PlatformSignal) -> str:
+    return f"{signal.strategy_name} | {signal.asset_class} | {signal.strategy_id} | {signal.setup_id}"
 
 
 def discord_payload(signal: PlatformSignal, username: str = SIGNAL_DESK_NAME) -> dict[str, object]:
@@ -117,10 +138,10 @@ def discord_payload(signal: PlatformSignal, username: str = SIGNAL_DESK_NAME) ->
         )
         return {
             "username": username,
-            "content": f"📅 [{signal.strategy_name}] {basket_label} monthly allocation",
+            "content": f"\U0001F4C5 [{signal.strategy_name}] {basket_label} monthly allocation",
             "embeds": [
                 {
-                    "title": f"📅 {basket_label} Monthly Allocation",
+                    "title": f"\U0001F4C5 {basket_label} Monthly Allocation",
                     "description": signal.summary,
                     "color": 0x3498DB,
                     "fields": [
@@ -134,9 +155,8 @@ def discord_payload(signal: PlatformSignal, username: str = SIGNAL_DESK_NAME) ->
                         {"name": "Active Adds", "value": _bullet_lines(active_lines), "inline": False},
                         {"name": "Skipped This Month", "value": _bullet_lines(skipped_lines), "inline": False},
                         {"name": "Research Anchor", "value": reference_text, "inline": False},
-                        {"name": "Setup ID", "value": signal.setup_id, "inline": False},
                     ],
-                    "footer": {"text": f"{signal.strategy_name} monthly board"},
+                    "footer": {"text": _footer_text(signal)},
                     "timestamp": signal.timestamp,
                 }
             ],
@@ -150,10 +170,10 @@ def discord_payload(signal: PlatformSignal, username: str = SIGNAL_DESK_NAME) ->
         ]
         return {
             "username": username,
-            "content": f"📊 [{signal.strategy_name}] {basket_label} month-end review",
+            "content": f"\U0001F4CA [{signal.strategy_name}] {basket_label} month-end review",
             "embeds": [
                 {
-                    "title": f"📊 {basket_label} Month-End Review",
+                    "title": f"\U0001F4CA {basket_label} Month-End Review",
                     "description": signal.summary,
                     "color": 0x5865F2,
                     "fields": [
@@ -172,9 +192,8 @@ def discord_payload(signal: PlatformSignal, username: str = SIGNAL_DESK_NAME) ->
                         },
                         {"name": "Payout Mode", "value": str(signal.raw_signal.get("payout_label", "n/a")), "inline": True},
                         {"name": "Asset Review", "value": _bullet_lines(asset_lines), "inline": False},
-                        {"name": "Setup ID", "value": signal.setup_id, "inline": False},
                     ],
-                    "footer": {"text": f"{signal.strategy_name} monthly board"},
+                    "footer": {"text": _footer_text(signal)},
                     "timestamp": signal.timestamp,
                 }
             ],
@@ -211,112 +230,164 @@ def discord_payload(signal: PlatformSignal, username: str = SIGNAL_DESK_NAME) ->
     ) or "n/a"
     bias_timeframe = str(signal.raw_signal.get("bias_timeframe", "n/a")).upper()
 
-    fields: list[dict[str, object]] = [
-        {"name": "Strategy", "value": signal.strategy_name, "inline": True},
-        {"name": "Setup", "value": setup_name, "inline": True},
-        {"name": "Side", "value": badge, "inline": True},
-    ]
+    title = f"{event_emoji} {signal.symbol} {signal.timeframe.upper()} {badge}"
+    description = signal.summary
+    fields: list[dict[str, object]] = []
 
     if event_type in {"entry", "add"}:
+        trade_plan = _join_lines(
+            [
+                f"\u26A1 Entry `{_format_price(signal.entry)}`",
+                f"\U0001F6D1 Stop `{_format_price(signal.stop_loss)}`",
+                f"\U0001F3AF Target `{_format_price(signal.target_1)}`",
+                f"\U0001F4CF R/R `{rr_text}`",
+                f"\u2B50 Score `{score_text}`" if score_text != "n/a" else "",
+            ]
+        )
+        context_lines = [
+            f"`{_structure_badge(signal.side)}` Structure",
+            f"`{setup_name}`",
+            f"`{bias_timeframe}` Bias",
+        ]
+        if risk_display_text != "n/a":
+            context_lines.append(f"`{risk_display_text}`")
+        notes_lines = [
+            "Use your own account risk rule for sizing.",
+            history_text,
+        ]
+        if stop_distance_text != "n/a":
+            notes_lines.append(f"Stop distance `{stop_distance_text}`")
+        if basket_id != "n/a":
+            notes_lines.append(f"Basket Ref: `{basket_id}`")
+        if tranche_id != "n/a":
+            notes_lines.append(f"Tranche Ref: `{tranche_id}`")
         fields.extend(
             [
-                {"name": "Entry", "value": _format_price(signal.entry), "inline": True},
-                {"name": "Stop", "value": _format_price(signal.stop_loss), "inline": True},
-                {"name": "Target", "value": _format_price(signal.target_1), "inline": True},
-                {"name": "Risk/Reward", "value": rr_text, "inline": True},
-                {"name": "Signal Score", "value": score_text, "inline": True},
-                {"name": risk_field_name, "value": risk_display_text, "inline": True},
-                {"name": "Stop Distance", "value": stop_distance_text, "inline": True},
-                {"name": "Bias Timeframe", "value": bias_timeframe, "inline": True},
-                {"name": "Basket Ref", "value": basket_id, "inline": True},
-                {"name": "Tranche Ref", "value": tranche_id, "inline": True},
-                {
-                    "name": "Position Note",
-                    "value": "Size the position so a full stop-out matches your own account risk rule.",
-                    "inline": False,
-                },
-                {"name": "Live Record", "value": history_text, "inline": False},
+                {"name": "Trade Plan", "value": trade_plan, "inline": False},
+                {"name": "Context", "value": _join_lines(context_lines), "inline": False},
+                {"name": "Notes", "value": _join_lines(notes_lines), "inline": False},
             ]
         )
     elif event_type == "reinforcement":
         root_signal_id = str(signal.root_signal_id or signal.raw_signal.get("root_signal_id", "n/a"))
         structure_id = str(signal.structure_id or signal.raw_signal.get("structure_id", "n/a"))
-        components = signal.raw_signal.get("reinforcement_components", [])
-        component_lines = _bullet_lines([str(component).replace("_", " ").title() for component in components])
         r_scaling_enabled = bool(signal.raw_signal.get("r_scaling_enabled", False))
         effective_r_exposure = float(signal.raw_signal.get("effective_r_exposure", 1.0))
+        title = f"{event_emoji} {signal.symbol} {signal.timeframe.upper()} {badge}"
+        description = _join_lines(
+            [
+                "No new trade. Reinforcement only for the active structure.",
+                signal.summary,
+            ]
+        )
         fields.extend(
             [
-                {"name": "Reference Signal", "value": root_signal_id, "inline": False},
-                {"name": "Strength", "value": f"{int(signal.strength_score or 0)}/100", "inline": True},
-                {"name": "Reinforcements", "value": str(signal.reinforcement_count), "inline": True},
-                {"name": "Signal Score", "value": score_text, "inline": True},
-                {"name": "Entry", "value": _format_price(signal.entry), "inline": True},
-                {"name": "Stop", "value": _format_price(signal.stop_loss), "inline": True},
-                {"name": "Target", "value": _format_price(signal.target_1), "inline": True},
-                {"name": "R:R", "value": rr_text, "inline": True},
-                {"name": "Structure Ref", "value": structure_id, "inline": False},
-                {"name": "What Changed", "value": component_lines, "inline": False},
                 {
-                    "name": "Trade Action",
-                    "value": "No new trade. Reinforcement only for the active structure.",
+                    "name": "Update",
+                    "value": _join_lines(
+                        [
+                            f"`{_structure_badge(signal.side)}` Structure",
+                            f"`{int(signal.strength_score or 0)}/100` Strength",
+                            f"`{signal.reinforcement_count}` Reinforcements",
+                            f"`{setup_name}` | `{bias_timeframe}` Bias",
+                        ]
+                    ),
                     "inline": False,
                 },
                 {
-                    "name": "Effective R Monitor",
-                    "value": f"{effective_r_exposure:.2f}R (experimental)" if r_scaling_enabled else "Disabled",
+                    "name": "Reference",
+                    "value": _join_lines(
+                        [
+                            f"\u26A1 `{_format_price(signal.entry)}` | \U0001F6D1 `{_format_price(signal.stop_loss)}` | \U0001F3AF `{_format_price(signal.target_1)}`",
+                            f"\U0001F4CF `{rr_text}R`" if rr_text != "n/a" else "",
+                            f"\u2B50 `{score_text}`" if score_text != "n/a" else "",
+                            f"`{risk_display_text}`" if risk_display_text != "n/a" else "",
+                            (
+                                f"Effective R `{effective_r_exposure:.2f}R (experimental)`"
+                                if r_scaling_enabled
+                                else ""
+                            ),
+                            f"Root `{root_signal_id}`",
+                            f"Structure `{structure_id}`",
+                        ]
+                    ),
                     "inline": False,
                 },
             ]
         )
     elif event_type == "move_stop":
-        fields.extend(
-            [
-                {"name": "New Stop", "value": _format_price(signal.stop_loss), "inline": True},
-                {"name": "Bars Held", "value": str(signal.raw_signal.get("bars_held", "n/a")), "inline": True},
-                {"name": "Original Entry Time", "value": str(signal.raw_signal.get("original_entry_time", "n/a")), "inline": False},
-                {"name": "Basket Ref", "value": basket_id, "inline": True},
-                {"name": "Tranche Ref", "value": tranche_id, "inline": True},
-            ]
+        title = f"{event_emoji} {signal.symbol} {signal.timeframe.upper()} {badge}"
+        fields.append(
+            {
+                "name": "Update",
+                "value": _join_lines(
+                    [
+                        f"\U0001F6D1 New Stop `{_format_price(signal.stop_loss)}`",
+                        f"Bars Held: `{signal.raw_signal.get('bars_held', 'n/a')}`",
+                        f"Original Entry Time: `{signal.raw_signal.get('original_entry_time', 'n/a')}`",
+                        f"Basket Ref: `{basket_id}`" if basket_id != "n/a" else "",
+                        f"Tranche Ref: `{tranche_id}`" if tranche_id != "n/a" else "",
+                    ]
+                ),
+                "inline": False,
+            }
         )
     elif event_type == "basket_exit":
-        fields.extend(
-            [
-                {"name": "Exit Reason", "value": str(signal.raw_signal.get("exit_reason", "n/a")), "inline": True},
-                {"name": "Tranches", "value": str(signal.raw_signal.get("tranche_count", "n/a")), "inline": True},
-                {"name": "Basket Result", "value": f"{float(signal.raw_signal.get('basket_result_r', 0.0)):.2f}R", "inline": True},
-                {"name": "Basket Ref", "value": basket_id, "inline": True},
-            ]
+        title = f"{event_emoji} {signal.symbol} {signal.timeframe.upper()} {badge}"
+        fields.append(
+            {
+                "name": "Basket Close",
+                "value": _join_lines(
+                    [
+                        f"Exit Reason: `{signal.raw_signal.get('exit_reason', 'n/a')}`",
+                        f"Tranches: `{signal.raw_signal.get('tranche_count', 'n/a')}`",
+                        f"Basket Result: `{float(signal.raw_signal.get('basket_result_r', 0.0)):.2f}R`",
+                        f"Basket Ref: `{basket_id}`" if basket_id != "n/a" else "",
+                    ]
+                ),
+                "inline": False,
+            }
         )
     elif event_type == "cooldown":
-        fields.extend(
-            [
-                {"name": "Cooldown Until", "value": str(signal.raw_signal.get("cooldown_until", "n/a")), "inline": False},
-                {"name": "Basket Ref", "value": basket_id, "inline": True},
-            ]
+        title = f"{event_emoji} {signal.symbol} {signal.timeframe.upper()} {badge}"
+        fields.append(
+            {
+                "name": "Cooldown",
+                "value": _join_lines(
+                    [
+                        f"Cooldown Until: `{signal.raw_signal.get('cooldown_until', 'n/a')}`",
+                        f"Basket Ref: `{basket_id}`" if basket_id != "n/a" else "",
+                    ]
+                ),
+                "inline": False,
+            }
         )
     else:
-        fields.extend(
-            [
-                {"name": "Entry", "value": _format_price(signal.entry), "inline": True},
-                {"name": "Stop", "value": _format_price(signal.stop_loss), "inline": True},
-                {"name": "Target", "value": _format_price(signal.target_1), "inline": True},
-                {"name": "Risk/Reward", "value": rr_text, "inline": True},
-            ]
+        fields.append(
+            {
+                "name": "Trade Plan",
+                "value": _join_lines(
+                    [
+                        f"\u26A1 Entry `{_format_price(signal.entry)}`",
+                        f"\U0001F6D1 Stop `{_format_price(signal.stop_loss)}`",
+                        f"\U0001F3AF Target `{_format_price(signal.target_1)}`",
+                        f"\U0001F4CF R/R `{rr_text}`",
+                    ]
+                ),
+                "inline": False,
+            }
         )
-
-    fields.append({"name": "Setup ID", "value": signal.setup_id, "inline": False})
 
     return {
         "username": username,
         "content": f"{event_emoji} [{signal.strategy_name}] {signal.symbol} {signal.timeframe.upper()} {badge}",
         "embeds": [
             {
-                "title": f"{event_emoji} {signal.symbol} {signal.timeframe.upper()} {badge}",
-                "description": signal.summary,
+                "title": title,
+                "description": description,
                 "color": _discord_color(signal),
                 "fields": fields,
-                "footer": {"text": f"{signal.strategy_name} | {signal.asset_class} | {signal.strategy_id}"},
+                "footer": {"text": _footer_text(signal)},
                 "timestamp": signal.timestamp,
             }
         ],
@@ -356,13 +427,13 @@ def outcome_payload(entry: JournalEntry, username: str = SIGNAL_DESK_NAME) -> di
         else "CLOSED"
     )
     outcome_emoji = (
-        "✅"
+        "\u2705"
         if normalized_outcome == "tp_hit"
-        else "🛑"
+        else "\U0001F6D1"
         if normalized_outcome == "sl_hit"
-        else "🟡"
+        else "\U0001F7E1"
         if normalized_outcome == "break_even"
-        else "📌"
+        else "\U0001F4CC"
     )
     realized_r = entry.realized_r()
     return {
@@ -374,16 +445,40 @@ def outcome_payload(entry: JournalEntry, username: str = SIGNAL_DESK_NAME) -> di
                 "description": f"{outcome_tag} outcome recorded for setup `{entry.setup_id}`.",
                 "color": color,
                 "fields": [
-                    {"name": "Side", "value": entry.side.upper(), "inline": True},
-                    {"name": "Outcome", "value": outcome_label, "inline": True},
-                    {"name": "Exit Price", "value": _format_price(entry.exit_price), "inline": True},
-                    {"name": "Realized", "value": f"{realized_r:.2f}R" if realized_r is not None else "n/a", "inline": True},
-                    {"name": "Signal Time", "value": entry.signal_timestamp, "inline": False},
-                    {"name": "Outcome Time", "value": entry.outcome_timestamp or "n/a", "inline": False},
-                    {"name": "Hold Time", "value": hold_text, "inline": True},
-                    {"name": "Bars Checked", "value": str(entry.bars_checked), "inline": True},
+                    {
+                        "name": "Result",
+                        "value": _join_lines(
+                            [
+                                f"Side: `{entry.side.upper()}`",
+                                f"Outcome: `{outcome_label}`",
+                                f"Realized: `{realized_r:.2f}R`" if realized_r is not None else "Realized: `n/a`",
+                            ]
+                        ),
+                        "inline": False,
+                    },
+                    {
+                        "name": "Exit Details",
+                        "value": _join_lines(
+                            [
+                                f"Exit Price: `{_format_price(entry.exit_price)}`",
+                                f"Signal Time: `{entry.signal_timestamp}`",
+                                f"Outcome Time: `{entry.outcome_timestamp or 'n/a'}`",
+                            ]
+                        ),
+                        "inline": False,
+                    },
+                    {
+                        "name": "Hold",
+                        "value": _join_lines(
+                            [
+                                f"Hold Time: `{hold_text}`",
+                                f"Bars Checked: `{entry.bars_checked}`",
+                            ]
+                        ),
+                        "inline": False,
+                    },
                 ],
-                "footer": {"text": f"{entry.strategy_name} outcome log"},
+                "footer": {"text": f"{entry.strategy_name} | outcome | {entry.setup_id}"},
             }
         ],
     }
@@ -403,10 +498,10 @@ def report_payload(
 ) -> dict[str, object]:
     period_label = str(summary["period_label"])
     title_prefix = "Weekly" if period_label.lower().startswith("weekly") else "Monthly"
-    title_emoji = "🗓️" if title_prefix == "Weekly" else "📆"
-    tp_list = "\n".join(f"• {item}" for item in summary["tp_list"]) or "• none"
-    sl_list = "\n".join(f"• {item}" for item in summary["sl_list"]) or "• none"
-    open_list = "\n".join(f"• {item}" for item in summary["open_list"]) or "• none"
+    title_emoji = "\U0001F5D3\uFE0F" if title_prefix == "Weekly" else "\U0001F4C6"
+    tp_list = "\n".join(f"\u2022 {item}" for item in summary["tp_list"]) or "\u2022 none"
+    sl_list = "\n".join(f"\u2022 {item}" for item in summary["sl_list"]) or "\u2022 none"
+    open_list = "\n".join(f"\u2022 {item}" for item in summary["open_list"]) or "\u2022 none"
     return {
         "username": username,
         "content": f"{title_emoji} {title_prefix} review",
@@ -416,13 +511,21 @@ def report_payload(
                 "description": "A concise review of signal flow, realized result, and any open exposure still on the board.",
                 "color": 0x5865F2,
                 "fields": [
-                    {"name": "Signals", "value": str(summary["signals_sent"]), "inline": True},
-                    {"name": "TP Hits", "value": str(summary["tp_hits"]), "inline": True},
-                    {"name": "SL Hits", "value": str(summary["sl_hits"]), "inline": True},
-                    {"name": "Still Open", "value": str(summary["open_count"]), "inline": True},
-                    {"name": "Net Realized", "value": f"{summary['total_realized_r']:.2f}R", "inline": True},
-                    {"name": "Avg Closed Trade", "value": str(summary["avg_closed_r_text"]), "inline": True},
-                    {"name": "Avg Hold", "value": str(summary["avg_hold_text"]), "inline": True},
+                    {
+                        "name": "Summary",
+                        "value": _join_lines(
+                            [
+                                f"Signals: `{summary['signals_sent']}`",
+                                f"TP Hits: `{summary['tp_hits']}`",
+                                f"SL Hits: `{summary['sl_hits']}`",
+                                f"Still Open: `{summary['open_count']}`",
+                                f"Net Realized: `{summary['total_realized_r']:.2f}R`",
+                                f"Avg Closed Trade: `{summary['avg_closed_r_text']}`",
+                                f"Avg Hold: `{summary['avg_hold_text']}`",
+                            ]
+                        ),
+                        "inline": False,
+                    },
                     {"name": "TP List", "value": tp_list, "inline": False},
                     {"name": "SL List", "value": sl_list, "inline": False},
                     {"name": "Open List", "value": open_list, "inline": False},

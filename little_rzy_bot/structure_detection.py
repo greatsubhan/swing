@@ -99,7 +99,8 @@ def detect_candidate(
         pullback_high = float(pullback_slice["high"].max())
         pullback_bars = trendline_end[0] - anchor[0]
         retrace = (pullback_high - anchor[1]) / max(impulse_size, 1e-9)
-        if impulse_size / atr_v < cfg.structure.min_impulse_atr:
+        impulse_atr_multiple = impulse_size / atr_v
+        if impulse_atr_multiple < cfg.structure.min_impulse_atr:
             return None
         if not (cfg.structure.min_impulse_bars <= impulse_bars <= cfg.structure.max_impulse_bars):
             return None
@@ -148,6 +149,8 @@ def detect_candidate(
             trendline_tolerance=touch_tolerance,
             target=target,
             measured_distance=measured,
+            retrace_pct=retrace,
+            impulse_atr_multiple=impulse_atr_multiple,
             risk_reward=rr,
             validity_reason="Valid bearish Little RZY candidate",
         )
@@ -181,7 +184,8 @@ def detect_candidate(
     pullback_low = float(pullback_slice["low"].min())
     pullback_bars = trendline_end[0] - anchor[0]
     retrace = (anchor[1] - pullback_low) / max(impulse_size, 1e-9)
-    if impulse_size / atr_v < cfg.structure.min_impulse_atr:
+    impulse_atr_multiple = impulse_size / atr_v
+    if impulse_atr_multiple < cfg.structure.min_impulse_atr:
         return None
     if not (cfg.structure.min_impulse_bars <= impulse_bars <= cfg.structure.max_impulse_bars):
         return None
@@ -230,6 +234,8 @@ def detect_candidate(
         trendline_tolerance=touch_tolerance,
         target=target,
         measured_distance=measured,
+        retrace_pct=retrace,
+        impulse_atr_multiple=impulse_atr_multiple,
         risk_reward=rr,
         validity_reason="Valid bullish Little RZY candidate",
     )

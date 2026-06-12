@@ -1,0 +1,43 @@
+{
+  "cwt_benchmark": {
+    "label": "CWT funded ladder benchmark",
+    "date_range": "2025-01-01 to 2026-04-01",
+    "scope_note": "portfolio simulation across four symbols with daily risk caps",
+    "ending_balance": 178563.73,
+    "net_pnl_dollars": 78563.73,
+    "return_pct": 78.56,
+    "trades_taken": 3323,
+    "win_rate": 53.48,
+    "profit_factor": 1.25,
+    "max_drawdown_dollars": 10275.86
+  },
+  "trend_current_benchmark": {
+    "label": "Trend Current benchmark basket",
+    "date_range": "2020-01-01 to 2026-04-01",
+    "scope_note": "per-asset static-funded simulations on the keep-list basket, not one rotating account",
+    "assets_count": 8,
+    "mean_return_pct": 31.74,
+    "mean_win_rate": 57.15,
+    "mean_avg_r": 0.414,
+    "mean_profit_factor": 2.92,
+    "mean_reward_risk_ratio": 2.146,
+    "mean_max_drawdown_dollars": 7497.29
+  },
+  "measured_drift_benchmark": {
+    "label": "Measured Drift benchmark basket",
+    "date_range": "2020-01-01 to 2026-04-01",
+    "scope_note": "per-asset static-funded simulations on the production basket, not one rotating account",
+    "assets_count": 6,
+    "mean_return_pct": 20.22,
+    "mean_win_rate": 41.54,
+    "mean_avg_r": 1.062,
+    "mean_profit_factor": 4.86,
+    "mean_reward_risk_ratio": 3.582,
+    "mean_max_drawdown_dollars": 10334.19
+  },
+  "notes": [
+    "CWT is the only result here that is currently modeled as one combined portfolio with daily caps.",
+    "Trend Current and Measured Drift benchmark files are per-asset funded-style simulations, not one rotating portfolio.",
+    "The comparison is useful for scale and quality, but not perfectly apples-to-apples."
+  ]
+}

@@ -45,10 +45,22 @@ def test_discord_payload_formats_tactical_signal_cleanly() -> None:
     assert "Cambist With Trend" in payload["content"]
     embed = payload["embeds"][0]
     assert "EUR_USD" in embed["title"]
+    assert "LH/LL" in embed["title"]
     field_names = {field["name"] for field in embed["fields"]}
-    assert "Entry" in field_names
-    assert "Stop" in field_names
-    assert "Live Record" in field_names
+    assert "Trade Plan" in field_names
+    assert "Context" in field_names
+    assert "Notes" in field_names
+    trade_plan = next(field["value"] for field in embed["fields"] if field["name"] == "Trade Plan")
+    assert "Entry" in trade_plan
+    assert "Target" in trade_plan
+    assert "Score" in trade_plan
+    context = next(field["value"] for field in embed["fields"] if field["name"] == "Context")
+    assert "LH/LL" in context
+    assert "Scenario 2" in context
+    assert "H1" in context
+    assert "0.07% (step 1/4)" in context
+    assert "platform-test-message" not in field_names
+    assert "cwt-1" in embed["footer"]["text"]
 
 
 def test_discord_payload_formats_reinforcement_update_cleanly() -> None:
@@ -91,11 +103,15 @@ def test_discord_payload_formats_reinforcement_update_cleanly() -> None:
     payload = discord_payload(signal)
 
     embed = payload["embeds"][0]
+    assert "HH/HL" in embed["title"]
     field_names = {field["name"] for field in embed["fields"]}
-    assert "Reference Signal" in field_names
-    assert "Strength" in field_names
-    assert "Trade Action" in field_names
-    assert "No new trade" in next(field["value"] for field in embed["fields"] if field["name"] == "Trade Action")
+    assert "Update" in field_names
+    assert "Reference" in field_names
+    assert "No new trade" in embed["description"]
+    update = next(field["value"] for field in embed["fields"] if field["name"] == "Update")
+    assert "Strength" in update
+    reference = next(field["value"] for field in embed["fields"] if field["name"] == "Reference")
+    assert "Root" in reference
 
 
 def test_outcome_payload_supports_break_even_wording() -> None:
@@ -125,7 +141,8 @@ def test_outcome_payload_supports_break_even_wording() -> None:
     payload = outcome_payload(entry)
     assert "Break-even" in payload["content"]
     embed = payload["embeds"][0]
-    assert embed["fields"][3]["value"] == "0.00R"
+    result_field = next(field for field in embed["fields"] if field["name"] == "Result")
+    assert "0.00R" in result_field["value"]
 
 
 def test_report_payload_uses_clean_lists() -> None:
@@ -146,4 +163,4 @@ def test_report_payload_uses_clean_lists() -> None:
     )
     embed = payload["embeds"][0]
     assert "Weekly" in embed["title"]
-    assert "EUR_USD" in embed["fields"][7]["value"]
+    assert "EUR_USD" in embed["fields"][1]["value"]

@@ -1,17 +1,21 @@
-"""CLI for running a quick Little RZY backtest."""
+"""CLI for running Little RZY backtests, research batches, and live scans."""
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 import sys
 
+from .config import EngineConfig
 from .market_data import fetch_oanda_ohlcv, fetch_yahoo_ohlcv, save_ohlcv_csv
+from signal_platform.env import load_dotenv
 from .scanner import save_scan_outputs, scan_oanda_symbols
 from .watchlists import resolve_watchlist
 from .workflows import make_synthetic_ohlcv, run_backtest, run_backtest_from_csv, save_backtest_outputs
+from .research import run_research_config
 
 
-def main() -> None:
+def _build_legacy_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Little RZY backtest runner")
     parser.add_argument("--scan", action="store_true", help="Scan live OANDA watchlist symbols and emit latest signals")
     parser.add_argument("--watchlist", type=str, default="primary-4h", help="Named watchlist for scan mode")
@@ -33,21 +37,64 @@ def main() -> None:
     parser.add_argument("--timeframe", type=str, default=None, help="Override timeframe label used in signals")
     parser.add_argument("--higher-timeframe", type=str, default="1d", help="Higher timeframe label used in signals")
     parser.add_argument("--disable-auto-profile", action="store_true", help="Disable built-in market-specific tuning profiles")
-    args = parser.parse_args()
+    parser.add_argument("--commission-per-trade", type=float, default=0.0, help="Fixed currency commission per round trip")
+    parser.add_argument("--spread-points", type=float, default=0.0, help="Spread in raw price points")
+    parser.add_argument("--slippage-points", type=float, default=0.0, help="Adverse slippage in raw price points per fill")
+    parser.add_argument("--max-open-risk", type=float, default=None, help="Max simultaneous open risk across trades, measured in R")
+    parser.add_argument("--max-trades-per-day", type=int, default=None, help="Max accepted trades per calendar day")
+    parser.add_argument("--max-trades-per-symbol-per-day", type=int, default=None, help="Max accepted trades per symbol per calendar day")
+    parser.add_argument("--max-daily-drawdown", type=float, default=None, help="Stop taking new trades after this realized daily drawdown in R")
+    parser.add_argument("--export-trades-csv", type=str, default=None, help="Optional path to write the enriched per-trade CSV")
+    parser.add_argument("--use-htf-bias", action="store_true", help="Require higher-timeframe bias alignment for the test run")
+    parser.add_argument("--htf-granularity", type=str, default=None, help="Override higher-timeframe granularity when HTF bias is enabled")
+    return parser
+
+
+def _apply_cli_overrides(cfg: EngineConfig, args: argparse.Namespace) -> EngineConfig:
+    cfg.risk.commission_per_trade = args.commission_per_trade
+    cfg.risk.spread_points = args.spread_points
+    cfg.risk.slippage_points = args.slippage_points
+    cfg.portfolio.max_open_risk = args.max_open_risk
+    cfg.portfolio.max_trades_per_day = args.max_trades_per_day
+    cfg.portfolio.max_trades_per_symbol_per_day = args.max_trades_per_symbol_per_day
+    cfg.portfolio.max_daily_drawdown = args.max_daily_drawdown
+    if args.use_htf_bias:
+        cfg.execution.use_htf_bias = True
+        cfg.execution.htf_granularity = args.htf_granularity or args.higher_timeframe
+        cfg.require_higher_timeframe_confirmation = True
+    return cfg
+
+
+def main(argv: list[str] | None = None) -> None:
+    argv = list(sys.argv[1:] if argv is None else argv)
+    load_dotenv(".env")
+    if argv[:1] == ["research"]:
+        parser = argparse.ArgumentParser(description="Little RZY research runner")
+        parser.add_argument("research")
+        parser.add_argument("--config", required=True, help="Path to a research JSON config")
+        args = parser.parse_args(argv)
+        results = run_research_config(args.config)
+        print(json.dumps(results, indent=2))
+        return
+
+    parser = _build_legacy_parser()
+    args = parser.parse_args(argv)
 
     fetched_csv_path = None
 
     try:
+        cfg = _apply_cli_overrides(EngineConfig(), args)
         if args.scan:
             symbols = resolve_watchlist(args.watchlist)
             results = scan_oanda_symbols(
                 symbols=symbols,
                 granularity=args.granularity,
-                higher_timeframe=args.higher_timeframe,
+                higher_timeframe=args.htf_granularity or args.higher_timeframe,
                 environment=args.oanda_env,
                 token=args.oanda_token,
                 price=args.oanda_price,
                 use_market_profile=not args.disable_auto_profile,
+                base_config=cfg,
             )
             save_scan_outputs(args.out, results)
             print(f"Scanned {len(symbols)} symbols from watchlist: {args.watchlist}")
@@ -79,24 +126,37 @@ def main() -> None:
 
             csv_path = args.save_csv or str(Path(args.out) / "fetched_ohlcv.csv")
             fetched_csv_path = save_ohlcv_csv(fetched.df, csv_path)
-            signals, trade_log, summary = run_backtest(
+            signals, trade_log, summary, diagnostics = run_backtest(
                 fetched.df,
                 symbol=fetched.symbol,
                 asset_class=args.asset_class or fetched.asset_class,
                 timeframe=args.timeframe or fetched.timeframe,
-                higher_timeframe=args.higher_timeframe,
+                higher_timeframe=args.htf_granularity or args.higher_timeframe,
+                config=cfg,
                 use_market_profile=not args.disable_auto_profile,
             )
         elif args.csv:
-            signals, trade_log, summary = run_backtest_from_csv(args.csv, args.timestamp_col)
+            signals, trade_log, summary, diagnostics = run_backtest_from_csv(args.csv, args.timestamp_col)
         else:
             df = make_synthetic_ohlcv()
-            signals, trade_log, summary = run_backtest(df, use_market_profile=not args.disable_auto_profile)
+            signals, trade_log, summary, diagnostics = run_backtest(
+                df,
+                config=cfg,
+                higher_timeframe=args.htf_granularity or args.higher_timeframe,
+                use_market_profile=not args.disable_auto_profile,
+            )
     except Exception as exc:
         print(f"Error: {exc}", file=sys.stderr)
         raise SystemExit(1) from exc
 
-    save_backtest_outputs(args.out, trade_log, summary)
+    save_backtest_outputs(
+        args.out,
+        trade_log,
+        summary,
+        diagnostics=diagnostics,
+        signals=signals,
+        export_trades_csv=args.export_trades_csv,
+    )
     if fetched_csv_path:
         print(f"Fetched OHLCV saved to: {fetched_csv_path}")
     print(f"Signals: {len(signals)}")

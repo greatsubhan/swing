@@ -96,8 +96,30 @@
       "reinforcement_state_file": "platform_output/strategy_four/reinforcement_state.json",
       "reinforcement_log_file": "platform_output/strategy_four/reinforcement_decisions.jsonl",
       "extra": {
+        "outcome_price_mode": "side_aware",
+        "quality_layer": {
+          "require_followthrough": false,
+          "skip_high_noise": true,
+          "stop_scale": 1.1,
+          "min_atr_multiple": 0.35
+        },
+        "fwm_selective": {
+          "enabled_symbols": [
+            "SPX500_USD",
+            "UK100_GBP",
+            "USD_JPY",
+            "NZD_USD",
+            "AUD_USD",
+            "EUR_USD"
+          ],
+          "swing_lookback_bars": 8,
+          "order_valid_bars": 2
+        },
         "signal_reinforcement": {
           "enabled": true,
+          "post_alerts": false,
+          "post_tp_cooldown_bars": 12,
+          "post_sl_cooldown_bars": 0,
           "state_file": "platform_output/strategy_four/reinforcement_state.json",
           "decision_log_file": "platform_output/strategy_four/reinforcement_decisions.jsonl",
           "base_strength_score": 50,

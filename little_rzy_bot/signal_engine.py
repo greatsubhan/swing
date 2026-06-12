@@ -8,6 +8,7 @@ import pandas as pd
 
 from .config import EngineConfig
 from .data_models import BollingerContext, Signal, StructureInfo, TrendlinePoint
+from .filters import primary_session
 from .indicators import adx, atr, bollinger, ema
 from .pivots import detect_pivot_highs, detect_pivot_lows
 from .scoring import grade, score_setup
@@ -59,12 +60,19 @@ class SignalEngine:
     def _resample_ohlcv(self, df: pd.DataFrame, timeframe: str) -> pd.DataFrame:
         freq_map = {
             "5m": "5min",
+            "m5": "5min",
             "15m": "15min",
+            "m15": "15min",
             "30m": "30min",
-            "1h": "1H",
-            "4h": "4H",
+            "m30": "30min",
+            "1h": "1h",
+            "h1": "1h",
+            "4h": "4h",
+            "h4": "4h",
             "1d": "1D",
+            "d": "1D",
             "1w": "1W",
+            "w": "1W",
         }
         rule = freq_map.get(timeframe.lower())
         if rule is None:
@@ -120,7 +128,7 @@ class SignalEngine:
         trend_states = self._compute_trend_states(df)
         htf_states = (
             self._build_higher_timeframe_states(df, higher_timeframe)
-            if self.config.require_higher_timeframe_confirmation and higher_timeframe
+            if higher_timeframe
             else pd.Series(["sideways"] * len(df), index=df.index, dtype="object")
         )
         ph = detect_pivot_highs(df, self.config.pivots.left_bars, self.config.pivots.right_bars)
@@ -197,6 +205,20 @@ class SignalEngine:
                 pullback_band_location="near_upper_band" if candidate.side == "short" else "near_lower_band",
                 extension_state="moderately_stretched" if abs(row["close"] - row["bb_mid"]) > row["atr"] else "normal",
             )
+            atr_at_entry = float(row["atr"])
+            bar_range_at_entry = float(row["high"] - row["low"])
+            rolling_atr = df["atr"].iloc[max(0, i - 19) : i + 1].median()
+            volatility_regime = "normal"
+            if rolling_atr and not pd.isna(rolling_atr):
+                if atr_at_entry < rolling_atr * 0.8:
+                    volatility_regime = "compressed"
+                elif atr_at_entry > rolling_atr * 1.2:
+                    volatility_regime = "expanded"
+            structure_tag = (
+                "bullish_hh_hl_continuation"
+                if candidate.side == "long"
+                else "bearish_ll_lh_continuation"
+            )
             signal = Signal(
                 symbol=symbol,
                 asset_class=asset_class,
@@ -221,6 +243,15 @@ class SignalEngine:
                 alerts=["fresh_trend_structure", "pullback_rejected_at_trendline", "good_bb_context"],
                 reason_summary=f"{trend_state.title()} trend. {candidate.validity_reason} with measured move target.",
                 setup_id=f"{symbol}-{timeframe}-{candidate.side}-{candidate.anchor_index}",
+                profile_name=self.config.profile_name,
+                atr_at_entry=atr_at_entry,
+                bar_range_at_entry=bar_range_at_entry,
+                retrace_pct=round(candidate.retrace_pct, 4),
+                impulse_atr_multiple=round(candidate.impulse_atr_multiple, 4),
+                volatility_regime=volatility_regime,
+                session=primary_session(str(df.index[i])),
+                structure_tag=structure_tag,
+                higher_timeframe_bias=higher_trend_state,
             )
             signals.append(signal)
             used_setups.add(key)

@@ -114,6 +114,25 @@ def test_apply_signal_reinforcement_allows_new_structure_after_root_closes() -> 
     assert result.tradable_signals[0].root_signal_id == "next-1"
 
 
+def test_apply_signal_reinforcement_suppresses_post_tp_cluster_inside_cooldown() -> None:
+    config = ReinforcementConfig(enabled=True, post_tp_cooldown_bars=12)
+
+    result = apply_signal_reinforcement(
+        signals=[_signal("next-1", "2026-04-15T00:30:00+00:00", quality_score=77)],
+        journal_entries=[_closed_root_entry("root-1")],
+        existing_structures={},
+        config=config,
+    )
+
+    assert len(result.tradable_signals) == 0
+    assert len(result.reinforcement_signals) == 1
+    cooldown = result.reinforcement_signals[0]
+    assert cooldown.is_tradable is False
+    assert cooldown.raw_signal["event_type"] == "cooldown"
+    assert cooldown.raw_signal["reinforcement_reason"] == "same_direction_post_tp_hit_cooldown"
+    assert result.decisions[0]["classification"] == "cooldown"
+
+
 @dataclass
 class _FakeStrategy:
     strategy_id: str = "strategy_four"

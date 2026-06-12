@@ -99,6 +99,15 @@ class JournalEntry:
     outcome_notified: bool = False
     last_checked_utc: str | None = None
     bars_checked: int = 0
+    ladder_sequence_pct: list[float] = field(default_factory=list)
+    ladder_step_at_entry: int | None = None
+    ladder_risk_pct_at_entry: float | None = None
+    ladder_risk_display_at_entry: str | None = None
+    ladder_previous_outcome: str | None = None
+    ladder_previous_setup_id: str | None = None
+    ladder_step_after_outcome: int | None = None
+    ladder_next_risk_pct: float | None = None
+    ladder_transition_note: str | None = None
     raw_signal: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -164,6 +173,8 @@ class ReinforcementConfig:
     enable_r_scaling: bool = False
     r_scale_per_reinforcement: float = 0.25
     max_effective_r_exposure: float = 2.0
+    post_tp_cooldown_bars: int = 0
+    post_sl_cooldown_bars: int = 0
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

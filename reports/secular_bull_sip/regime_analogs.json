@@ -1,0 +1,407 @@
+{
+  "config": {
+    "date_range": {
+      "start": "2020-01-01",
+      "end": "2026-04-01"
+    },
+    "window_months": 12,
+    "monthly_contribution": 8333.333333333334
+  },
+  "current_regime": {
+    "start": "2025-03-31 21:00:00+00:00",
+    "end": "2026-02-28 22:00:00+00:00",
+    "results": {
+      "XAU_USD": {
+        "period_start": "2025-03-31 21:00:00+00:00",
+        "period_end": "2026-02-28 22:00:00+00:00",
+        "months": 12,
+        "total_contributed": 100000.0,
+        "ending_value": 124246.35,
+        "net_pnl": 24246.35,
+        "max_drawdown_pct": 0.0609
+      },
+      "NAS100_USD": {
+        "period_start": "2025-03-31 21:00:00+00:00",
+        "period_end": "2026-02-28 22:00:00+00:00",
+        "months": 12,
+        "total_contributed": 100000.0,
+        "ending_value": 102347.24,
+        "net_pnl": 2347.24,
+        "max_drawdown_pct": 0.0
+      },
+      "US30_USD": {
+        "period_start": "2025-03-31 21:00:00+00:00",
+        "period_end": "2026-02-28 22:00:00+00:00",
+        "months": 12,
+        "total_contributed": 100000.0,
+        "ending_value": 102310.47,
+        "net_pnl": 2310.47,
+        "max_drawdown_pct": 0.0
+      },
+      "BTC_USD": {
+        "period_start": "2025-03-31 21:00:00+00:00",
+        "period_end": "2026-02-28 22:00:00+00:00",
+        "months": 12,
+        "total_contributed": 100000.0,
+        "ending_value": 72511.87,
+        "net_pnl": -27488.13,
+        "max_drawdown_pct": 0.1201
+      },
+      "ETH_USD": {
+        "period_start": "2025-03-31 21:00:00+00:00",
+        "period_end": "2026-02-28 22:00:00+00:00",
+        "months": 12,
+        "total_contributed": 100000.0,
+        "ending_value": 77915.5,
+        "net_pnl": -22084.5,
+        "max_drawdown_pct": 0.257
+      }
+    },
+    "summary": {
+      "mean_ending_value": 95866.29,
+      "mean_net_pnl": -4133.71,
+      "mean_max_drawdown_pct": 0.0876
+    }
+  },
+  "analogs": [
+    {
+      "rank": 1,
+      "label": null,
+      "distance": 0.952987,
+      "match_start": "2023-10-31 21:00:00+00:00",
+      "match_end": "2024-09-30 21:00:00+00:00",
+      "follow_start": "2024-10-31 21:00:00+00:00",
+      "follow_end": "2025-09-30 21:00:00+00:00",
+      "match_results": {
+        "XAU_USD": {
+          "period_start": "2023-10-31 21:00:00+00:00",
+          "period_end": "2024-09-30 21:00:00+00:00",
+          "months": 12,
+          "total_contributed": 100000.0,
+          "ending_value": 123238.55,
+          "net_pnl": 23238.55,
+          "max_drawdown_pct": 0.0
+        },
+        "NAS100_USD": {
+          "period_start": "2023-10-31 21:00:00+00:00",
+          "period_end": "2024-09-30 21:00:00+00:00",
+          "months": 12,
+          "total_contributed": 100000.0,
+          "ending_value": 112018.41,
+          "net_pnl": 12018.41,
+          "max_drawdown_pct": 0.0
+        },
+        "US30_USD": {
+          "period_start": "2023-10-31 21:00:00+00:00",
+          "period_end": "2024-09-30 21:00:00+00:00",
+          "months": 12,
+          "total_contributed": 100000.0,
+          "ending_value": 108538.02,
+          "net_pnl": 8538.02,
+          "max_drawdown_pct": 0.0
+        },
+        "BTC_USD": {
+          "period_start": "2023-10-31 21:00:00+00:00",
+          "period_end": "2024-09-30 21:00:00+00:00",
+          "months": 12,
+          "total_contributed": 100000.0,
+          "ending_value": 133114.72,
+          "net_pnl": 33114.72,
+          "max_drawdown_pct": 0.0387
+        },
+        "ETH_USD": {
+          "period_start": "2023-10-31 21:00:00+00:00",
+          "period_end": "2024-09-30 21:00:00+00:00",
+          "months": 12,
+          "total_contributed": 100000.0,
+          "ending_value": 94125.89,
+          "net_pnl": -5874.11,
+          "max_drawdown_pct": 0.1472
+        }
+      },
+      "follow_results": {
+        "XAU_USD": {
+          "period_start": "2024-10-31 21:00:00+00:00",
+          "period_end": "2025-09-30 21:00:00+00:00",
+          "months": 12,
+          "total_contributed": 100000.0,
+          "ending_value": 130444.6,
+          "net_pnl": 30444.6,
+          "max_drawdown_pct": 0.0
+        },
+        "NAS100_USD": {
+          "period_start": "2024-10-31 21:00:00+00:00",
+          "period_end": "2025-09-30 21:00:00+00:00",
+          "months": 12,
+          "total_contributed": 100000.0,
+          "ending_value": 120859.64,
+          "net_pnl": 20859.64,
+          "max_drawdown_pct": 0.0
+        },
+        "US30_USD": {
+          "period_start": "2024-10-31 21:00:00+00:00",
+          "period_end": "2025-09-30 21:00:00+00:00",
+          "months": 12,
+          "total_contributed": 100000.0,
+          "ending_value": 109530.49,
+          "net_pnl": 9530.49,
+          "max_drawdown_pct": 0.0
+        },
+        "BTC_USD": {
+          "period_start": "2024-10-31 21:00:00+00:00",
+          "period_end": "2025-09-30 21:00:00+00:00",
+          "months": 12,
+          "total_contributed": 100000.0,
+          "ending_value": 114167.3,
+          "net_pnl": 14167.3,
+          "max_drawdown_pct": 0.0
+        },
+        "ETH_USD": {
+          "period_start": "2024-10-31 21:00:00+00:00",
+          "period_end": "2025-09-30 21:00:00+00:00",
+          "months": 12,
+          "total_contributed": 100000.0,
+          "ending_value": 139740.6,
+          "net_pnl": 39740.6,
+          "max_drawdown_pct": 0.119
+        }
+      },
+      "match_summary": {
+        "mean_ending_value": 114207.12,
+        "mean_net_pnl": 14207.12,
+        "mean_max_drawdown_pct": 0.0372
+      },
+      "follow_summary": {
+        "mean_ending_value": 122948.53,
+        "mean_net_pnl": 22948.53,
+        "mean_max_drawdown_pct": 0.0238
+      }
+    },
+    {
+      "rank": 2,
+      "label": null,
+      "distance": 1.098607,
+      "match_start": "2021-06-30 21:00:00+00:00",
+      "match_end": "2022-05-31 21:00:00+00:00",
+      "follow_start": "2022-06-30 21:00:00+00:00",
+      "follow_end": "2023-05-31 21:00:00+00:00",
+      "match_results": {
+        "XAU_USD": {
+          "period_start": "2021-06-30 21:00:00+00:00",
+          "period_end": "2022-05-31 21:00:00+00:00",
+          "months": 12,
+          "total_contributed": 100000.0,
+          "ending_value": 99011.99,
+          "net_pnl": -988.01,
+          "max_drawdown_pct": 0.0
+        },
+        "NAS100_USD": {
+          "period_start": "2021-06-30 21:00:00+00:00",
+          "period_end": "2022-05-31 21:00:00+00:00",
+          "months": 12,
+          "total_contributed": 100000.0,
+          "ending_value": 77864.48,
+          "net_pnl": -22135.52,
+          "max_drawdown_pct": 0.0376
+        },
+        "US30_USD": {
+          "period_start": "2021-06-30 21:00:00+00:00",
+          "period_end": "2022-05-31 21:00:00+00:00",
+          "months": 12,
+          "total_contributed": 100000.0,
+          "ending_value": 88791.54,
+          "net_pnl": -11208.46,
+          "max_drawdown_pct": 0.0
+        },
+        "BTC_USD": {
+          "period_start": "2021-06-30 21:00:00+00:00",
+          "period_end": "2022-05-31 21:00:00+00:00",
+          "months": 12,
+          "total_contributed": 100000.0,
+          "ending_value": 43997.76,
+          "net_pnl": -56002.24,
+          "max_drawdown_pct": 0.4303
+        },
+        "ETH_USD": {
+          "period_start": "2021-06-30 21:00:00+00:00",
+          "period_end": "2022-05-31 21:00:00+00:00",
+          "months": 12,
+          "total_contributed": 100000.0,
+          "ending_value": 34539.57,
+          "net_pnl": -65460.43,
+          "max_drawdown_pct": 0.5453
+        }
+      },
+      "follow_results": {
+        "XAU_USD": {
+          "period_start": "2022-06-30 21:00:00+00:00",
+          "period_end": "2023-05-31 21:00:00+00:00",
+          "months": 12,
+          "total_contributed": 100000.0,
+          "ending_value": 105851.15,
+          "net_pnl": 5851.15,
+          "max_drawdown_pct": 0.0
+        },
+        "NAS100_USD": {
+          "period_start": "2022-06-30 21:00:00+00:00",
+          "period_end": "2023-05-31 21:00:00+00:00",
+          "months": 12,
+          "total_contributed": 100000.0,
+          "ending_value": 124647.61,
+          "net_pnl": 24647.61,
+          "max_drawdown_pct": 0.0
+        },
+        "US30_USD": {
+          "period_start": "2022-06-30 21:00:00+00:00",
+          "period_end": "2023-05-31 21:00:00+00:00",
+          "months": 12,
+          "total_contributed": 100000.0,
+          "ending_value": 105711.41,
+          "net_pnl": 5711.41,
+          "max_drawdown_pct": 0.0
+        },
+        "BTC_USD": {
+          "period_start": "2022-06-30 21:00:00+00:00",
+          "period_end": "2023-05-31 21:00:00+00:00",
+          "months": 12,
+          "total_contributed": 100000.0,
+          "ending_value": 144840.98,
+          "net_pnl": 44840.98,
+          "max_drawdown_pct": 0.0397
+        },
+        "ETH_USD": {
+          "period_start": "2022-06-30 21:00:00+00:00",
+          "period_end": "2023-05-31 21:00:00+00:00",
+          "months": 12,
+          "total_contributed": 100000.0,
+          "ending_value": 132248.44,
+          "net_pnl": 32248.44,
+          "max_drawdown_pct": 0.0172
+        }
+      },
+      "match_summary": {
+        "mean_ending_value": 68841.07,
+        "mean_net_pnl": -31158.93,
+        "mean_max_drawdown_pct": 0.2026
+      },
+      "follow_summary": {
+        "mean_ending_value": 122659.92,
+        "mean_net_pnl": 22659.92,
+        "mean_max_drawdown_pct": 0.0114
+      }
+    },
+    {
+      "rank": 3,
+      "label": "US-Iran crisis / early 2020 geopolitical shock",
+      "distance": null,
+      "match_start": "2020-01-31 22:00:00+00:00",
+      "match_end": "2020-12-31 22:00:00+00:00",
+      "follow_start": "2021-01-31 22:00:00+00:00",
+      "follow_end": "2021-12-31 22:00:00+00:00",
+      "match_results": {
+        "XAU_USD": {
+          "period_start": "2020-01-31 22:00:00+00:00",
+          "period_end": "2020-12-31 22:00:00+00:00",
+          "months": 12,
+          "total_contributed": 100000.0,
+          "ending_value": 104476.74,
+          "net_pnl": 4476.74,
+          "max_drawdown_pct": 0.0
+        },
+        "NAS100_USD": {
+          "period_start": "2020-01-31 22:00:00+00:00",
+          "period_end": "2020-12-31 22:00:00+00:00",
+          "months": 12,
+          "total_contributed": 100000.0,
+          "ending_value": 127536.86,
+          "net_pnl": 27536.86,
+          "max_drawdown_pct": 0.0
+        },
+        "US30_USD": {
+          "period_start": "2020-01-31 22:00:00+00:00",
+          "period_end": "2020-12-31 22:00:00+00:00",
+          "months": 12,
+          "total_contributed": 100000.0,
+          "ending_value": 113267.17,
+          "net_pnl": 13267.17,
+          "max_drawdown_pct": 0.0
+        },
+        "BTC_USD": {
+          "period_start": "2020-01-31 22:00:00+00:00",
+          "period_end": "2020-12-31 22:00:00+00:00",
+          "months": 12,
+          "total_contributed": 100000.0,
+          "ending_value": 327100.77,
+          "net_pnl": 227100.77,
+          "max_drawdown_pct": 0.0
+        },
+        "ETH_USD": {
+          "period_start": "2020-01-31 22:00:00+00:00",
+          "period_end": "2020-12-31 22:00:00+00:00",
+          "months": 12,
+          "total_contributed": 100000.0,
+          "ending_value": 501557.48,
+          "net_pnl": 401557.48,
+          "max_drawdown_pct": 0.128
+        }
+      },
+      "follow_results": {
+        "XAU_USD": {
+          "period_start": "2021-01-31 22:00:00+00:00",
+          "period_end": "2021-12-31 22:00:00+00:00",
+          "months": 12,
+          "total_contributed": 100000.0,
+          "ending_value": 100258.63,
+          "net_pnl": 258.63,
+          "max_drawdown_pct": 0.0
+        },
+        "NAS100_USD": {
+          "period_start": "2021-01-31 22:00:00+00:00",
+          "period_end": "2021-12-31 22:00:00+00:00",
+          "months": 12,
+          "total_contributed": 100000.0,
+          "ending_value": 102786.36,
+          "net_pnl": 2786.36,
+          "max_drawdown_pct": 0.0177
+        },
+        "US30_USD": {
+          "period_start": "2021-01-31 22:00:00+00:00",
+          "period_end": "2021-12-31 22:00:00+00:00",
+          "months": 12,
+          "total_contributed": 100000.0,
+          "ending_value": 103295.18,
+          "net_pnl": 3295.18,
+          "max_drawdown_pct": 0.0
+        },
+        "BTC_USD": {
+          "period_start": "2021-01-31 22:00:00+00:00",
+          "period_end": "2021-12-31 22:00:00+00:00",
+          "months": 12,
+          "total_contributed": 100000.0,
+          "ending_value": 85425.29,
+          "net_pnl": -14574.71,
+          "max_drawdown_pct": 0.2241
+        },
+        "ETH_USD": {
+          "period_start": "2021-01-31 22:00:00+00:00",
+          "period_end": "2021-12-31 22:00:00+00:00",
+          "months": 12,
+          "total_contributed": 100000.0,
+          "ending_value": 110744.82,
+          "net_pnl": 10744.82,
+          "max_drawdown_pct": 0.3592
+        }
+      },
+      "match_summary": {
+        "mean_ending_value": 234787.8,
+        "mean_net_pnl": 134787.8,
+        "mean_max_drawdown_pct": 0.0256
+      },
+      "follow_summary": {
+        "mean_ending_value": 100502.06,
+        "mean_net_pnl": 502.06,
+        "mean_max_drawdown_pct": 0.1202
+      }
+    }
+  ]
+}

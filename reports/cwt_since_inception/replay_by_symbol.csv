@@ -1,0 +1,9 @@
+symbol,timeframe,signals,tp_hits,sl_hits,open
+NAS100_USD,5m,36,8,19,9
+SPX500_USD,5m,44,18,20,6
+UK100_GBP,5m,15,1,13,1
+USD_JPY,5m,52,28,22,2
+NZD_USD,5m,43,21,22,0
+AUD_USD,5m,34,12,15,7
+EUR_USD,5m,51,23,23,5
+GBP_JPY,15m,37,25,7,5

@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import asdict, dataclass, replace
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -40,6 +40,8 @@ def reinforcement_config_from_route_extra(extra: dict[str, Any] | None) -> Reinf
         enable_r_scaling=bool(payload.get("enable_r_scaling", False)),
         r_scale_per_reinforcement=float(payload.get("r_scale_per_reinforcement", 0.25)),
         max_effective_r_exposure=float(payload.get("max_effective_r_exposure", 2.0)),
+        post_tp_cooldown_bars=int(payload.get("post_tp_cooldown_bars", 0)),
+        post_sl_cooldown_bars=int(payload.get("post_sl_cooldown_bars", 0)),
     )
 
 
@@ -85,6 +87,19 @@ class ReinforcementProcessingResult:
 
 def _structure_key(symbol: str, timeframe: str, side: str) -> str:
     return f"{symbol}|{timeframe}|{side}"
+
+
+def _timeframe_minutes(timeframe: str) -> int:
+    normalized = str(timeframe).strip().lower()
+    if normalized.endswith("m") and normalized[:-1].isdigit():
+        return int(normalized[:-1])
+    if normalized in {"1h", "h1"}:
+        return 60
+    if normalized in {"4h", "h4"}:
+        return 240
+    if normalized in {"1d", "d"}:
+        return 1440
+    return 5
 
 
 def _find_active_structure(
@@ -144,6 +159,14 @@ def _build_reinforcement_summary(signal: PlatformSignal, structure: SignalStruct
         f"Structure still holds for {signal.symbol} {signal.timeframe.upper()} {signal.side.upper()}. "
         f"Strength is now {structure.strength_score}/100 after {structure.reinforcement_count} reinforcement"
         f"{'' if structure.reinforcement_count == 1 else 's'}. No new trade; reinforcement only."
+    )
+
+
+def _build_cooldown_summary(signal: PlatformSignal, reason: str, cooldown_bars: int) -> str:
+    return (
+        f"{signal.symbol} {signal.timeframe.upper()} {signal.side.upper()} is still inside the "
+        f"same-idea cooldown after the prior {reason.replace('_', ' ')}. "
+        f"No new trade; cooldown suppression for {cooldown_bars} bars."
     )
 
 
@@ -266,6 +289,88 @@ def _annotate_reinforcement_signal(
     )
 
 
+def _annotate_cooldown_signal(
+    signal: PlatformSignal,
+    *,
+    root_signal_id: str,
+    structure_id: str | None,
+    reason: str,
+    cooldown_bars: int,
+    previous_outcome: str,
+) -> PlatformSignal:
+    summary = _build_cooldown_summary(signal, previous_outcome, cooldown_bars)
+    raw_signal = {
+        **signal.raw_signal,
+        "event_type": "cooldown",
+        "structure_id": structure_id,
+        "root_signal_id": root_signal_id,
+        "reinforcement_reason": reason,
+        "cooldown_bars": cooldown_bars,
+        "previous_outcome": previous_outcome,
+        "is_tradable": False,
+    }
+    return replace(
+        signal,
+        summary=summary,
+        alert_text=summary,
+        is_tradable=False,
+        structure_id=structure_id,
+        root_signal_id=root_signal_id,
+        raw_signal=raw_signal,
+    )
+
+
+def _latest_closed_same_side_entry(
+    journal_entries: list[JournalEntry],
+    *,
+    symbol: str,
+    timeframe: str,
+    side: str,
+) -> JournalEntry | None:
+    candidates = [
+        entry
+        for entry in journal_entries
+        if entry.symbol == symbol
+        and entry.timeframe == timeframe
+        and entry.side == side
+        and entry.is_root_signal
+        and entry.status == "closed"
+        and entry.outcome_timestamp
+    ]
+    if not candidates:
+        return None
+    candidates.sort(
+        key=lambda entry: (
+            _parse_timestamp(entry.outcome_timestamp or entry.last_checked_utc or entry.signal_timestamp),
+            entry.setup_id,
+        ),
+        reverse=True,
+    )
+    return candidates[0]
+
+
+def _cooldown_bars_for_entry(entry: JournalEntry | None, config: ReinforcementConfig) -> tuple[int, str] | None:
+    if entry is None:
+        return None
+    outcome = str(entry.outcome or "").lower()
+    if outcome == "tp_hit" and config.post_tp_cooldown_bars > 0:
+        return config.post_tp_cooldown_bars, outcome
+    if outcome == "sl_hit" and config.post_sl_cooldown_bars > 0:
+        return config.post_sl_cooldown_bars, outcome
+    return None
+
+
+def _inside_post_outcome_cooldown(
+    signal: PlatformSignal,
+    previous_entry: JournalEntry,
+    cooldown_bars: int,
+) -> bool:
+    previous_time = _parse_timestamp(previous_entry.outcome_timestamp or previous_entry.signal_timestamp)
+    signal_time = _parse_timestamp(signal.timestamp)
+    cooldown_minutes = _timeframe_minutes(signal.timeframe) * max(cooldown_bars, 0)
+    return signal_time <= (previous_time + timedelta(minutes=cooldown_minutes))
+
+
 def apply_signal_reinforcement(
     *,
     signals: list[PlatformSignal],
@@ -373,6 +478,41 @@ def apply_signal_reinforcement(
             active_opposite.current_status = "invalidated"
             active_opposite.last_update_timestamp = signal.timestamp
             structures[active_opposite.structure_id] = active_opposite
+
+        latest_closed = _latest_closed_same_side_entry(
+            journal_entries,
+            symbol=signal.symbol,
+            timeframe=signal.timeframe,
+            side=signal.side,
+        )
+        cooldown = _cooldown_bars_for_entry(latest_closed, config)
+        if latest_closed is not None and cooldown is not None:
+            cooldown_bars, previous_outcome = cooldown
+            if _inside_post_outcome_cooldown(signal, latest_closed, cooldown_bars):
+                cooldown_signal = _annotate_cooldown_signal(
+                    signal,
+                    root_signal_id=latest_closed.root_signal_id or latest_closed.setup_id,
+                    structure_id=latest_closed.structure_id,
+                    reason=f"same_direction_post_{previous_outcome}_cooldown",
+                    cooldown_bars=cooldown_bars,
+                    previous_outcome=previous_outcome,
+                )
+                reinforcements.append(cooldown_signal)
+                decisions.append(
+                    {
+                        "timestamp": signal.timestamp,
+                        "signal_id": signal.setup_id,
+                        "symbol": signal.symbol,
+                        "timeframe": signal.timeframe,
+                        "side": signal.side,
+                        "classification": "cooldown",
+                        "root_signal_id": latest_closed.root_signal_id or latest_closed.setup_id,
+                        "reason": f"same_direction_post_{previous_outcome}_cooldown",
+                        "cooldown_bars": cooldown_bars,
+                        "previous_outcome_timestamp": latest_closed.outcome_timestamp,
+                    }
+                )
+                continue
 
         structure = _build_structure(signal, config)
         structures[structure.structure_id] = structure

@@ -1,0 +1,866 @@
+[
+  {
+    "symbol": "USD_JPY",
+    "execution_timeframe": "5m",
+    "exit_mode": "rr1",
+    "scenario_filter": "scenario1",
+    "trade_count": 837,
+    "flat_0_15": {
+      "mode": "flat",
+      "risk_sequence": [
+        0.15
+      ],
+      "trades": 837,
+      "net_pct": 11.001,
+      "avg_pct_per_trade": 0.0131,
+      "win_rate": 54.12,
+      "profit_factor": 1.21,
+      "max_loss_streak": 7
+    },
+    "ladder_notes": {
+      "mode": "ladder",
+      "risk_sequence": [
+        0.15,
+        0.3,
+        0.6,
+        1.2
+      ],
+      "trades": 837,
+      "net_pct": 39.192,
+      "avg_pct_per_trade": 0.0468,
+      "win_rate": 54.12,
+      "profit_factor": 1.35,
+      "max_loss_streak": 7,
+      "max_risk_step_used": 1.2
+    },
+    "ladder_minus_flat_net_pct": 28.191
+  },
+  {
+    "symbol": "USD_JPY",
+    "execution_timeframe": "5m",
+    "exit_mode": "rr1",
+    "scenario_filter": "scenario2",
+    "trade_count": 562,
+    "flat_0_15": {
+      "mode": "flat",
+      "risk_sequence": [
+        0.15
+      ],
+      "trades": 562,
+      "net_pct": 12.277,
+      "avg_pct_per_trade": 0.0218,
+      "win_rate": 56.23,
+      "profit_factor": 1.4,
+      "max_loss_streak": 6
+    },
+    "ladder_notes": {
+      "mode": "ladder",
+      "risk_sequence": [
+        0.15,
+        0.3,
+        0.6,
+        1.2
+      ],
+      "trades": 562,
+      "net_pct": 29.242,
+      "avg_pct_per_trade": 0.052,
+      "win_rate": 56.23,
+      "profit_factor": 1.46,
+      "max_loss_streak": 6,
+      "max_risk_step_used": 1.2
+    },
+    "ladder_minus_flat_net_pct": 16.965
+  },
+  {
+    "symbol": "USD_JPY",
+    "execution_timeframe": "5m",
+    "exit_mode": "rr1",
+    "scenario_filter": "both",
+    "trade_count": 1124,
+    "flat_0_15": {
+      "mode": "flat",
+      "risk_sequence": [
+        0.15
+      ],
+      "trades": 1124,
+      "net_pct": 20.949,
+      "avg_pct_per_trade": 0.0186,
+      "win_rate": 55.87,
+      "profit_factor": 1.31,
+      "max_loss_streak": 8
+    },
+    "ladder_notes": {
+      "mode": "ladder",
+      "risk_sequence": [
+        0.15,
+        0.3,
+        0.6,
+        1.2
+      ],
+      "trades": 1124,
+      "net_pct": 56.934,
+      "avg_pct_per_trade": 0.0507,
+      "win_rate": 55.87,
+      "profit_factor": 1.41,
+      "max_loss_streak": 8,
+      "max_risk_step_used": 1.2
+    },
+    "ladder_minus_flat_net_pct": 35.985
+  },
+  {
+    "symbol": "USD_JPY",
+    "execution_timeframe": "5m",
+    "exit_mode": "jaw_trail",
+    "scenario_filter": "scenario1",
+    "trade_count": 751,
+    "flat_0_15": {
+      "mode": "flat",
+      "risk_sequence": [
+        0.15
+      ],
+      "trades": 751,
+      "net_pct": 15.164,
+      "avg_pct_per_trade": 0.0202,
+      "win_rate": 36.22,
+      "profit_factor": 1.38,
+      "max_loss_streak": 14
+    },
+    "ladder_notes": {
+      "mode": "ladder",
+      "risk_sequence": [
+        0.15,
+        0.3,
+        0.6,
+        1.2
+      ],
+      "trades": 751,
+      "net_pct": 88.087,
+      "avg_pct_per_trade": 0.1173,
+      "win_rate": 36.22,
+      "profit_factor": 1.65,
+      "max_loss_streak": 14,
+      "max_risk_step_used": 1.2
+    },
+    "ladder_minus_flat_net_pct": 72.923
+  },
+  {
+    "symbol": "USD_JPY",
+    "execution_timeframe": "5m",
+    "exit_mode": "jaw_trail",
+    "scenario_filter": "scenario2",
+    "trade_count": 842,
+    "flat_0_15": {
+      "mode": "flat",
+      "risk_sequence": [
+        0.15
+      ],
+      "trades": 842,
+      "net_pct": 17.128,
+      "avg_pct_per_trade": 0.0203,
+      "win_rate": 16.39,
+      "profit_factor": 2.03,
+      "max_loss_streak": 34
+    },
+    "ladder_notes": {
+      "mode": "ladder",
+      "risk_sequence": [
+        0.15,
+        0.3,
+        0.6,
+        1.2
+      ],
+      "trades": 842,
+      "net_pct": 147.312,
+      "avg_pct_per_trade": 0.175,
+      "win_rate": 16.39,
+      "profit_factor": 2.59,
+      "max_loss_streak": 34,
+      "max_risk_step_used": 1.2
+    },
+    "ladder_minus_flat_net_pct": 130.184
+  },
+  {
+    "symbol": "USD_JPY",
+    "execution_timeframe": "5m",
+    "exit_mode": "jaw_trail",
+    "scenario_filter": "both",
+    "trade_count": 1444,
+    "flat_0_15": {
+      "mode": "flat",
+      "risk_sequence": [
+        0.15
+      ],
+      "trades": 1444,
+      "net_pct": 27.021,
+      "avg_pct_per_trade": 0.0187,
+      "win_rate": 24.79,
+      "profit_factor": 1.54,
+      "max_loss_streak": 20
+    },
+    "ladder_notes": {
+      "mode": "ladder",
+      "risk_sequence": [
+        0.15,
+        0.3,
+        0.6,
+        1.2
+      ],
+      "trades": 1444,
+      "net_pct": 192.872,
+      "avg_pct_per_trade": 0.1336,
+      "win_rate": 24.79,
+      "profit_factor": 1.83,
+      "max_loss_streak": 20,
+      "max_risk_step_used": 1.2
+    },
+    "ladder_minus_flat_net_pct": 165.851
+  },
+  {
+    "symbol": "EUR_USD",
+    "execution_timeframe": "5m",
+    "exit_mode": "rr1",
+    "scenario_filter": "scenario1",
+    "trade_count": 849,
+    "flat_0_15": {
+      "mode": "flat",
+      "risk_sequence": [
+        0.15
+      ],
+      "trades": 849,
+      "net_pct": 1.711,
+      "avg_pct_per_trade": 0.002,
+      "win_rate": 50.41,
+      "profit_factor": 1.03,
+      "max_loss_streak": 10
+    },
+    "ladder_notes": {
+      "mode": "ladder",
+      "risk_sequence": [
+        0.15,
+        0.3,
+        0.6,
+        1.2
+      ],
+      "trades": 849,
+      "net_pct": 8.298,
+      "avg_pct_per_trade": 0.0098,
+      "win_rate": 50.41,
+      "profit_factor": 1.06,
+      "max_loss_streak": 10,
+      "max_risk_step_used": 1.2
+    },
+    "ladder_minus_flat_net_pct": 6.587
+  },
+  {
+    "symbol": "EUR_USD",
+    "execution_timeframe": "5m",
+    "exit_mode": "rr1",
+    "scenario_filter": "scenario2",
+    "trade_count": 519,
+    "flat_0_15": {
+      "mode": "flat",
+      "risk_sequence": [
+        0.15
+      ],
+      "trades": 519,
+      "net_pct": 3.673,
+      "avg_pct_per_trade": 0.0071,
+      "win_rate": 50.48,
+      "profit_factor": 1.12,
+      "max_loss_streak": 7
+    },
+    "ladder_notes": {
+      "mode": "ladder",
+      "risk_sequence": [
+        0.15,
+        0.3,
+        0.6,
+        1.2
+      ],
+      "trades": 519,
+      "net_pct": 7.205,
+      "avg_pct_per_trade": 0.0139,
+      "win_rate": 50.48,
+      "profit_factor": 1.09,
+      "max_loss_streak": 7,
+      "max_risk_step_used": 1.2
+    },
+    "ladder_minus_flat_net_pct": 3.532
+  },
+  {
+    "symbol": "EUR_USD",
+    "execution_timeframe": "5m",
+    "exit_mode": "rr1",
+    "scenario_filter": "both",
+    "trade_count": 1091,
+    "flat_0_15": {
+      "mode": "flat",
+      "risk_sequence": [
+        0.15
+      ],
+      "trades": 1091,
+      "net_pct": 7.503,
+      "avg_pct_per_trade": 0.0069,
+      "win_rate": 51.7,
+      "profit_factor": 1.11,
+      "max_loss_streak": 8
+    },
+    "ladder_notes": {
+      "mode": "ladder",
+      "risk_sequence": [
+        0.15,
+        0.3,
+        0.6,
+        1.2
+      ],
+      "trades": 1091,
+      "net_pct": 34.773,
+      "avg_pct_per_trade": 0.0319,
+      "win_rate": 51.7,
+      "profit_factor": 1.23,
+      "max_loss_streak": 8,
+      "max_risk_step_used": 1.2
+    },
+    "ladder_minus_flat_net_pct": 27.27
+  },
+  {
+    "symbol": "EUR_USD",
+    "execution_timeframe": "5m",
+    "exit_mode": "jaw_trail",
+    "scenario_filter": "scenario1",
+    "trade_count": 744,
+    "flat_0_15": {
+      "mode": "flat",
+      "risk_sequence": [
+        0.15
+      ],
+      "trades": 744,
+      "net_pct": 6.682,
+      "avg_pct_per_trade": 0.009,
+      "win_rate": 33.2,
+      "profit_factor": 1.16,
+      "max_loss_streak": 13
+    },
+    "ladder_notes": {
+      "mode": "ladder",
+      "risk_sequence": [
+        0.15,
+        0.3,
+        0.6,
+        1.2
+      ],
+      "trades": 744,
+      "net_pct": -0.241,
+      "avg_pct_per_trade": -0.0003,
+      "win_rate": 33.2,
+      "profit_factor": 1.0,
+      "max_loss_streak": 13,
+      "max_risk_step_used": 1.2
+    },
+    "ladder_minus_flat_net_pct": -6.923
+  },
+  {
+    "symbol": "EUR_USD",
+    "execution_timeframe": "5m",
+    "exit_mode": "jaw_trail",
+    "scenario_filter": "scenario2",
+    "trade_count": 795,
+    "flat_0_15": {
+      "mode": "flat",
+      "risk_sequence": [
+        0.15
+      ],
+      "trades": 795,
+      "net_pct": 9.865,
+      "avg_pct_per_trade": 0.0124,
+      "win_rate": 15.6,
+      "profit_factor": 1.58,
+      "max_loss_streak": 27
+    },
+    "ladder_notes": {
+      "mode": "ladder",
+      "risk_sequence": [
+        0.15,
+        0.3,
+        0.6,
+        1.2
+      ],
+      "trades": 795,
+      "net_pct": 53.341,
+      "avg_pct_per_trade": 0.0671,
+      "win_rate": 15.6,
+      "profit_factor": 1.51,
+      "max_loss_streak": 27,
+      "max_risk_step_used": 1.2
+    },
+    "ladder_minus_flat_net_pct": 43.476
+  },
+  {
+    "symbol": "EUR_USD",
+    "execution_timeframe": "5m",
+    "exit_mode": "jaw_trail",
+    "scenario_filter": "both",
+    "trade_count": 1410,
+    "flat_0_15": {
+      "mode": "flat",
+      "risk_sequence": [
+        0.15
+      ],
+      "trades": 1410,
+      "net_pct": 14.927,
+      "avg_pct_per_trade": 0.0106,
+      "win_rate": 23.33,
+      "profit_factor": 1.29,
+      "max_loss_streak": 21
+    },
+    "ladder_notes": {
+      "mode": "ladder",
+      "risk_sequence": [
+        0.15,
+        0.3,
+        0.6,
+        1.2
+      ],
+      "trades": 1410,
+      "net_pct": 23.273,
+      "avg_pct_per_trade": 0.0165,
+      "win_rate": 23.33,
+      "profit_factor": 1.09,
+      "max_loss_streak": 21,
+      "max_risk_step_used": 1.2
+    },
+    "ladder_minus_flat_net_pct": 8.346
+  },
+  {
+    "symbol": "NZD_USD",
+    "execution_timeframe": "5m",
+    "exit_mode": "rr1",
+    "scenario_filter": "scenario1",
+    "trade_count": 814,
+    "flat_0_15": {
+      "mode": "flat",
+      "risk_sequence": [
+        0.15
+      ],
+      "trades": 814,
+      "net_pct": 2.511,
+      "avg_pct_per_trade": 0.0031,
+      "win_rate": 50.86,
+      "profit_factor": 1.04,
+      "max_loss_streak": 8
+    },
+    "ladder_notes": {
+      "mode": "ladder",
+      "risk_sequence": [
+        0.15,
+        0.3,
+        0.6,
+        1.2
+      ],
+      "trades": 814,
+      "net_pct": 7.338,
+      "avg_pct_per_trade": 0.009,
+      "win_rate": 50.86,
+      "profit_factor": 1.05,
+      "max_loss_streak": 8,
+      "max_risk_step_used": 1.2
+    },
+    "ladder_minus_flat_net_pct": 4.827
+  },
+  {
+    "symbol": "NZD_USD",
+    "execution_timeframe": "5m",
+    "exit_mode": "rr1",
+    "scenario_filter": "scenario2",
+    "trade_count": 518,
+    "flat_0_15": {
+      "mode": "flat",
+      "risk_sequence": [
+        0.15
+      ],
+      "trades": 518,
+      "net_pct": 9.482,
+      "avg_pct_per_trade": 0.0183,
+      "win_rate": 56.18,
+      "profit_factor": 1.33,
+      "max_loss_streak": 8
+    },
+    "ladder_notes": {
+      "mode": "ladder",
+      "risk_sequence": [
+        0.15,
+        0.3,
+        0.6,
+        1.2
+      ],
+      "trades": 518,
+      "net_pct": 22.936,
+      "avg_pct_per_trade": 0.0443,
+      "win_rate": 56.18,
+      "profit_factor": 1.37,
+      "max_loss_streak": 8,
+      "max_risk_step_used": 1.2
+    },
+    "ladder_minus_flat_net_pct": 13.454
+  },
+  {
+    "symbol": "NZD_USD",
+    "execution_timeframe": "5m",
+    "exit_mode": "rr1",
+    "scenario_filter": "both",
+    "trade_count": 1065,
+    "flat_0_15": {
+      "mode": "flat",
+      "risk_sequence": [
+        0.15
+      ],
+      "trades": 1065,
+      "net_pct": 10.985,
+      "avg_pct_per_trade": 0.0103,
+      "win_rate": 53.43,
+      "profit_factor": 1.16,
+      "max_loss_streak": 11
+    },
+    "ladder_notes": {
+      "mode": "ladder",
+      "risk_sequence": [
+        0.15,
+        0.3,
+        0.6,
+        1.2
+      ],
+      "trades": 1065,
+      "net_pct": 37.687,
+      "avg_pct_per_trade": 0.0354,
+      "win_rate": 53.43,
+      "profit_factor": 1.26,
+      "max_loss_streak": 11,
+      "max_risk_step_used": 1.2
+    },
+    "ladder_minus_flat_net_pct": 26.702
+  },
+  {
+    "symbol": "NZD_USD",
+    "execution_timeframe": "5m",
+    "exit_mode": "jaw_trail",
+    "scenario_filter": "scenario1",
+    "trade_count": 729,
+    "flat_0_15": {
+      "mode": "flat",
+      "risk_sequence": [
+        0.15
+      ],
+      "trades": 729,
+      "net_pct": 10.154,
+      "avg_pct_per_trade": 0.0139,
+      "win_rate": 35.53,
+      "profit_factor": 1.26,
+      "max_loss_streak": 11
+    },
+    "ladder_notes": {
+      "mode": "ladder",
+      "risk_sequence": [
+        0.15,
+        0.3,
+        0.6,
+        1.2
+      ],
+      "trades": 729,
+      "net_pct": 18.423,
+      "avg_pct_per_trade": 0.0253,
+      "win_rate": 35.53,
+      "profit_factor": 1.13,
+      "max_loss_streak": 11,
+      "max_risk_step_used": 1.2
+    },
+    "ladder_minus_flat_net_pct": 8.269
+  },
+  {
+    "symbol": "NZD_USD",
+    "execution_timeframe": "5m",
+    "exit_mode": "jaw_trail",
+    "scenario_filter": "scenario2",
+    "trade_count": 814,
+    "flat_0_15": {
+      "mode": "flat",
+      "risk_sequence": [
+        0.15
+      ],
+      "trades": 814,
+      "net_pct": 12.34,
+      "avg_pct_per_trade": 0.0152,
+      "win_rate": 20.64,
+      "profit_factor": 1.78,
+      "max_loss_streak": 15
+    },
+    "ladder_notes": {
+      "mode": "ladder",
+      "risk_sequence": [
+        0.15,
+        0.3,
+        0.6,
+        1.2
+      ],
+      "trades": 814,
+      "net_pct": 99.021,
+      "avg_pct_per_trade": 0.1216,
+      "win_rate": 20.64,
+      "profit_factor": 2.29,
+      "max_loss_streak": 15,
+      "max_risk_step_used": 1.2
+    },
+    "ladder_minus_flat_net_pct": 86.681
+  },
+  {
+    "symbol": "NZD_USD",
+    "execution_timeframe": "5m",
+    "exit_mode": "jaw_trail",
+    "scenario_filter": "both",
+    "trade_count": 1385,
+    "flat_0_15": {
+      "mode": "flat",
+      "risk_sequence": [
+        0.15
+      ],
+      "trades": 1385,
+      "net_pct": 20.166,
+      "avg_pct_per_trade": 0.0146,
+      "win_rate": 26.79,
+      "profit_factor": 1.42,
+      "max_loss_streak": 14
+    },
+    "ladder_notes": {
+      "mode": "ladder",
+      "risk_sequence": [
+        0.15,
+        0.3,
+        0.6,
+        1.2
+      ],
+      "trades": 1385,
+      "net_pct": 122.504,
+      "avg_pct_per_trade": 0.0885,
+      "win_rate": 26.79,
+      "profit_factor": 1.57,
+      "max_loss_streak": 14,
+      "max_risk_step_used": 1.2
+    },
+    "ladder_minus_flat_net_pct": 102.338
+  },
+  {
+    "symbol": "USD_CAD",
+    "execution_timeframe": "5m",
+    "exit_mode": "rr1",
+    "scenario_filter": "scenario1",
+    "trade_count": 830,
+    "flat_0_15": {
+      "mode": "flat",
+      "risk_sequence": [
+        0.15
+      ],
+      "trades": 830,
+      "net_pct": -0.836,
+      "avg_pct_per_trade": -0.001,
+      "win_rate": 49.04,
+      "profit_factor": 0.99,
+      "max_loss_streak": 7
+    },
+    "ladder_notes": {
+      "mode": "ladder",
+      "risk_sequence": [
+        0.15,
+        0.3,
+        0.6,
+        1.2
+      ],
+      "trades": 830,
+      "net_pct": 15.658,
+      "avg_pct_per_trade": 0.0189,
+      "win_rate": 49.04,
+      "profit_factor": 1.12,
+      "max_loss_streak": 7,
+      "max_risk_step_used": 1.2
+    },
+    "ladder_minus_flat_net_pct": 16.494
+  },
+  {
+    "symbol": "USD_CAD",
+    "execution_timeframe": "5m",
+    "exit_mode": "rr1",
+    "scenario_filter": "scenario2",
+    "trade_count": 511,
+    "flat_0_15": {
+      "mode": "flat",
+      "risk_sequence": [
+        0.15
+      ],
+      "trades": 511,
+      "net_pct": 14.119,
+      "avg_pct_per_trade": 0.0276,
+      "win_rate": 58.9,
+      "profit_factor": 1.54,
+      "max_loss_streak": 7
+    },
+    "ladder_notes": {
+      "mode": "ladder",
+      "risk_sequence": [
+        0.15,
+        0.3,
+        0.6,
+        1.2
+      ],
+      "trades": 511,
+      "net_pct": 30.877,
+      "avg_pct_per_trade": 0.0604,
+      "win_rate": 58.9,
+      "profit_factor": 1.59,
+      "max_loss_streak": 7,
+      "max_risk_step_used": 1.2
+    },
+    "ladder_minus_flat_net_pct": 16.758
+  },
+  {
+    "symbol": "USD_CAD",
+    "execution_timeframe": "5m",
+    "exit_mode": "rr1",
+    "scenario_filter": "both",
+    "trade_count": 1064,
+    "flat_0_15": {
+      "mode": "flat",
+      "risk_sequence": [
+        0.15
+      ],
+      "trades": 1064,
+      "net_pct": 10.895,
+      "avg_pct_per_trade": 0.0102,
+      "win_rate": 52.44,
+      "profit_factor": 1.16,
+      "max_loss_streak": 7
+    },
+    "ladder_notes": {
+      "mode": "ladder",
+      "risk_sequence": [
+        0.15,
+        0.3,
+        0.6,
+        1.2
+      ],
+      "trades": 1064,
+      "net_pct": 33.414,
+      "avg_pct_per_trade": 0.0314,
+      "win_rate": 52.44,
+      "profit_factor": 1.21,
+      "max_loss_streak": 7,
+      "max_risk_step_used": 1.2
+    },
+    "ladder_minus_flat_net_pct": 22.519
+  },
+  {
+    "symbol": "USD_CAD",
+    "execution_timeframe": "5m",
+    "exit_mode": "jaw_trail",
+    "scenario_filter": "scenario1",
+    "trade_count": 783,
+    "flat_0_15": {
+      "mode": "flat",
+      "risk_sequence": [
+        0.15
+      ],
+      "trades": 783,
+      "net_pct": -1.309,
+      "avg_pct_per_trade": -0.0017,
+      "win_rate": 32.06,
+      "profit_factor": 0.97,
+      "max_loss_streak": 15
+    },
+    "ladder_notes": {
+      "mode": "ladder",
+      "risk_sequence": [
+        0.15,
+        0.3,
+        0.6,
+        1.2
+      ],
+      "trades": 783,
+      "net_pct": 55.763,
+      "avg_pct_per_trade": 0.0712,
+      "win_rate": 32.06,
+      "profit_factor": 1.35,
+      "max_loss_streak": 15,
+      "max_risk_step_used": 1.2
+    },
+    "ladder_minus_flat_net_pct": 57.072
+  },
+  {
+    "symbol": "USD_CAD",
+    "execution_timeframe": "5m",
+    "exit_mode": "jaw_trail",
+    "scenario_filter": "scenario2",
+    "trade_count": 803,
+    "flat_0_15": {
+      "mode": "flat",
+      "risk_sequence": [
+        0.15
+      ],
+      "trades": 803,
+      "net_pct": 352.543,
+      "avg_pct_per_trade": 0.439,
+      "win_rate": 19.55,
+      "profit_factor": 23.04,
+      "max_loss_streak": 34
+    },
+    "ladder_notes": {
+      "mode": "ladder",
+      "risk_sequence": [
+        0.15,
+        0.3,
+        0.6,
+        1.2
+      ],
+      "trades": 803,
+      "net_pct": 2789.072,
+      "avg_pct_per_trade": 3.4733,
+      "win_rate": 19.55,
+      "profit_factor": 33.13,
+      "max_loss_streak": 34,
+      "max_risk_step_used": 1.2
+    },
+    "ladder_minus_flat_net_pct": 2436.529
+  },
+  {
+    "symbol": "USD_CAD",
+    "execution_timeframe": "5m",
+    "exit_mode": "jaw_trail",
+    "scenario_filter": "both",
+    "trade_count": 1420,
+    "flat_0_15": {
+      "mode": "flat",
+      "risk_sequence": [
+        0.15
+      ],
+      "trades": 1420,
+      "net_pct": 345.106,
+      "avg_pct_per_trade": 0.243,
+      "win_rate": 23.87,
+      "profit_factor": 7.55,
+      "max_loss_streak": 20
+    },
+    "ladder_notes": {
+      "mode": "ladder",
+      "risk_sequence": [
+        0.15,
+        0.3,
+        0.6,
+        1.2
+      ],
+      "trades": 1420,
+      "net_pct": 2769.014,
+      "avg_pct_per_trade": 1.95,
+      "win_rate": 23.87,
+      "profit_factor": 12.05,
+      "max_loss_streak": 20,
+      "max_risk_step_used": 1.2
+    },
+    "ladder_minus_flat_net_pct": 2423.908
+  }
+]

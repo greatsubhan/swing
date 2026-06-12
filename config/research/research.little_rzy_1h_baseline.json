@@ -1,0 +1,43 @@
+{
+  "name": "little_rzy_1h_base_mode",
+  "provider": "oanda",
+  "oanda_environment": "practice",
+  "symbols": [
+    "NAS100_USD",
+    "EUR_USD"
+  ],
+  "granularity": "H1",
+  "timeframe": "1h",
+  "higher_timeframe": "1d",
+  "use_market_profile": false,
+  "costs": {
+    "commission_per_trade": 0.0,
+    "spread_points": 0.0,
+    "slippage_points": 0.0
+  },
+  "constraints": {
+    "max_open_risk": null,
+    "max_trades_per_day": null,
+    "max_trades_per_symbol_per_day": null,
+    "max_daily_drawdown": null,
+    "allow_partial_size": true
+  },
+  "segments": [
+    {
+      "name": "segment_2025_q3",
+      "start": "2025-07-01",
+      "end": "2025-09-30"
+    },
+    {
+      "name": "segment_2025_q4",
+      "start": "2025-10-01",
+      "end": "2025-12-31"
+    },
+    {
+      "name": "segment_2026_q1",
+      "start": "2026-01-01",
+      "end": "2026-03-31"
+    }
+  ],
+  "output_dir": "output/research/little_rzy_1h_baseline"
+}

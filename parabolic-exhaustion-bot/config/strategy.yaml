@@ -1,0 +1,124 @@
+provider: oanda
+market_scope: multi_asset
+session_scope: london_new_york
+daily_context_timeframe: 1d
+intraday_timeframes:
+  - 1m
+  - 5m
+signal_timeframe: 1m
+max_attempts_per_symbol_per_day: 2
+close_all_minutes_before_close: 5
+
+sessions:
+  london:
+    timezone: Europe/London
+    start_time: "07:00"
+    end_time: "11:00"
+  new_york:
+    timezone: America/New_York
+    start_time: "09:30"
+    end_time: "12:00"
+
+kill_zones:
+  timezone: America/New_York
+  prioritize_overlap: true
+  default_alert_priority: normal
+  overlap_alert_priority: high
+  overlap:
+    enabled: true
+    start_time: "08:00"
+    end_time: "10:00"
+  london:
+    enabled: true
+    start_time: "02:00"
+    end_time: "05:00"
+  new_york:
+    enabled: true
+    start_time: "07:00"
+    end_time: "10:00"
+
+filters:
+  extension:
+    mode: atr_multiple
+    min_value: 3.0
+    per_symbol_overrides:
+      XAU_USD: 2.5
+      XAG_USD: 3.0
+      WTICO_USD: 3.0
+      NAS100_USD: 2.0
+      UK100_GBP: 1.8
+      US30_USD: 2.0
+      SPX500_USD: 1.8
+  volume_rank_min: 0.7
+  round_number_tolerance_pct: 0.75
+  min_parabolic_slope_score: 55.0
+  near_high_threshold_pct: 1.5
+
+intraday:
+  require_lower_high: true
+  require_lower_low: true
+  require_vwap_loss: true
+  require_vwap_reclaim_failure: true
+  vwap_retest_max_count: 2
+
+risk:
+  risk_per_trade_pct: 0.5
+  partial_take_r: 1.5
+  partial_take_size_pct: 40.0
+  move_stop_to_break_even_after_partial: true
+  enable_risk_free_add: true
+  add_only_after_second_vwap_failure: true
+
+flow_strategy:
+  markets:
+    - NAS100_USD
+    - US30_USD
+  daily_context_timeframe: 1d
+  signal_timeframe: M5
+  opening_window_timezone: America/New_York
+  opening_window_variant: open_0930_1030
+  opening_windows:
+    open_0930_1030:
+      timezone: America/New_York
+      start_time: "09:30"
+      end_time: "10:30"
+    open_0935_1030:
+      timezone: America/New_York
+      start_time: "09:35"
+      end_time: "10:30"
+    open_0945_1030:
+      timezone: America/New_York
+      start_time: "09:45"
+      end_time: "10:30"
+    open_1000_1100:
+      timezone: America/New_York
+      start_time: "10:00"
+      end_time: "11:00"
+  ema_fast_length: 9
+  ema_slow_length: 21
+  intraday_atr_length: 14
+  vwap_slope_lookback: 3
+  pullback_lookback: 3
+  stop_lookback_bars: 3
+  min_daily_atr_pct: 0.60
+  min_vwap_slope_atr: 0.03
+  pullback_distance_atr: 0.35
+  max_extension_atr: 1.25
+  stop_atr_buffer: 0.75
+  max_trades_per_day: 2
+  use_kill_zones: true
+  allow_longs: true
+  allow_shorts: true
+  require_session_alignment: true
+
+paper_profiles:
+  NAS100_PARABOLIC_PAPER:
+    strategy_type: parabolic_exhaustion
+    markets:
+      - NAS100_USD
+    parameter_set_id: idx_ps07_baseline_on
+    discord_webhook_env_var: DISCORD_WEBHOOK_URL_NAS100_PARABOLIC_PAPER
+    discord_channel_name: nas100-parabolic-paper
+    output_subdir: nas100_parabolic_paper
+    forward_test_log_filename: forward_test_log_parabolic.csv
+    session_timezone: America/New_York

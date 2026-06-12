@@ -1,0 +1,4 @@
+dataset,baseline_trades,improved_trades,trade_delta,baseline_skipped,improved_skipped,baseline_win_rate_pct,improved_win_rate_pct,win_rate_delta_pct,baseline_profit_factor,improved_profit_factor,baseline_avg_r,improved_avg_r,baseline_total_r,improved_total_r,baseline_ending_equity,improved_ending_equity,ending_equity_delta,baseline_return_pct,improved_return_pct,baseline_max_drawdown_pct,improved_max_drawdown_pct
+operational_journal_root_only,95,33,-62,0,61,46.32,63.64,17.32,0.8627,0.9799,-0.073684,-0.007314,-7.0,-0.24135,90750.8,100313.16,9562.36,-9.25,0.31,12.59,0.94
+since_inception_replay_root_only,131,50,-81,0,81,40.46,58.0,17.54,0.6795,0.964,-0.19084,-0.015126,-25.0,-0.756318,74283.94,96878.54,22594.6,-25.72,-3.12,26.6,4.77
+since_inception_replay_raw,277,50,-227,0,227,49.1,58.0,8.9,0.9645,0.964,-0.018051,-0.015126,-5.0,-0.756318,62073.1,96878.54,34805.44,-37.93,-3.12,38.76,4.77

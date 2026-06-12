@@ -1,14 +1,19 @@
 """Strategy registry."""
 from __future__ import annotations
 
-from .little_rzy_strategy import LittleRzyStrategy
+from .cwt_strategy import CwtStrategy
+from .little_rzy_strategy import LittleRzy1HStrategy, LittleRzyStrategy
+from .secular_bull_sip_strategy import SecularBullSipStrategy
 from .strategies import StrategyPlugin
 from .trend_current_strategy import TrendCurrentStrategy
 
 
 _STRATEGIES: dict[str, StrategyPlugin] = {
     "little_rzy": LittleRzyStrategy(),
+    "little_rzy_1h": LittleRzy1HStrategy(),
     "strategy_two": TrendCurrentStrategy(),
+    "strategy_four": CwtStrategy(),
+    "strategy_five": SecularBullSipStrategy(),
 }
 
 

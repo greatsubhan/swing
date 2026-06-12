@@ -46,9 +46,30 @@ class StructureConfig:
 class RiskConfig:
     atr_stop_padding: float = 0.25
     min_rr: float = 1.2
-    fee_bps: float = 2.0
-    slippage_bps: float = 3.0
     stop_priority_when_both_hit: bool = True
+    commission_per_trade: float = 0.0
+    spread_points: float = 0.0
+    slippage_points: float = 0.0
+
+
+@dataclass
+class PortfolioConstraintConfig:
+    max_open_risk: float | None = None
+    max_trades_per_day: int | None = None
+    max_trades_per_symbol_per_day: int | None = None
+    max_daily_drawdown: float | None = None
+    allow_partial_size: bool = True
+
+
+@dataclass
+class ExecutionFilterConfig:
+    allowed_sessions: tuple[str, ...] = ()
+    min_atr_to_spread_ratio: float = 0.0
+    min_bar_range_to_spread_ratio: float = 0.0
+    use_htf_bias: bool = False
+    htf_granularity: str = "1d"
+    log_signals: bool = False
+    log_filtered_setups: bool = False
 
 
 @dataclass
@@ -67,11 +88,14 @@ class ScoreWeights:
 @dataclass
 class EngineConfig:
     strategy_name: str = "Little RZY"
+    profile_name: str = "baseline"
     indicator: IndicatorConfig = field(default_factory=IndicatorConfig)
     pivots: PivotConfig = field(default_factory=PivotConfig)
     trend: TrendConfig = field(default_factory=TrendConfig)
     structure: StructureConfig = field(default_factory=StructureConfig)
     risk: RiskConfig = field(default_factory=RiskConfig)
+    portfolio: PortfolioConstraintConfig = field(default_factory=PortfolioConstraintConfig)
+    execution: ExecutionFilterConfig = field(default_factory=ExecutionFilterConfig)
     score_weights: ScoreWeights = field(default_factory=ScoreWeights)
     entry_on_break_of_prior_bar: bool = True
     require_confirmed_candle: bool = True

@@ -1,0 +1,1026 @@
+[
+  {
+    "symbol": "SYNTH",
+    "asset_class": "synthetic",
+    "timeframe": "4h",
+    "higher_timeframe": "1d",
+    "signal_type": "short",
+    "strategy": "Little RZY",
+    "trend_state": "bearish",
+    "setup_status": "triggered",
+    "timestamp": "2023-01-09 16:00:00",
+    "entry": 98.20532988534178,
+    "stop_loss": 100.87997595461574,
+    "target_1": 94.22925121732291,
+    "target_2": null,
+    "invalidation_level": 98.8709210008324,
+    "risk_reward": 1.49,
+    "structure": {
+      "impulse_start_index": 18,
+      "impulse_end_index": 43,
+      "pullback_start_index": 44,
+      "pullback_end_index": 52,
+      "anchor_low": 99.02387236304922,
+      "anchor_high": null,
+      "trendline_points": [
+        {
+          "index": 50,
+          "price": 99.9703815581531
+        },
+        {
+          "index": 52,
+          "price": 98.8709210008324
+        }
+      ],
+      "trendline_tolerance": 0.4062938248948201,
+      "measured_distance": 4.79462114572631,
+      "projected_target": 94.22925121732291
+    },
+    "bollinger_context": {
+      "bb_length": 20,
+      "bb_stddev": 2.0,
+      "price_vs_mid": "below",
+      "pullback_band_location": "near_upper_band",
+      "extension_state": "moderately_stretched"
+    },
+    "quality_score": 78,
+    "quality_grade": "B",
+    "trend_maturity": 1,
+    "alerts": [
+      "fresh_trend_structure",
+      "pullback_rejected_at_trendline",
+      "good_bb_context"
+    ],
+    "reason_summary": "Bearish trend. Valid bearish Little RZY candidate with measured move target.",
+    "setup_id": "SYNTH-4h-short-43",
+    "profile_name": "synth_4h",
+    "atr_at_entry": 1.160839499699486,
+    "bar_range_at_entry": 1.275753897184515,
+    "retrace_pct": 0.2679,
+    "impulse_atr_multiple": 5.0355,
+    "volatility_regime": "normal",
+    "session": "asia",
+    "structure_tag": "bearish_ll_lh_continuation",
+    "higher_timeframe_bias": "bearish"
+  },
+  {
+    "symbol": "SYNTH",
+    "asset_class": "synthetic",
+    "timeframe": "4h",
+    "higher_timeframe": "1d",
+    "signal_type": "short",
+    "strategy": "Little RZY",
+    "trend_state": "bearish",
+    "setup_status": "triggered",
+    "timestamp": "2023-01-10 08:00:00",
+    "entry": 98.2543528148492,
+    "stop_loss": 99.80936955841682,
+    "target_1": 95.32838864089733,
+    "target_2": null,
+    "invalidation_level": 99.16534926231556,
+    "risk_reward": 1.88,
+    "structure": {
+      "impulse_start_index": 27,
+      "impulse_end_index": 52,
+      "pullback_start_index": 53,
+      "pullback_end_index": 56,
+      "anchor_low": 97.59516710364788,
+      "anchor_high": null,
+      "trendline_points": [
+        {
+          "index": 54,
+          "price": 99.513647414357
+        },
+        {
+          "index": 56,
+          "price": 99.16534926231556
+        }
+      ],
+      "trendline_tolerance": 0.414011001683757,
+      "measured_distance": 2.266778462750551,
+      "projected_target": 95.32838864089733
+    },
+    "bollinger_context": {
+      "bb_length": 20,
+      "bb_stddev": 2.0,
+      "price_vs_mid": "below",
+      "pullback_band_location": "near_upper_band",
+      "extension_state": "moderately_stretched"
+    },
+    "quality_score": 80,
+    "quality_grade": "B",
+    "trend_maturity": 2,
+    "alerts": [
+      "fresh_trend_structure",
+      "pullback_rejected_at_trendline",
+      "good_bb_context"
+    ],
+    "reason_summary": "Bearish trend. Valid bearish Little RZY candidate with measured move target.",
+    "setup_id": "SYNTH-4h-short-52",
+    "profile_name": "synth_4h",
+    "atr_at_entry": 1.1828885762393058,
+    "bar_range_at_entry": 1.5088395021631555,
+    "retrace_pct": 0.2637,
+    "impulse_atr_multiple": 6.1495,
+    "volatility_regime": "normal",
+    "session": "off_hours",
+    "structure_tag": "bearish_ll_lh_continuation",
+    "higher_timeframe_bias": "bearish"
+  },
+  {
+    "symbol": "SYNTH",
+    "asset_class": "synthetic",
+    "timeframe": "4h",
+    "higher_timeframe": "1d",
+    "signal_type": "short",
+    "strategy": "Little RZY",
+    "trend_state": "bearish",
+    "setup_status": "triggered",
+    "timestamp": "2023-01-11 12:00:00",
+    "entry": 97.47732041500295,
+    "stop_loss": 99.62262454433429,
+    "target_1": 94.38168702914075,
+    "target_2": null,
+    "invalidation_level": 98.14858582085205,
+    "risk_reward": 1.44,
+    "structure": {
+      "impulse_start_index": 35,
+      "impulse_end_index": 60,
+      "pullback_start_index": 61,
+      "pullback_end_index": 63,
+      "anchor_low": 97.15011169534927,
+      "anchor_high": null,
+      "trendline_points": [
+        {
+          "index": 61,
+          "price": 99.3285528479892
+        },
+        {
+          "index": 63,
+          "price": 98.14858582085205
+        }
+      ],
+      "trendline_tolerance": 0.41170037488312444,
+      "measured_distance": 2.7684246662085172,
+      "projected_target": 94.38168702914075
+    },
+    "bollinger_context": {
+      "bb_length": 20,
+      "bb_stddev": 2.0,
+      "price_vs_mid": "below",
+      "pullback_band_location": "near_upper_band",
+      "extension_state": "normal"
+    },
+    "quality_score": 76,
+    "quality_grade": "B",
+    "trend_maturity": 3,
+    "alerts": [
+      "fresh_trend_structure",
+      "pullback_rejected_at_trendline",
+      "good_bb_context"
+    ],
+    "reason_summary": "Bearish trend. Valid bearish Little RZY candidate with measured move target.",
+    "setup_id": "SYNTH-4h-short-60",
+    "profile_name": "synth_4h",
+    "atr_at_entry": 1.1762867853803556,
+    "bar_range_at_entry": 0.9200626962141172,
+    "retrace_pct": 0.383,
+    "impulse_atr_multiple": 4.8359,
+    "volatility_regime": "normal",
+    "session": "asia",
+    "structure_tag": "bearish_ll_lh_continuation",
+    "higher_timeframe_bias": "bearish"
+  },
+  {
+    "symbol": "SYNTH",
+    "asset_class": "synthetic",
+    "timeframe": "4h",
+    "higher_timeframe": "1d",
+    "signal_type": "short",
+    "strategy": "Little RZY",
+    "trend_state": "bearish",
+    "setup_status": "triggered",
+    "timestamp": "2023-01-12 08:00:00",
+    "entry": 97.56191704815615,
+    "stop_loss": 98.9380818949505,
+    "target_1": 94.88414254707912,
+    "target_2": null,
+    "invalidation_level": 98.07748756591874,
+    "risk_reward": 1.95,
+    "structure": {
+      "impulse_start_index": 40,
+      "impulse_end_index": 65,
+      "pullback_start_index": 66,
+      "pullback_end_index": 68,
+      "anchor_low": 96.9174837454842,
+      "anchor_high": null,
+      "trendline_points": [
+        {
+          "index": 66,
+          "price": 98.65971248456577
+        },
+        {
+          "index": 68,
+          "price": 98.07748756591874
+        }
+      ],
+      "trendline_tolerance": 0.38971717453861704,
+      "measured_distance": 2.0333411984050827,
+      "projected_target": 94.88414254707912
+    },
+    "bollinger_context": {
+      "bb_length": 20,
+      "bb_stddev": 2.0,
+      "price_vs_mid": "below",
+      "pullback_band_location": "near_upper_band",
+      "extension_state": "normal"
+    },
+    "quality_score": 76,
+    "quality_grade": "B",
+    "trend_maturity": 4,
+    "alerts": [
+      "fresh_trend_structure",
+      "pullback_rejected_at_trendline",
+      "good_bb_context"
+    ],
+    "reason_summary": "Bearish trend. Valid bearish Little RZY candidate with measured move target.",
+    "setup_id": "SYNTH-4h-short-65",
+    "profile_name": "synth_4h",
+    "atr_at_entry": 1.1134776415389058,
+    "bar_range_at_entry": 0.8143650738753649,
+    "retrace_pct": 0.3827,
+    "impulse_atr_multiple": 4.0889,
+    "volatility_regime": "normal",
+    "session": "off_hours",
+    "structure_tag": "bearish_ll_lh_continuation",
+    "higher_timeframe_bias": "bearish"
+  },
+  {
+    "symbol": "SYNTH",
+    "asset_class": "synthetic",
+    "timeframe": "4h",
+    "higher_timeframe": "1d",
+    "signal_type": "short",
+    "strategy": "Little RZY",
+    "trend_state": "bearish",
+    "setup_status": "triggered",
+    "timestamp": "2023-01-24 20:00:00",
+    "entry": 101.65329327711798,
+    "stop_loss": 103.53949985606127,
+    "target_1": 98.67230280763906,
+    "target_2": null,
+    "invalidation_level": 102.68075219041847,
+    "risk_reward": 1.58,
+    "structure": {
+      "impulse_start_index": 114,
+      "impulse_end_index": 139,
+      "pullback_start_index": 140,
+      "pullback_end_index": 143,
+      "anchor_low": 101.23077460523758,
+      "anchor_high": null,
+      "trendline_points": [
+        {
+          "index": 141,
+          "price": 103.23499929662728
+        },
+        {
+          "index": 143,
+          "price": 102.68075219041846
+        }
+      ],
+      "trendline_tolerance": 0.4263007832075811,
+      "measured_distance": 2.5584717975985285,
+      "projected_target": 98.67230280763906
+    },
+    "bollinger_context": {
+      "bb_length": 20,
+      "bb_stddev": 2.0,
+      "price_vs_mid": "below",
+      "pullback_band_location": "near_upper_band",
+      "extension_state": "moderately_stretched"
+    },
+    "quality_score": 78,
+    "quality_grade": "B",
+    "trend_maturity": 1,
+    "alerts": [
+      "fresh_trend_structure",
+      "pullback_rejected_at_trendline",
+      "good_bb_context"
+    ],
+    "reason_summary": "Bearish trend. Valid bearish Little RZY candidate with measured move target.",
+    "setup_id": "SYNTH-4h-short-139",
+    "profile_name": "synth_4h",
+    "atr_at_entry": 1.218002237735946,
+    "bar_range_at_entry": 1.0325507396438667,
+    "retrace_pct": 0.2737,
+    "impulse_atr_multiple": 6.0111,
+    "volatility_regime": "normal",
+    "session": "london",
+    "structure_tag": "bearish_ll_lh_continuation",
+    "higher_timeframe_bias": "bearish"
+  },
+  {
+    "symbol": "SYNTH",
+    "asset_class": "synthetic",
+    "timeframe": "4h",
+    "higher_timeframe": "1d",
+    "signal_type": "short",
+    "strategy": "Little RZY",
+    "trend_state": "bearish",
+    "setup_status": "triggered",
+    "timestamp": "2023-01-27 08:00:00",
+    "entry": 100.63647886486746,
+    "stop_loss": 102.63840555930446,
+    "target_1": 97.31132590012967,
+    "target_2": null,
+    "invalidation_level": 102.05065331041368,
+    "risk_reward": 1.66,
+    "structure": {
+      "impulse_start_index": 126,
+      "impulse_end_index": 151,
+      "pullback_start_index": 152,
+      "pullback_end_index": 158,
+      "anchor_low": 100.1425337180324,
+      "anchor_high": null,
+      "trendline_points": [
+        {
+          "index": 156,
+          "price": 102.3143928034198
+        },
+        {
+          "index": 158,
+          "price": 102.05065331041368
+        }
+      ],
+      "trendline_tolerance": 0.4536178582385199,
+      "measured_distance": 2.8312078179027225,
+      "projected_target": 97.31132590012967
+    },
+    "bollinger_context": {
+      "bb_length": 20,
+      "bb_stddev": 2.0,
+      "price_vs_mid": "below",
+      "pullback_band_location": "near_upper_band",
+      "extension_state": "normal"
+    },
+    "quality_score": 83,
+    "quality_grade": "B",
+    "trend_maturity": 2,
+    "alerts": [
+      "fresh_trend_structure",
+      "pullback_rejected_at_trendline",
+      "good_bb_context"
+    ],
+    "reason_summary": "Bearish trend. Valid bearish Little RZY candidate with measured move target.",
+    "setup_id": "SYNTH-4h-short-151",
+    "profile_name": "synth_4h",
+    "atr_at_entry": 1.2960510235386284,
+    "bar_range_at_entry": 2.4471941453083446,
+    "retrace_pct": 0.3556,
+    "impulse_atr_multiple": 4.7128,
+    "volatility_regime": "normal",
+    "session": "off_hours",
+    "structure_tag": "bearish_ll_lh_continuation",
+    "higher_timeframe_bias": "bearish"
+  },
+  {
+    "symbol": "SYNTH",
+    "asset_class": "synthetic",
+    "timeframe": "4h",
+    "higher_timeframe": "1d",
+    "signal_type": "short",
+    "strategy": "Little RZY",
+    "trend_state": "bearish",
+    "setup_status": "triggered",
+    "timestamp": "2023-02-10 16:00:00",
+    "entry": 103.99938662797643,
+    "stop_loss": 105.9103422000471,
+    "target_1": 101.52535484229654,
+    "target_2": null,
+    "invalidation_level": 105.04520237091,
+    "risk_reward": 1.29,
+    "structure": {
+      "impulse_start_index": 216,
+      "impulse_end_index": 241,
+      "pullback_start_index": 242,
+      "pullback_end_index": 244,
+      "anchor_low": 103.72474357983931,
+      "anchor_high": null,
+      "trendline_points": [
+        {
+          "index": 242,
+          "price": 105.63115566855807
+        },
+        {
+          "index": 244,
+          "price": 105.04520237091
+        }
+      ],
+      "trendline_tolerance": 0.3908611440846465,
+      "measured_distance": 2.199388737542776,
+      "projected_target": 101.52535484229654
+    },
+    "bollinger_context": {
+      "bb_length": 20,
+      "bb_stddev": 2.0,
+      "price_vs_mid": "below",
+      "pullback_band_location": "near_upper_band",
+      "extension_state": "normal"
+    },
+    "quality_score": 81,
+    "quality_grade": "B",
+    "trend_maturity": 1,
+    "alerts": [
+      "fresh_trend_structure",
+      "pullback_rejected_at_trendline",
+      "good_bb_context"
+    ],
+    "reason_summary": "Bearish trend. Valid bearish Little RZY candidate with measured move target.",
+    "setup_id": "SYNTH-4h-short-241",
+    "profile_name": "synth_4h",
+    "atr_at_entry": 1.1167461259561329,
+    "bar_range_at_entry": 1.3148631564616124,
+    "retrace_pct": 0.2979,
+    "impulse_atr_multiple": 5.7309,
+    "volatility_regime": "normal",
+    "session": "asia",
+    "structure_tag": "bearish_ll_lh_continuation",
+    "higher_timeframe_bias": "bearish"
+  },
+  {
+    "symbol": "SYNTH",
+    "asset_class": "synthetic",
+    "timeframe": "4h",
+    "higher_timeframe": "1d",
+    "signal_type": "long",
+    "strategy": "Little RZY",
+    "trend_state": "bullish",
+    "setup_status": "triggered",
+    "timestamp": "2023-02-18 20:00:00",
+    "entry": 114.33689889176263,
+    "stop_loss": 112.55527489193393,
+    "target_1": 117.34065623054128,
+    "target_2": null,
+    "invalidation_level": 113.16242636969008,
+    "risk_reward": 1.69,
+    "structure": {
+      "impulse_start_index": 261,
+      "impulse_end_index": 286,
+      "pullback_start_index": 287,
+      "pullback_end_index": 293,
+      "anchor_low": null,
+      "anchor_high": 114.90409527210586,
+      "trendline_points": [
+        {
+          "index": 290,
+          "price": 112.86461548853882
+        },
+        {
+          "index": 293,
+          "price": 113.1624263696901
+        }
+      ],
+      "trendline_tolerance": 0.43307683524682816,
+      "measured_distance": 2.4365609584354218,
+      "projected_target": 117.34065623054128
+    },
+    "bollinger_context": {
+      "bb_length": 20,
+      "bb_stddev": 2.0,
+      "price_vs_mid": "above",
+      "pullback_band_location": "near_lower_band",
+      "extension_state": "normal"
+    },
+    "quality_score": 83,
+    "quality_grade": "B",
+    "trend_maturity": 1,
+    "alerts": [
+      "fresh_trend_structure",
+      "pullback_rejected_at_trendline",
+      "good_bb_context"
+    ],
+    "reason_summary": "Bullish trend. Valid bullish Little RZY candidate with measured move target.",
+    "setup_id": "SYNTH-4h-long-286",
+    "profile_name": "synth_4h",
+    "atr_at_entry": 1.2373623864195091,
+    "bar_range_at_entry": 1.3276208842218722,
+    "retrace_pct": 0.2502,
+    "impulse_atr_multiple": 6.5878,
+    "volatility_regime": "normal",
+    "session": "london",
+    "structure_tag": "bullish_hh_hl_continuation",
+    "higher_timeframe_bias": "bullish"
+  },
+  {
+    "symbol": "SYNTH",
+    "asset_class": "synthetic",
+    "timeframe": "4h",
+    "higher_timeframe": "1d",
+    "signal_type": "short",
+    "strategy": "Little RZY",
+    "trend_state": "bearish",
+    "setup_status": "triggered",
+    "timestamp": "2023-02-24 08:00:00",
+    "entry": 108.75528220113458,
+    "stop_loss": 110.38282000200441,
+    "target_1": 104.76899497924094,
+    "target_2": null,
+    "invalidation_level": 109.14259769260579,
+    "risk_reward": 2.45,
+    "structure": {
+      "impulse_start_index": 297,
+      "impulse_end_index": 322,
+      "pullback_start_index": 323,
+      "pullback_end_index": 326,
+      "anchor_low": 107.86584653352341,
+      "anchor_high": null,
+      "trendline_points": [
+        {
+          "index": 324,
+          "price": 110.0526478902058
+        },
+        {
+          "index": 326,
+          "price": 109.14259769260576
+        }
+      ],
+      "trendline_tolerance": 0.46224095651803826,
+      "measured_distance": 3.096851554282466,
+      "projected_target": 104.76899497924094
+    },
+    "bollinger_context": {
+      "bb_length": 20,
+      "bb_stddev": 2.0,
+      "price_vs_mid": "below",
+      "pullback_band_location": "near_upper_band",
+      "extension_state": "normal"
+    },
+    "quality_score": 82,
+    "quality_grade": "B",
+    "trend_maturity": 1,
+    "alerts": [
+      "fresh_trend_structure",
+      "pullback_rejected_at_trendline",
+      "good_bb_context"
+    ],
+    "reason_summary": "Bearish trend. Valid bearish Little RZY candidate with measured move target.",
+    "setup_id": "SYNTH-4h-short-322",
+    "profile_name": "synth_4h",
+    "atr_at_entry": 1.3206884471943952,
+    "bar_range_at_entry": 1.4055819814022072,
+    "retrace_pct": 0.2963,
+    "impulse_atr_multiple": 5.5886,
+    "volatility_regime": "normal",
+    "session": "off_hours",
+    "structure_tag": "bearish_ll_lh_continuation",
+    "higher_timeframe_bias": "bearish"
+  },
+  {
+    "symbol": "SYNTH",
+    "asset_class": "synthetic",
+    "timeframe": "4h",
+    "higher_timeframe": "1d",
+    "signal_type": "short",
+    "strategy": "Little RZY",
+    "trend_state": "bearish",
+    "setup_status": "triggered",
+    "timestamp": "2023-02-25 16:00:00",
+    "entry": 109.09050698191773,
+    "stop_loss": 110.34887757775859,
+    "target_1": 105.50184232076471,
+    "target_2": null,
+    "invalidation_level": 109.50210604355985,
+    "risk_reward": 2.85,
+    "structure": {
+      "impulse_start_index": 304,
+      "impulse_end_index": 329,
+      "pullback_start_index": 330,
+      "pullback_end_index": 334,
+      "anchor_low": 107.96933602693274,
+      "anchor_high": null,
+      "trendline_points": [
+        {
+          "index": 331,
+          "price": 110.06294025728441
+        },
+        {
+          "index": 334,
+          "price": 109.50210604355986
+        }
+      ],
+      "trendline_tolerance": 0.40031224866385223,
+      "measured_distance": 2.467493706168028,
+      "projected_target": 105.50184232076471
+    },
+    "bollinger_context": {
+      "bb_length": 20,
+      "bb_stddev": 2.0,
+      "price_vs_mid": "below",
+      "pullback_band_location": "near_upper_band",
+      "extension_state": "normal"
+    },
+    "quality_score": 88,
+    "quality_grade": "A",
+    "trend_maturity": 2,
+    "alerts": [
+      "fresh_trend_structure",
+      "pullback_rejected_at_trendline",
+      "good_bb_context"
+    ],
+    "reason_summary": "Bearish trend. Valid bearish Little RZY candidate with measured move target.",
+    "setup_id": "SYNTH-4h-short-329",
+    "profile_name": "synth_4h",
+    "atr_at_entry": 1.1437492818967208,
+    "bar_range_at_entry": 0.8421580780666034,
+    "retrace_pct": 0.3879,
+    "impulse_atr_multiple": 4.7191,
+    "volatility_regime": "normal",
+    "session": "asia",
+    "structure_tag": "bearish_ll_lh_continuation",
+    "higher_timeframe_bias": "bearish"
+  },
+  {
+    "symbol": "SYNTH",
+    "asset_class": "synthetic",
+    "timeframe": "4h",
+    "higher_timeframe": "1d",
+    "signal_type": "long",
+    "strategy": "Little RZY",
+    "trend_state": "bullish",
+    "setup_status": "triggered",
+    "timestamp": "2023-03-05 16:00:00",
+    "entry": 119.60753983084003,
+    "stop_loss": 118.00586527217206,
+    "target_1": 122.24898389673842,
+    "target_2": null,
+    "invalidation_level": 118.9610120853269,
+    "risk_reward": 1.65,
+    "structure": {
+      "impulse_start_index": 354,
+      "impulse_end_index": 379,
+      "pullback_start_index": 380,
+      "pullback_end_index": 382,
+      "anchor_low": null,
+      "anchor_high": 120.09334797973044,
+      "trendline_points": [
+        {
+          "index": 380,
+          "price": 118.27881207025726
+        },
+        {
+          "index": 382,
+          "price": 118.96101208532689
+        }
+      ],
+      "trendline_tolerance": 0.38212551731927874,
+      "measured_distance": 2.1556359170079844,
+      "projected_target": 122.24898389673842
+    },
+    "bollinger_context": {
+      "bb_length": 20,
+      "bb_stddev": 2.0,
+      "price_vs_mid": "below",
+      "pullback_band_location": "near_lower_band",
+      "extension_state": "normal"
+    },
+    "quality_score": 83,
+    "quality_grade": "B",
+    "trend_maturity": 1,
+    "alerts": [
+      "fresh_trend_structure",
+      "pullback_rejected_at_trendline",
+      "good_bb_context"
+    ],
+    "reason_summary": "Bullish trend. Valid bullish Little RZY candidate with measured move target.",
+    "setup_id": "SYNTH-4h-long-379",
+    "profile_name": "synth_4h",
+    "atr_at_entry": 1.0917871923407965,
+    "bar_range_at_entry": 0.66785807775031,
+    "retrace_pct": 0.3239,
+    "impulse_atr_multiple": 5.1315,
+    "volatility_regime": "normal",
+    "session": "asia",
+    "structure_tag": "bullish_hh_hl_continuation",
+    "higher_timeframe_bias": "bullish"
+  },
+  {
+    "symbol": "SYNTH",
+    "asset_class": "synthetic",
+    "timeframe": "4h",
+    "higher_timeframe": "1d",
+    "signal_type": "short",
+    "strategy": "Little RZY",
+    "trend_state": "bearish",
+    "setup_status": "triggered",
+    "timestamp": "2023-03-24 08:00:00",
+    "entry": 116.10143349246853,
+    "stop_loss": 118.37934174433643,
+    "target_1": 113.11276148148133,
+    "target_2": null,
+    "invalidation_level": 117.34215133768066,
+    "risk_reward": 1.31,
+    "structure": {
+      "impulse_start_index": 466,
+      "impulse_end_index": 491,
+      "pullback_start_index": 492,
+      "pullback_end_index": 494,
+      "anchor_low": 115.7552278423708,
+      "anchor_high": null,
+      "trendline_points": [
+        {
+          "index": 492,
+          "price": 118.0458465814004
+        },
+        {
+          "index": 494,
+          "price": 117.34215133768066
+        }
+      ],
+      "trendline_tolerance": 0.46689322811044676,
+      "measured_distance": 2.642466360889472,
+      "projected_target": 113.11276148148133
+    },
+    "bollinger_context": {
+      "bb_length": 20,
+      "bb_stddev": 2.0,
+      "price_vs_mid": "below",
+      "pullback_band_location": "near_upper_band",
+      "extension_state": "moderately_stretched"
+    },
+    "quality_score": 77,
+    "quality_grade": "B",
+    "trend_maturity": 1,
+    "alerts": [
+      "fresh_trend_structure",
+      "pullback_rejected_at_trendline",
+      "good_bb_context"
+    ],
+    "reason_summary": "Bearish trend. Valid bearish Little RZY candidate with measured move target.",
+    "setup_id": "SYNTH-4h-short-491",
+    "profile_name": "synth_4h",
+    "atr_at_entry": 1.3339806517441337,
+    "bar_range_at_entry": 1.4239119775179319,
+    "retrace_pct": 0.3033,
+    "impulse_atr_multiple": 5.6623,
+    "volatility_regime": "normal",
+    "session": "off_hours",
+    "structure_tag": "bearish_ll_lh_continuation",
+    "higher_timeframe_bias": "bearish"
+  },
+  {
+    "symbol": "SYNTH",
+    "asset_class": "synthetic",
+    "timeframe": "4h",
+    "higher_timeframe": "1d",
+    "signal_type": "short",
+    "strategy": "Little RZY",
+    "trend_state": "bearish",
+    "setup_status": "triggered",
+    "timestamp": "2023-03-26 08:00:00",
+    "entry": 114.54260605373166,
+    "stop_loss": 116.49880743225786,
+    "target_1": 111.1719036835931,
+    "target_2": null,
+    "invalidation_level": 115.66022095726295,
+    "risk_reward": 1.72,
+    "structure": {
+      "impulse_start_index": 477,
+      "impulse_end_index": 502,
+      "pullback_start_index": 503,
+      "pullback_end_index": 506,
+      "anchor_low": 113.91678738917011,
+      "anchor_high": null,
+      "trendline_points": [
+        {
+          "index": 504,
+          "price": 116.16094602600502
+        },
+        {
+          "index": 506,
+          "price": 115.66022095726294
+        }
+      ],
+      "trendline_tolerance": 0.47300596875398515,
+      "measured_distance": 2.74488370557701,
+      "projected_target": 111.1719036835931
+    },
+    "bollinger_context": {
+      "bb_length": 20,
+      "bb_stddev": 2.0,
+      "price_vs_mid": "below",
+      "pullback_band_location": "near_upper_band",
+      "extension_state": "normal"
+    },
+    "quality_score": 79,
+    "quality_grade": "B",
+    "trend_maturity": 2,
+    "alerts": [
+      "fresh_trend_structure",
+      "pullback_rejected_at_trendline",
+      "good_bb_context"
+    ],
+    "reason_summary": "Bearish trend. Valid bearish Little RZY candidate with measured move target.",
+    "setup_id": "SYNTH-4h-short-502",
+    "profile_name": "synth_4h",
+    "atr_at_entry": 1.3514456250113862,
+    "bar_range_at_entry": 1.1755387206495698,
+    "retrace_pct": 0.3011,
+    "impulse_atr_multiple": 5.5156,
+    "volatility_regime": "normal",
+    "session": "off_hours",
+    "structure_tag": "bearish_ll_lh_continuation",
+    "higher_timeframe_bias": "bearish"
+  },
+  {
+    "symbol": "SYNTH",
+    "asset_class": "synthetic",
+    "timeframe": "4h",
+    "higher_timeframe": "1d",
+    "signal_type": "short",
+    "strategy": "Little RZY",
+    "trend_state": "bearish",
+    "setup_status": "triggered",
+    "timestamp": "2023-04-22 16:00:00",
+    "entry": 124.09060836893258,
+    "stop_loss": 126.41126239139524,
+    "target_1": 121.07340582910786,
+    "target_2": null,
+    "invalidation_level": 125.15437161983766,
+    "risk_reward": 1.3,
+    "structure": {
+      "impulse_start_index": 642,
+      "impulse_end_index": 667,
+      "pullback_start_index": 668,
+      "pullback_end_index": 670,
+      "anchor_low": 123.80728492233621,
+      "anchor_high": null,
+      "trendline_points": [
+        {
+          "index": 668,
+          "price": 126.07889988365562
+        },
+        {
+          "index": 670,
+          "price": 125.15437161983769
+        }
+      ],
+      "trendline_tolerance": 0.4653075108354585,
+      "measured_distance": 2.733879093228353,
+      "projected_target": 121.07340582910786
+    },
+    "bollinger_context": {
+      "bb_length": 20,
+      "bb_stddev": 2.0,
+      "price_vs_mid": "below",
+      "pullback_band_location": "near_upper_band",
+      "extension_state": "moderately_stretched"
+    },
+    "quality_score": 77,
+    "quality_grade": "B",
+    "trend_maturity": 1,
+    "alerts": [
+      "fresh_trend_structure",
+      "pullback_rejected_at_trendline",
+      "good_bb_context"
+    ],
+    "reason_summary": "Bearish trend. Valid bearish Little RZY candidate with measured move target.",
+    "setup_id": "SYNTH-4h-short-667",
+    "profile_name": "synth_4h",
+    "atr_at_entry": 1.329450030958453,
+    "bar_range_at_entry": 1.4929400168360303,
+    "retrace_pct": 0.4256,
+    "impulse_atr_multiple": 4.0151,
+    "volatility_regime": "normal",
+    "session": "asia",
+    "structure_tag": "bearish_ll_lh_continuation",
+    "higher_timeframe_bias": "bearish"
+  },
+  {
+    "symbol": "SYNTH",
+    "asset_class": "synthetic",
+    "timeframe": "4h",
+    "higher_timeframe": "1d",
+    "signal_type": "short",
+    "strategy": "Little RZY",
+    "trend_state": "bearish",
+    "setup_status": "triggered",
+    "timestamp": "2023-04-25 00:00:00",
+    "entry": 122.92005352256884,
+    "stop_loss": 124.23908368718537,
+    "target_1": 119.21877555255014,
+    "target_2": null,
+    "invalidation_level": 123.40909258224383,
+    "risk_reward": 2.81,
+    "structure": {
+      "impulse_start_index": 653,
+      "impulse_end_index": 678,
+      "pullback_start_index": 679,
+      "pullback_end_index": 684,
+      "anchor_low": 122.15621579558723,
+      "anchor_high": null,
+      "trendline_points": [
+        {
+          "index": 682,
+          "price": 123.97061373437064
+        },
+        {
+          "index": 684,
+          "price": 123.40909258224382
+        }
+      ],
+      "trendline_tolerance": 0.3758579339406201,
+      "measured_distance": 2.937440243037088,
+      "projected_target": 119.21877555255014
+    },
+    "bollinger_context": {
+      "bb_length": 20,
+      "bb_stddev": 2.0,
+      "price_vs_mid": "below",
+      "pullback_band_location": "near_upper_band",
+      "extension_state": "normal"
+    },
+    "quality_score": 83,
+    "quality_grade": "B",
+    "trend_maturity": 2,
+    "alerts": [
+      "fresh_trend_structure",
+      "pullback_rejected_at_trendline",
+      "good_bb_context"
+    ],
+    "reason_summary": "Bearish trend. Valid bearish Little RZY candidate with measured move target.",
+    "setup_id": "SYNTH-4h-short-678",
+    "profile_name": "synth_4h",
+    "atr_at_entry": 1.0738798112589147,
+    "bar_range_at_entry": 0.5821705463549307,
+    "retrace_pct": 0.2957,
+    "impulse_atr_multiple": 5.7142,
+    "volatility_regime": "normal",
+    "session": "london_new_york",
+    "structure_tag": "bearish_ll_lh_continuation",
+    "higher_timeframe_bias": "bearish"
+  },
+  {
+    "symbol": "SYNTH",
+    "asset_class": "synthetic",
+    "timeframe": "4h",
+    "higher_timeframe": "1d",
+    "signal_type": "short",
+    "strategy": "Little RZY",
+    "trend_state": "bearish",
+    "setup_status": "triggered",
+    "timestamp": "2023-05-08 20:00:00",
+    "entry": 127.8803908636613,
+    "stop_loss": 129.72356681179932,
+    "target_1": 125.43478246454072,
+    "target_2": null,
+    "invalidation_level": 128.97578258888302,
+    "risk_reward": 1.33,
+    "structure": {
+      "impulse_start_index": 738,
+      "impulse_end_index": 763,
+      "pullback_start_index": 764,
+      "pullback_end_index": 767,
+      "anchor_low": 127.62710541327212,
+      "anchor_high": null,
+      "trendline_points": [
+        {
+          "index": 765,
+          "price": 129.39760547544327
+        },
+        {
+          "index": 767,
+          "price": 128.97578258888302
+        }
+      ],
+      "trendline_tolerance": 0.45634587089844425,
+      "measured_distance": 2.1923229487314018,
+      "projected_target": 125.43478246454072
+    },
+    "bollinger_context": {
+      "bb_length": 20,
+      "bb_stddev": 2.0,
+      "price_vs_mid": "below",
+      "pullback_band_location": "near_upper_band",
+      "extension_state": "normal"
+    },
+    "quality_score": 77,
+    "quality_grade": "B",
+    "trend_maturity": 1,
+    "alerts": [
+      "fresh_trend_structure",
+      "pullback_rejected_at_trendline",
+      "good_bb_context"
+    ],
+    "reason_summary": "Bearish trend. Valid bearish Little RZY candidate with measured move target.",
+    "setup_id": "SYNTH-4h-short-763",
+    "profile_name": "synth_4h",
+    "atr_at_entry": 1.3038453454241266,
+    "bar_range_at_entry": 1.2409889072637128,
+    "retrace_pct": 0.2842,
+    "impulse_atr_multiple": 4.7787,
+    "volatility_regime": "normal",
+    "session": "london",
+    "structure_tag": "bearish_ll_lh_continuation",
+    "higher_timeframe_bias": "bearish"
+  }
+]

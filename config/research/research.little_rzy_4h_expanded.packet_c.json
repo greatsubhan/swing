@@ -1,0 +1,88 @@
+{
+    "name": "little_rzy_4h_expanded_packet_c",
+    "provider": "oanda",
+    "oanda_environment": "practice",
+    "symbols": [
+        "WTICO_USD",
+        "BCO_USD",
+        "XAG_USD",
+        "XAU_USD",
+        "UK100_GBP",
+        "NAS100_USD",
+        "US30_USD",
+        "SPX500_USD",
+        "FR40_EUR",
+        "JP225_USD",
+        "ESPIX_EUR",
+        "EUR_USD",
+        "GBP_USD",
+        "USD_JPY",
+        "AUD_USD",
+        "AUD_CHF",
+        "USD_CAD",
+        "USD_CHF",
+        "NZD_USD",
+        "EUR_GBP",
+        "EUR_JPY",
+        "GBP_JPY",
+        "BTC_USD",
+        "ETH_USD",
+        "LTC_USD",
+        "BCH_USD"
+    ],
+    "granularity": "H4",
+    "timeframe": "4h",
+    "higher_timeframe": "1d",
+    "use_market_profile": true,
+    "structure": {
+        "min_impulse_atr": 1.5,
+        "max_breakout_bars_after_pullback": 5,
+        "pullback_min_retrace": 0.2,
+        "pullback_max_retrace": 0.7
+    },
+    "costs": {
+        "commission_per_trade": 0,
+        "spread_points": 0,
+        "slippage_points": 0
+    },
+    "constraints": {
+        "max_open_risk": null,
+        "max_trades_per_day": null,
+        "max_trades_per_symbol_per_day": null,
+        "max_daily_drawdown": null,
+        "allow_partial_size": true
+    },
+    "segments": [
+        {
+            "name": "segment_2023_h1",
+            "start": "2023-01-01",
+            "end": "2023-06-30"
+        },
+        {
+            "name": "segment_2023_h2",
+            "start": "2023-07-01",
+            "end": "2023-12-31"
+        },
+        {
+            "name": "segment_2024_h1",
+            "start": "2024-01-01",
+            "end": "2024-06-30"
+        },
+        {
+            "name": "segment_2024_h2",
+            "start": "2024-07-01",
+            "end": "2024-12-31"
+        },
+        {
+            "name": "segment_2025_h1",
+            "start": "2025-01-01",
+            "end": "2025-06-30"
+        },
+        {
+            "name": "segment_2025_h2",
+            "start": "2025-07-01",
+            "end": "2025-12-31"
+        }
+    ],
+    "output_dir": "output/research/little_rzy_4h_expanded/packet_c"
+}

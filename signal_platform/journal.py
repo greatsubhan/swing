@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import json
 from collections import Counter
-from dataclasses import asdict
+from dataclasses import asdict, fields
 from datetime import datetime, timezone
 from pathlib import Path
 from statistics import mean
@@ -22,13 +22,125 @@ def load_journal(path: str | Path) -> list[JournalEntry]:
     if not journal_path.exists():
         return []
     payload = json.loads(journal_path.read_text() or "[]")
-    return [JournalEntry(**entry) for entry in payload]
+    allowed_fields = {field.name for field in fields(JournalEntry)}
+    entries: list[JournalEntry] = []
+    for entry in payload:
+        if not isinstance(entry, dict):
+            continue
+        normalized = {key: value for key, value in entry.items() if key in allowed_fields}
+        entries.append(JournalEntry(**normalized))
+    return entries
 
 
 def save_journal(path: str | Path, entries: list[JournalEntry]) -> None:
     journal_path = Path(path)
     journal_path.parent.mkdir(parents=True, exist_ok=True)
     journal_path.write_text(json.dumps([entry.to_dict() for entry in entries], indent=2))
+
+
+def _next_ladder_state(entry: JournalEntry) -> tuple[int | None, float | None, str | None]:
+    if entry.ladder_step_at_entry is None:
+        return None, None, None
+    sequence = entry.ladder_sequence_pct or []
+    if not sequence:
+        return None, None, None
+    current_step = max(0, min(int(entry.ladder_step_at_entry), len(sequence) - 1))
+    outcome = str(entry.outcome or "")
+    if outcome == "tp_hit":
+        return 0, float(sequence[0]), "reset_after_tp"
+    if outcome == "sl_hit":
+        next_step = min(current_step + 1, len(sequence) - 1)
+        return next_step, float(sequence[next_step]), "advance_after_sl"
+    if outcome in {"break_even", "breakeven"}:
+        return current_step, float(sequence[current_step]), "hold_after_break_even"
+    return current_step, float(sequence[current_step]), "unchanged"
+
+
+def build_ladder_ledger(entries: list[JournalEntry]) -> dict[str, object]:
+    by_symbol: dict[str, list[JournalEntry]] = {}
+    for entry in entries:
+        if entry.ladder_step_at_entry is None:
+            continue
+        by_symbol.setdefault(entry.symbol, []).append(entry)
+
+    symbols_payload: dict[str, object] = {}
+    for symbol, symbol_entries in sorted(by_symbol.items()):
+        ordered = sorted(
+            symbol_entries,
+            key=lambda entry: (
+                entry.signal_timestamp,
+                entry.setup_id,
+            ),
+        )
+        events: list[dict[str, object]] = []
+        current_state: dict[str, object] | None = None
+        for entry in ordered:
+            events.append(
+                {
+                    "setup_id": entry.setup_id,
+                    "timeframe": entry.timeframe,
+                    "side": entry.side,
+                    "signal_timestamp": entry.signal_timestamp,
+                    "status": entry.status,
+                    "outcome": entry.outcome,
+                    "outcome_timestamp": entry.outcome_timestamp,
+                    "ladder_step_at_entry": entry.ladder_step_at_entry,
+                    "ladder_risk_pct_at_entry": entry.ladder_risk_pct_at_entry,
+                    "ladder_risk_display_at_entry": entry.ladder_risk_display_at_entry,
+                    "ladder_previous_outcome": entry.ladder_previous_outcome,
+                    "ladder_previous_setup_id": entry.ladder_previous_setup_id,
+                    "ladder_step_after_outcome": entry.ladder_step_after_outcome,
+                    "ladder_next_risk_pct": entry.ladder_next_risk_pct,
+                    "ladder_transition_note": entry.ladder_transition_note,
+                }
+            )
+            current_state = {
+                "last_setup_id": entry.setup_id,
+                "status": entry.status,
+                "outcome": entry.outcome,
+                "ladder_step": entry.ladder_step_after_outcome if entry.status == "closed" else entry.ladder_step_at_entry,
+                "risk_pct": entry.ladder_next_risk_pct if entry.status == "closed" else entry.ladder_risk_pct_at_entry,
+                "updated_at": entry.outcome_timestamp or entry.signal_timestamp,
+            }
+        symbols_payload[symbol] = {
+            "current_state": current_state,
+            "events": events,
+        }
+
+    return {
+        "updated_at_utc": utc_now_iso(),
+        "symbol_count": len(symbols_payload),
+        "symbols": symbols_payload,
+    }
+
+
+def save_ladder_ledger(path: str | Path, entries: list[JournalEntry]) -> None:
+    ledger_path = Path(path)
+    ledger_path.parent.mkdir(parents=True, exist_ok=True)
+    ledger_path.write_text(json.dumps(build_ladder_ledger(entries), indent=2))
+
+
+def enrich_ladder_fields(entries: list[JournalEntry]) -> list[JournalEntry]:
+    for entry in entries:
+        raw_signal = entry.raw_signal or {}
+        if entry.ladder_sequence_pct == [] and raw_signal.get("ladder_sequence_pct"):
+            entry.ladder_sequence_pct = [float(value) for value in raw_signal.get("ladder_sequence_pct", [])]
+        if entry.ladder_step_at_entry is None and raw_signal.get("ladder_step_index") is not None:
+            entry.ladder_step_at_entry = int(raw_signal["ladder_step_index"])
+        if entry.ladder_risk_pct_at_entry is None and raw_signal.get("risk_fraction") is not None:
+            entry.ladder_risk_pct_at_entry = float(raw_signal["risk_fraction"]) * 100.0
+        if entry.ladder_risk_display_at_entry is None:
+            entry.ladder_risk_display_at_entry = raw_signal.get("risk_display")
+        if entry.ladder_previous_outcome is None:
+            entry.ladder_previous_outcome = raw_signal.get("previous_outcome")
+        if entry.ladder_previous_setup_id is None:
+            entry.ladder_previous_setup_id = raw_signal.get("previous_setup_id")
+        if entry.status == "closed" and entry.ladder_step_after_outcome is None:
+            next_step, next_risk_pct, transition_note = _next_ladder_state(entry)
+            entry.ladder_step_after_outcome = next_step
+            entry.ladder_next_risk_pct = next_risk_pct
+            entry.ladder_transition_note = transition_note
+    return entries
 
 
 def append_new_signals(entries: list[JournalEntry], signals: list[PlatformSignal]) -> list[JournalEntry]:
@@ -62,6 +174,20 @@ def append_new_signals(entries: list[JournalEntry], signals: list[PlatformSignal
                 root_signal_id=signal.root_signal_id or signal.setup_id,
                 reinforcement_count_at_dispatch=signal.reinforcement_count,
                 strength_score_at_dispatch=signal.strength_score,
+                ladder_sequence_pct=[float(value) for value in signal.raw_signal.get("ladder_sequence_pct", [])],
+                ladder_step_at_entry=(
+                    int(signal.raw_signal["ladder_step_index"])
+                    if signal.raw_signal.get("ladder_step_index") is not None
+                    else None
+                ),
+                ladder_risk_pct_at_entry=(
+                    float(signal.raw_signal["risk_fraction"]) * 100.0
+                    if signal.raw_signal.get("risk_fraction") is not None
+                    else None
+                ),
+                ladder_risk_display_at_entry=signal.raw_signal.get("risk_display"),
+                ladder_previous_outcome=signal.raw_signal.get("previous_outcome"),
+                ladder_previous_setup_id=signal.raw_signal.get("previous_setup_id"),
                 raw_signal=signal.raw_signal,
             )
         )
@@ -108,7 +234,20 @@ def signal_with_stats(signal: PlatformSignal, stats: SignalStatsSnapshot) -> Pla
     return enriched
 
 
-def _find_outcome(entry: JournalEntry, token: str | None, environment: str, price: str) -> tuple[str, str, float, int] | None:
+def _outcome_price_for_entry(entry: JournalEntry, price: str, outcome_price_mode: str) -> str:
+    mode = str(outcome_price_mode or "route_default").strip().lower()
+    if mode == "side_aware":
+        return "B" if entry.side == "long" else "A"
+    return price
+
+
+def _find_outcome(
+    entry: JournalEntry,
+    token: str | None,
+    environment: str,
+    price: str,
+    outcome_price_mode: str = "route_default",
+) -> tuple[str, str, float, int] | None:
     timeframe_key = entry.timeframe.lower()
     granularity = {
         "5m": "M5",
@@ -125,7 +264,7 @@ def _find_outcome(entry: JournalEntry, token: str | None, environment: str, pric
         granularity=granularity,
         start=entry.signal_timestamp,
         end=None,
-        price=price,
+        price=_outcome_price_for_entry(entry, price, outcome_price_mode),
         token=token,
         environment=environment,
     )
@@ -161,14 +300,26 @@ def refresh_open_entries(
     token: str | None,
     environment: str,
     price: str,
+    outcome_price_mode: str = "route_default",
 ) -> list[JournalEntry]:
     updates: list[JournalEntry] = []
     now = utc_now_iso()
     for entry in entries:
         if entry.status != "open":
             continue
-        outcome = _find_outcome(entry, token=token, environment=environment, price=price)
         entry.last_checked_utc = now
+        try:
+            outcome = _find_outcome(
+                entry,
+                token=token,
+                environment=environment,
+                price=price,
+                outcome_price_mode=outcome_price_mode,
+            )
+        except Exception as exc:
+            entry.raw_signal = {**entry.raw_signal, "last_outcome_refresh_error": str(exc)}
+            updates.append(entry)
+            continue
         if not outcome:
             updates.append(entry)
             continue
@@ -178,6 +329,10 @@ def refresh_open_entries(
         entry.outcome_timestamp = timestamp
         entry.exit_price = exit_price
         entry.bars_checked = bars_checked
+        next_step, next_risk_pct, transition_note = _next_ladder_state(entry)
+        entry.ladder_step_after_outcome = next_step
+        entry.ladder_next_risk_pct = next_risk_pct
+        entry.ladder_transition_note = transition_note
         updates.append(entry)
     return entries
 

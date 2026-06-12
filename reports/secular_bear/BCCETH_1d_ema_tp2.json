@@ -1,0 +1,14 @@
+{
+  "symbol": "BCCETH",
+  "execution_interval": "1d",
+  "regime_filter": "ema",
+  "exit_mode": "tp2",
+  "trades": 0,
+  "win_rate": 0.0,
+  "avg_r": 0.0,
+  "profit_factor": null,
+  "total_r": 0,
+  "max_drawdown_r": 0.0,
+  "avg_bars_held": 0.0,
+  "closed_positions": []
+}
