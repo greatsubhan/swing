@@ -1,0 +1,2765 @@
+{
+  "generated_at_utc": "2026-04-21T17:12:20.872963+00:00",
+  "assumptions": {
+    "strategy_id": "strategy_four",
+    "trade_lenses": [
+      "raw",
+      "root_only"
+    ],
+    "repetition_window_bars": 12,
+    "post_stop_window_bars": 96,
+    "symbol_point_floor_method": "25th percentile of closed-trade stop distances per symbol",
+    "high_noise_rule": ">=3 close-direction flips over the last 6 bars and compressed range <= 2.25 ATR"
+  },
+  "reconciliation": {
+    "current_counts": {
+      "operational_journal:raw": {
+        "closed": 159,
+        "tp_hits": 90,
+        "sl_hits": 69
+      },
+      "operational_journal:root_only": {
+        "closed": 94,
+        "tp_hits": 43,
+        "sl_hits": 51
+      },
+      "since_inception_replay:raw": {
+        "closed": 277,
+        "tp_hits": 136,
+        "sl_hits": 141
+      }
+    },
+    "saved_summaries": {
+      "operational_summary": {
+        "total_signals": 114,
+        "closed_signals": 112,
+        "open_signals": 2,
+        "tp_hits": 56,
+        "sl_hits": 56,
+        "other_closures": 0,
+        "win_rate": 0.5,
+        "avg_hold_hours": 3.746279761904762,
+        "total_realized_r": 0.0,
+        "avg_closed_r": 0.0
+      },
+      "first_signal_summary": {
+        "selected_signals": 94,
+        "suppressed_repetitive_signals": 63,
+        "closed_selected_signals": 93,
+        "open_selected_signals": 1,
+        "tp_hits": 42,
+        "sl_hits": 51,
+        "win_rate": 0.45161290322580644,
+        "ending_equity": 105193.96,
+        "net_profit": 5193.96
+      },
+      "replay_summary": {
+        "assumption": {
+          "watchlist": "core-mixed",
+          "inception_utc_assumed": "2026-04-05T12:10:00+00:00",
+          "note": "Assumed from the April 5, 2026 live CWT implementation window."
+        },
+        "total_signals": 312,
+        "tp_hits": 136,
+        "sl_hits": 141,
+        "open_signals": 35,
+        "total_realized_r": -5.0,
+        "by_symbol": [
+          {
+            "symbol": "NAS100_USD",
+            "timeframe": "5m",
+            "signals": 36,
+            "tp_hits": 8,
+            "sl_hits": 19,
+            "open": 9
+          },
+          {
+            "symbol": "SPX500_USD",
+            "timeframe": "5m",
+            "signals": 44,
+            "tp_hits": 18,
+            "sl_hits": 20,
+            "open": 6
+          },
+          {
+            "symbol": "UK100_GBP",
+            "timeframe": "5m",
+            "signals": 15,
+            "tp_hits": 1,
+            "sl_hits": 13,
+            "open": 1
+          },
+          {
+            "symbol": "USD_JPY",
+            "timeframe": "5m",
+            "signals": 52,
+            "tp_hits": 28,
+            "sl_hits": 22,
+            "open": 2
+          },
+          {
+            "symbol": "NZD_USD",
+            "timeframe": "5m",
+            "signals": 43,
+            "tp_hits": 21,
+            "sl_hits": 22,
+            "open": 0
+          },
+          {
+            "symbol": "AUD_USD",
+            "timeframe": "5m",
+            "signals": 34,
+            "tp_hits": 12,
+            "sl_hits": 15,
+            "open": 7
+          },
+          {
+            "symbol": "EUR_USD",
+            "timeframe": "5m",
+            "signals": 51,
+            "tp_hits": 23,
+            "sl_hits": 23,
+            "open": 5
+          },
+          {
+            "symbol": "GBP_JPY",
+            "timeframe": "15m",
+            "signals": 37,
+            "tp_hits": 25,
+            "sl_hits": 7,
+            "open": 5
+          }
+        ]
+      }
+    },
+    "notes": [
+      "Operational summary markdown/json is stale versus the current journal: SL delta +13.",
+      "First-signal-only summary is behind the current journal state: TP delta +1, SL delta +0."
+    ]
+  },
+  "summary_counts": {
+    "total_rows": 705,
+    "closed_rows": 661,
+    "sl_rows": 339,
+    "by_view": {
+      "operational_journal:raw": {
+        "trades": 159,
+        "sl_hits": 69
+      },
+      "operational_journal:root_only": {
+        "trades": 94,
+        "sl_hits": 51
+      },
+      "since_inception_replay:raw": {
+        "trades": 277,
+        "sl_hits": 141
+      },
+      "since_inception_replay:root_only": {
+        "trades": 131,
+        "sl_hits": 78
+      }
+    }
+  },
+  "symbol_point_floors": {
+    "EUR_USD": 0.0005959999999998189,
+    "GBP_JPY": 0.19988599999999224,
+    "USD_JPY": 0.09321124999999597,
+    "NAS100_USD": 37.409059000001434,
+    "SPX500_USD": 5.882833250000431,
+    "AUD_USD": 0.0005789999999999684,
+    "NZD_USD": 0.0006110000000000282,
+    "UK100_GBP": 10.554286000000502
+  },
+  "by_view_metrics": {
+    "operational_journal:raw": {
+      "baseline": {
+        "trades": 159,
+        "wins": 90,
+        "win_rate": 0.5660377358490566,
+        "profit_factor": 1.3043478260869565,
+        "total_r": 21.0,
+        "avg_r": 0.1320754716981132,
+        "ending_equity": 86099.80696212765,
+        "max_drawdown_r": -0.1804814771377793,
+        "ladder_resets": 90,
+        "ladder_advances": 69
+      },
+      "fixed_widen_10": {
+        "trades": 158,
+        "wins": 95,
+        "win_rate": 0.6012658227848101,
+        "profit_factor": 1.3708406182325652,
+        "total_r": 23.362958948651666,
+        "avg_r": 0.1478668287889346,
+        "ending_equity": 89350.31293027202,
+        "max_drawdown_r": -0.14984683975482826,
+        "ladder_resets": 95,
+        "ladder_advances": 63
+      },
+      "fixed_widen_20": {
+        "trades": 158,
+        "wins": 95,
+        "win_rate": 0.6012658227848101,
+        "profit_factor": 1.256603900046519,
+        "total_r": 16.166045702930703,
+        "avg_r": 0.10231674495525761,
+        "ending_equity": 88185.29179267412,
+        "max_drawdown_r": -0.15468307592421887,
+        "ladder_resets": 95,
+        "ladder_advances": 63
+      },
+      "fixed_widen_30": {
+        "trades": 157,
+        "wins": 95,
+        "win_rate": 0.6050955414012739,
+        "profit_factor": 1.178650804510134,
+        "total_r": 11.076349879628351,
+        "avg_r": 0.0705499992333016,
+        "ending_equity": 87237.41154818298,
+        "max_drawdown_r": -0.1587413462040502,
+        "ladder_resets": 95,
+        "ladder_advances": 62
+      },
+      "symbol_point_floor": {
+        "trades": 159,
+        "wins": 94,
+        "win_rate": 0.5911949685534591,
+        "profit_factor": 1.2858583110116895,
+        "total_r": 18.58079021575982,
+        "avg_r": 0.1168603158223888,
+        "ending_equity": 85718.86078616312,
+        "max_drawdown_r": -0.17781670783184164,
+        "ladder_resets": 94,
+        "ladder_advances": 65
+      },
+      "atr_floor_025": {
+        "trades": 159,
+        "wins": 90,
+        "win_rate": 0.5660377358490566,
+        "profit_factor": 1.3043478260869499,
+        "total_r": 20.999999999999556,
+        "avg_r": 0.1320754716981104,
+        "ending_equity": 86099.80696212832,
+        "max_drawdown_r": -0.18048147713777377,
+        "ladder_resets": 90,
+        "ladder_advances": 69
+      },
+      "atr_floor_035": {
+        "trades": 159,
+        "wins": 91,
+        "win_rate": 0.5723270440251572,
+        "profit_factor": 1.3327120178041545,
+        "total_r": 22.624417210682527,
+        "avg_r": 0.1422919321426574,
+        "ending_equity": 87634.96181985049,
+        "max_drawdown_r": -0.16550769168245577,
+        "ladder_resets": 91,
+        "ladder_advances": 68
+      },
+      "atr_floor_050": {
+        "trades": 159,
+        "wins": 91,
+        "win_rate": 0.5723270440251572,
+        "profit_factor": 1.3292123285518218,
+        "total_r": 22.38643834152389,
+        "avg_r": 0.1407952096951188,
+        "ending_equity": 87468.71881088194,
+        "max_drawdown_r": -0.16709306172294033,
+        "ladder_resets": 91,
+        "ladder_advances": 68
+      },
+      "delay_1bar": {
+        "trades": 157,
+        "wins": 89,
+        "win_rate": 0.5668789808917197,
+        "profit_factor": 1.300741087029319,
+        "total_r": 20.45039391799371,
+        "avg_r": 0.13025728610187076,
+        "ending_equity": 87055.20460959722,
+        "max_drawdown_r": -0.16828458111254177,
+        "ladder_resets": 89,
+        "ladder_advances": 68
+      },
+      "followthrough_1bar": {
+        "trades": 82,
+        "wins": 55,
+        "win_rate": 0.6707317073170732,
+        "profit_factor": 2.037037037037016,
+        "total_r": 27.999999999999428,
+        "avg_r": 0.3414634146341394,
+        "ending_equity": 101230.6334264233,
+        "max_drawdown_r": -0.02768377851304511,
+        "ladder_resets": 55,
+        "ladder_advances": 27
+      },
+      "skip_small_stop_atr": {
+        "trades": 158,
+        "wins": 90,
+        "win_rate": 0.569620253164557,
+        "profit_factor": 1.3235294117646992,
+        "total_r": 21.999999999999556,
+        "avg_r": 0.1392405063291111,
+        "ending_equity": 86048.33445987225,
+        "max_drawdown_r": -0.18048147713777377,
+        "ladder_resets": 90,
+        "ladder_advances": 68
+      },
+      "skip_duplicate_cluster": {
+        "trades": 94,
+        "wins": 43,
+        "win_rate": 0.4574468085106383,
+        "profit_factor": 0.8431372549019659,
+        "total_r": -7.999999999999746,
+        "avg_r": -0.0851063829787207,
+        "ending_equity": 90687.32078472876,
+        "max_drawdown_r": -0.12677013260463704,
+        "ladder_resets": 43,
+        "ladder_advances": 51
+      },
+      "skip_high_noise": {
+        "trades": 147,
+        "wins": 84,
+        "win_rate": 0.5714285714285714,
+        "profit_factor": 1.3333333333333315,
+        "total_r": 20.999999999999897,
+        "avg_r": 0.14285714285714216,
+        "ending_equity": 87299.22699117137,
+        "max_drawdown_r": -0.16645834613384228,
+        "ladder_resets": 84,
+        "ladder_advances": 63
+      }
+    },
+    "operational_journal:root_only": {
+      "baseline": {
+        "trades": 94,
+        "wins": 43,
+        "win_rate": 0.4574468085106383,
+        "profit_factor": 0.8431372549019608,
+        "total_r": -8.0,
+        "avg_r": -0.0851063829787234,
+        "ending_equity": 90687.32078472816,
+        "max_drawdown_r": -0.12677013260464082,
+        "ladder_resets": 43,
+        "ladder_advances": 51
+      },
+      "fixed_widen_10": {
+        "trades": 93,
+        "wins": 46,
+        "win_rate": 0.4946236559139785,
+        "profit_factor": 0.8897341362382483,
+        "total_r": -5.182495596802327,
+        "avg_r": -0.05572575910540137,
+        "ending_equity": 89726.49453652192,
+        "max_drawdown_r": -0.1292202082669783,
+        "ladder_resets": 46,
+        "ladder_advances": 47
+      },
+      "fixed_widen_20": {
+        "trades": 93,
+        "wins": 46,
+        "win_rate": 0.4946236559139785,
+        "profit_factor": 0.815589624885061,
+        "total_r": -8.667287630402118,
+        "avg_r": -0.09319664118711955,
+        "ending_equity": 89007.2100262109,
+        "max_drawdown_r": -0.13285862708349697,
+        "ladder_resets": 46,
+        "ladder_advances": 47
+      },
+      "fixed_widen_30": {
+        "trades": 93,
+        "wins": 46,
+        "win_rate": 0.4946236559139785,
+        "profit_factor": 0.7528519614323643,
+        "total_r": -11.615957812678877,
+        "avg_r": -0.12490277217934276,
+        "ending_equity": 88402.8388397891,
+        "max_drawdown_r": -0.13600896305767265,
+        "ladder_resets": 46,
+        "ladder_advances": 47
+      },
+      "symbol_point_floor": {
+        "trades": 94,
+        "wins": 47,
+        "win_rate": 0.5,
+        "profit_factor": 0.8171250540988523,
+        "total_r": -8.595122457353943,
+        "avg_r": -0.09143747295057386,
+        "ending_equity": 90694.64606815475,
+        "max_drawdown_r": -0.11944946057169087,
+        "ladder_resets": 47,
+        "ladder_advances": 47
+      },
+      "atr_floor_025": {
+        "trades": 94,
+        "wins": 43,
+        "win_rate": 0.4574468085106383,
+        "profit_factor": 0.8431372549019659,
+        "total_r": -7.999999999999746,
+        "avg_r": -0.0851063829787207,
+        "ending_equity": 90687.32078472876,
+        "max_drawdown_r": -0.12677013260463704,
+        "ladder_resets": 43,
+        "ladder_advances": 51
+      },
+      "atr_floor_035": {
+        "trades": 94,
+        "wins": 44,
+        "win_rate": 0.46808510638297873,
+        "profit_factor": 0.8724883442136645,
+        "total_r": -6.37558278931678,
+        "avg_r": -0.06782534882251894,
+        "ending_equity": 92304.27076346356,
+        "max_drawdown_r": -0.11473834128275179,
+        "ladder_resets": 44,
+        "ladder_advances": 50
+      },
+      "atr_floor_050": {
+        "trades": 94,
+        "wins": 44,
+        "win_rate": 0.46808510638297873,
+        "profit_factor": 0.8677287668304917,
+        "total_r": -6.613561658475411,
+        "avg_r": -0.07035703891995118,
+        "ending_equity": 92129.1701027944,
+        "max_drawdown_r": -0.11473427578306117,
+        "ladder_resets": 44,
+        "ladder_advances": 50
+      },
+      "delay_1bar": {
+        "trades": 92,
+        "wins": 42,
+        "win_rate": 0.45652173913043476,
+        "profit_factor": 0.8976368855228125,
+        "total_r": -5.118155723859388,
+        "avg_r": -0.05563212743325422,
+        "ending_equity": 91675.5104609374,
+        "max_drawdown_r": -0.11457820871219984,
+        "ladder_resets": 42,
+        "ladder_advances": 50
+      },
+      "followthrough_1bar": {
+        "trades": 41,
+        "wins": 24,
+        "win_rate": 0.5853658536585366,
+        "profit_factor": 1.4117647058823577,
+        "total_r": 7.000000000000083,
+        "avg_r": 0.17073170731707518,
+        "ending_equity": 101697.05067152625,
+        "max_drawdown_r": -0.01718659893201242,
+        "ladder_resets": 24,
+        "ladder_advances": 17
+      },
+      "skip_small_stop_atr": {
+        "trades": 93,
+        "wins": 43,
+        "win_rate": 0.46236559139784944,
+        "profit_factor": 0.8600000000000052,
+        "total_r": -6.999999999999747,
+        "avg_r": -0.07526881720429836,
+        "ending_equity": 90633.10575814056,
+        "max_drawdown_r": -0.12677013260463704,
+        "ladder_resets": 43,
+        "ladder_advances": 50
+      },
+      "skip_duplicate_cluster": {
+        "trades": 94,
+        "wins": 43,
+        "win_rate": 0.4574468085106383,
+        "profit_factor": 0.8431372549019659,
+        "total_r": -7.999999999999746,
+        "avg_r": -0.0851063829787207,
+        "ending_equity": 90687.32078472876,
+        "max_drawdown_r": -0.12677013260463704,
+        "ladder_resets": 43,
+        "ladder_advances": 51
+      },
+      "skip_high_noise": {
+        "trades": 85,
+        "wins": 39,
+        "win_rate": 0.4588235294117647,
+        "profit_factor": 0.8478260869565318,
+        "total_r": -6.999999999999544,
+        "avg_r": -0.08235294117646523,
+        "ending_equity": 92114.58589338291,
+        "max_drawdown_r": -0.11051729697825532,
+        "ladder_resets": 39,
+        "ladder_advances": 46
+      }
+    },
+    "since_inception_replay:raw": {
+      "baseline": {
+        "trades": 277,
+        "wins": 136,
+        "win_rate": 0.49097472924187724,
+        "profit_factor": 0.9645390070921985,
+        "total_r": -5.0,
+        "avg_r": -0.018050541516245487,
+        "ending_equity": 62073.09930269067,
+        "max_drawdown_r": -0.3875613965518265,
+        "ladder_resets": 136,
+        "ladder_advances": 141
+      },
+      "fixed_widen_10": {
+        "trades": 277,
+        "wins": 143,
+        "win_rate": 0.516245487364621,
+        "profit_factor": 0.9701492537313605,
+        "total_r": -3.999999999997523,
+        "avg_r": -0.014440433212987448,
+        "ending_equity": 63117.50850519406,
+        "max_drawdown_r": -0.3764975748627242,
+        "ladder_resets": 143,
+        "ladder_advances": 134
+      },
+      "fixed_widen_20": {
+        "trades": 277,
+        "wins": 152,
+        "win_rate": 0.5487364620938628,
+        "profit_factor": 1.0133333333333507,
+        "total_r": 1.666666666668959,
+        "avg_r": 0.006016847172090104,
+        "ending_equity": 67910.56544477855,
+        "max_drawdown_r": -0.32846771122815366,
+        "ladder_resets": 152,
+        "ladder_advances": 125
+      },
+      "fixed_widen_30": {
+        "trades": 277,
+        "wins": 156,
+        "win_rate": 0.5631768953068592,
+        "profit_factor": 0.9917355371901001,
+        "total_r": -0.9999999999979954,
+        "avg_r": -0.0036101083032418608,
+        "ending_equity": 70207.64303435177,
+        "max_drawdown_r": -0.3051556821445607,
+        "ladder_resets": 156,
+        "ladder_advances": 121
+      },
+      "symbol_point_floor": {
+        "trades": 277,
+        "wins": 140,
+        "win_rate": 0.5054151624548736,
+        "profit_factor": 0.9671624375246493,
+        "total_r": -4.49874605912308,
+        "avg_r": -0.016240960502249387,
+        "ending_equity": 63539.22607305019,
+        "max_drawdown_r": -0.37012375278597753,
+        "ladder_resets": 140,
+        "ladder_advances": 137
+      },
+      "atr_floor_025": {
+        "trades": 277,
+        "wins": 136,
+        "win_rate": 0.49097472924187724,
+        "profit_factor": 0.9645390070922185,
+        "total_r": -4.99999999999726,
+        "avg_r": -0.018050541516235596,
+        "ending_equity": 62073.099302691255,
+        "max_drawdown_r": -0.38756139655182176,
+        "ladder_resets": 136,
+        "ladder_advances": 141
+      },
+      "atr_floor_035": {
+        "trades": 277,
+        "wins": 136,
+        "win_rate": 0.49097472924187724,
+        "profit_factor": 0.9631877157453682,
+        "total_r": -5.1905320799031305,
+        "avg_r": -0.0187383829599391,
+        "ending_equity": 62064.82625212519,
+        "max_drawdown_r": -0.3876430218547607,
+        "ladder_resets": 136,
+        "ladder_advances": 141
+      },
+      "atr_floor_050": {
+        "trades": 277,
+        "wins": 136,
+        "win_rate": 0.49097472924187724,
+        "profit_factor": 0.9614654435749552,
+        "total_r": -5.433372455931371,
+        "avg_r": -0.019615063017802786,
+        "ending_equity": 62054.28193480427,
+        "max_drawdown_r": -0.3877470564051036,
+        "ladder_resets": 136,
+        "ladder_advances": 141
+      },
+      "delay_1bar": {
+        "trades": 276,
+        "wins": 135,
+        "win_rate": 0.4891304347826087,
+        "profit_factor": 0.9582843898469889,
+        "total_r": -5.881901031574586,
+        "avg_r": -0.02131123562164705,
+        "ending_equity": 62925.9337679324,
+        "max_drawdown_r": -0.37663342298530234,
+        "ladder_resets": 135,
+        "ladder_advances": 141
+      },
+      "followthrough_1bar": {
+        "trades": 139,
+        "wins": 80,
+        "win_rate": 0.5755395683453237,
+        "profit_factor": 1.3559322033898338,
+        "total_r": 21.000000000000224,
+        "avg_r": 0.1510791366906491,
+        "ending_equity": 100836.40381242,
+        "max_drawdown_r": -0.044366110021974894,
+        "ladder_resets": 80,
+        "ladder_advances": 59
+      },
+      "skip_small_stop_atr": {
+        "trades": 277,
+        "wins": 136,
+        "win_rate": 0.49097472924187724,
+        "profit_factor": 0.9645390070922185,
+        "total_r": -4.99999999999726,
+        "avg_r": -0.018050541516235596,
+        "ending_equity": 62073.099302691255,
+        "max_drawdown_r": -0.38756139655182176,
+        "ladder_resets": 136,
+        "ladder_advances": 141
+      },
+      "skip_duplicate_cluster": {
+        "trades": 131,
+        "wins": 53,
+        "win_rate": 0.40458015267175573,
+        "profit_factor": 0.6794871794871983,
+        "total_r": -24.999999999998522,
+        "avg_r": -0.19083969465647727,
+        "ending_equity": 74283.93926993718,
+        "max_drawdown_r": -0.26598312613302727,
+        "ladder_resets": 53,
+        "ladder_advances": 78
+      },
+      "skip_high_noise": {
+        "trades": 259,
+        "wins": 125,
+        "win_rate": 0.4826254826254826,
+        "profit_factor": 0.9328358208955281,
+        "total_r": -8.999999999999249,
+        "avg_r": -0.03474903474903185,
+        "ending_equity": 60024.48028935686,
+        "max_drawdown_r": -0.4077739102110117,
+        "ladder_resets": 125,
+        "ladder_advances": 134
+      }
+    },
+    "since_inception_replay:root_only": {
+      "baseline": {
+        "trades": 131,
+        "wins": 53,
+        "win_rate": 0.40458015267175573,
+        "profit_factor": 0.6794871794871795,
+        "total_r": -25.0,
+        "avg_r": -0.19083969465648856,
+        "ending_equity": 74283.93926993679,
+        "max_drawdown_r": -0.2659831261330323,
+        "ladder_resets": 53,
+        "ladder_advances": 78
+      },
+      "fixed_widen_10": {
+        "trades": 131,
+        "wins": 58,
+        "win_rate": 0.44274809160305345,
+        "profit_factor": 0.7222914072229348,
+        "total_r": -20.272727272725742,
+        "avg_r": -0.15475364330324995,
+        "ending_equity": 76520.43165824552,
+        "max_drawdown_r": -0.24301715141618274,
+        "ladder_resets": 58,
+        "ladder_advances": 73
+      },
+      "fixed_widen_20": {
+        "trades": 131,
+        "wins": 65,
+        "win_rate": 0.4961832061068702,
+        "profit_factor": 0.8207070707070928,
+        "total_r": -11.833333333331892,
+        "avg_r": -0.09033078880406024,
+        "ending_equity": 81566.33356715532,
+        "max_drawdown_r": -0.19232908615223684,
+        "ladder_resets": 65,
+        "ladder_advances": 66
+      },
+      "fixed_widen_30": {
+        "trades": 131,
+        "wins": 66,
+        "win_rate": 0.5038167938931297,
+        "profit_factor": 0.7810650887574163,
+        "total_r": -14.23076923076789,
+        "avg_r": -0.10863182618906787,
+        "ending_equity": 81672.64546101495,
+        "max_drawdown_r": -0.19062204297569812,
+        "ladder_resets": 66,
+        "ladder_advances": 65
+      },
+      "symbol_point_floor": {
+        "trades": 131,
+        "wins": 55,
+        "win_rate": 0.4198473282442748,
+        "profit_factor": 0.6803654783553524,
+        "total_r": -24.29222364499323,
+        "avg_r": -0.18543682171750556,
+        "ending_equity": 76178.70641100418,
+        "max_drawdown_r": -0.24724675150855327,
+        "ladder_resets": 55,
+        "ladder_advances": 76
+      },
+      "atr_floor_025": {
+        "trades": 131,
+        "wins": 53,
+        "win_rate": 0.40458015267175573,
+        "profit_factor": 0.6794871794871983,
+        "total_r": -24.999999999998522,
+        "avg_r": -0.19083969465647727,
+        "ending_equity": 74283.93926993718,
+        "max_drawdown_r": -0.26598312613302727,
+        "ladder_resets": 53,
+        "ladder_advances": 78
+      },
+      "atr_floor_035": {
+        "trades": 131,
+        "wins": 53,
+        "win_rate": 0.40458015267175573,
+        "profit_factor": 0.6770444605140461,
+        "total_r": -25.190532079904393,
+        "avg_r": -0.19229413801453735,
+        "ending_equity": 74274.03876887108,
+        "max_drawdown_r": -0.26608095528578474,
+        "ladder_resets": 53,
+        "ladder_advances": 78
+      },
+      "atr_floor_050": {
+        "trades": 131,
+        "wins": 53,
+        "win_rate": 0.40458015267175573,
+        "profit_factor": 0.673931122359838,
+        "total_r": -25.433372455932634,
+        "avg_r": -0.1941478813429972,
+        "ending_equity": 74261.4202040448,
+        "max_drawdown_r": -0.2662056422584667,
+        "ladder_resets": 53,
+        "ladder_advances": 78
+      },
+      "delay_1bar": {
+        "trades": 130,
+        "wins": 53,
+        "win_rate": 0.4076923076923077,
+        "profit_factor": 0.7601015035955807,
+        "total_r": -18.472184223140285,
+        "avg_r": -0.1420937247933868,
+        "ending_equity": 76995.21802056434,
+        "max_drawdown_r": -0.23979367197333995,
+        "ladder_resets": 53,
+        "ladder_advances": 77
+      },
+      "followthrough_1bar": {
+        "trades": 56,
+        "wins": 29,
+        "win_rate": 0.5178571428571429,
+        "profit_factor": 1.0740740740740793,
+        "total_r": 2.0000000000001386,
+        "avg_r": 0.03571428571428819,
+        "ending_equity": 97390.01998468807,
+        "max_drawdown_r": -0.052176213498403665,
+        "ladder_resets": 29,
+        "ladder_advances": 27
+      },
+      "skip_small_stop_atr": {
+        "trades": 131,
+        "wins": 53,
+        "win_rate": 0.40458015267175573,
+        "profit_factor": 0.6794871794871983,
+        "total_r": -24.999999999998522,
+        "avg_r": -0.19083969465647727,
+        "ending_equity": 74283.93926993718,
+        "max_drawdown_r": -0.26598312613302727,
+        "ladder_resets": 53,
+        "ladder_advances": 78
+      },
+      "skip_duplicate_cluster": {
+        "trades": 131,
+        "wins": 53,
+        "win_rate": 0.40458015267175573,
+        "profit_factor": 0.6794871794871983,
+        "total_r": -24.999999999998522,
+        "avg_r": -0.19083969465647727,
+        "ending_equity": 74283.93926993718,
+        "max_drawdown_r": -0.26598312613302727,
+        "ladder_resets": 53,
+        "ladder_advances": 78
+      },
+      "skip_high_noise": {
+        "trades": 121,
+        "wins": 48,
+        "win_rate": 0.39669421487603307,
+        "profit_factor": 0.6575342465753439,
+        "total_r": -24.999999999999897,
+        "avg_r": -0.20661157024793303,
+        "ending_equity": 76172.3645713117,
+        "max_drawdown_r": -0.24732315669859542,
+        "ladder_resets": 48,
+        "ladder_advances": 73
+      }
+    }
+  },
+  "intervention_leaderboard": [
+    {
+      "view": "since_inception_replay:root_only",
+      "variant_id": "followthrough_1bar",
+      "label": "Require one-bar follow-through",
+      "trade_delta": -75,
+      "win_rate_delta": 11.33,
+      "profit_factor_delta": 0.3946,
+      "total_r_delta": 27.0,
+      "drawdown_delta_r": 0.2138,
+      "ending_equity_delta": 23106.08,
+      "ladder_reset_delta": -24,
+      "ladder_advance_delta": -51
+    },
+    {
+      "view": "since_inception_replay:raw",
+      "variant_id": "followthrough_1bar",
+      "label": "Require one-bar follow-through",
+      "trade_delta": -138,
+      "win_rate_delta": 8.46,
+      "profit_factor_delta": 0.3914,
+      "total_r_delta": 26.0,
+      "drawdown_delta_r": 0.3432,
+      "ending_equity_delta": 38763.3,
+      "ladder_reset_delta": -56,
+      "ladder_advance_delta": -82
+    },
+    {
+      "view": "operational_journal:root_only",
+      "variant_id": "followthrough_1bar",
+      "label": "Require one-bar follow-through",
+      "trade_delta": -53,
+      "win_rate_delta": 12.79,
+      "profit_factor_delta": 0.5686,
+      "total_r_delta": 15.0,
+      "drawdown_delta_r": 0.1096,
+      "ending_equity_delta": 11009.73,
+      "ladder_reset_delta": -19,
+      "ladder_advance_delta": -34
+    },
+    {
+      "view": "since_inception_replay:root_only",
+      "variant_id": "fixed_widen_20",
+      "label": "Widen stop +20%",
+      "trade_delta": 0,
+      "win_rate_delta": 9.16,
+      "profit_factor_delta": 0.1412,
+      "total_r_delta": 13.1667,
+      "drawdown_delta_r": 0.0737,
+      "ending_equity_delta": 7282.39,
+      "ladder_reset_delta": 12,
+      "ladder_advance_delta": -12
+    },
+    {
+      "view": "since_inception_replay:root_only",
+      "variant_id": "fixed_widen_30",
+      "label": "Widen stop +30%",
+      "trade_delta": 0,
+      "win_rate_delta": 9.92,
+      "profit_factor_delta": 0.1016,
+      "total_r_delta": 10.7692,
+      "drawdown_delta_r": 0.0754,
+      "ending_equity_delta": 7388.71,
+      "ladder_reset_delta": 13,
+      "ladder_advance_delta": -13
+    },
+    {
+      "view": "operational_journal:raw",
+      "variant_id": "followthrough_1bar",
+      "label": "Require one-bar follow-through",
+      "trade_delta": -77,
+      "win_rate_delta": 10.47,
+      "profit_factor_delta": 0.7327,
+      "total_r_delta": 7.0,
+      "drawdown_delta_r": 0.1528,
+      "ending_equity_delta": 15130.83,
+      "ladder_reset_delta": -35,
+      "ladder_advance_delta": -42
+    },
+    {
+      "view": "since_inception_replay:raw",
+      "variant_id": "fixed_widen_20",
+      "label": "Widen stop +20%",
+      "trade_delta": 0,
+      "win_rate_delta": 5.78,
+      "profit_factor_delta": 0.0488,
+      "total_r_delta": 6.6667,
+      "drawdown_delta_r": 0.0591,
+      "ending_equity_delta": 5837.47,
+      "ladder_reset_delta": 16,
+      "ladder_advance_delta": -16
+    },
+    {
+      "view": "since_inception_replay:root_only",
+      "variant_id": "delay_1bar",
+      "label": "Delay entry by 1 bar",
+      "trade_delta": -1,
+      "win_rate_delta": 0.31,
+      "profit_factor_delta": 0.0806,
+      "total_r_delta": 6.5278,
+      "drawdown_delta_r": 0.0262,
+      "ending_equity_delta": 2711.28,
+      "ladder_reset_delta": 0,
+      "ladder_advance_delta": -1
+    },
+    {
+      "view": "since_inception_replay:root_only",
+      "variant_id": "fixed_widen_10",
+      "label": "Widen stop +10%",
+      "trade_delta": 0,
+      "win_rate_delta": 3.82,
+      "profit_factor_delta": 0.0428,
+      "total_r_delta": 4.7273,
+      "drawdown_delta_r": 0.023,
+      "ending_equity_delta": 2236.49,
+      "ladder_reset_delta": 5,
+      "ladder_advance_delta": -5
+    },
+    {
+      "view": "since_inception_replay:raw",
+      "variant_id": "fixed_widen_30",
+      "label": "Widen stop +30%",
+      "trade_delta": 0,
+      "win_rate_delta": 7.22,
+      "profit_factor_delta": 0.0272,
+      "total_r_delta": 4.0,
+      "drawdown_delta_r": 0.0824,
+      "ending_equity_delta": 8134.54,
+      "ladder_reset_delta": 20,
+      "ladder_advance_delta": -20
+    },
+    {
+      "view": "operational_journal:root_only",
+      "variant_id": "delay_1bar",
+      "label": "Delay entry by 1 bar",
+      "trade_delta": -2,
+      "win_rate_delta": -0.09,
+      "profit_factor_delta": 0.0545,
+      "total_r_delta": 2.8818,
+      "drawdown_delta_r": 0.0122,
+      "ending_equity_delta": 988.19,
+      "ladder_reset_delta": -1,
+      "ladder_advance_delta": -1
+    },
+    {
+      "view": "operational_journal:root_only",
+      "variant_id": "fixed_widen_10",
+      "label": "Widen stop +10%",
+      "trade_delta": -1,
+      "win_rate_delta": 3.72,
+      "profit_factor_delta": 0.0466,
+      "total_r_delta": 2.8175,
+      "drawdown_delta_r": -0.0025,
+      "ending_equity_delta": -960.83,
+      "ladder_reset_delta": 3,
+      "ladder_advance_delta": -4
+    },
+    {
+      "view": "operational_journal:raw",
+      "variant_id": "fixed_widen_10",
+      "label": "Widen stop +10%",
+      "trade_delta": -1,
+      "win_rate_delta": 3.52,
+      "profit_factor_delta": 0.0665,
+      "total_r_delta": 2.363,
+      "drawdown_delta_r": 0.0306,
+      "ending_equity_delta": 3250.51,
+      "ladder_reset_delta": 5,
+      "ladder_advance_delta": -6
+    },
+    {
+      "view": "operational_journal:root_only",
+      "variant_id": "atr_floor_035",
+      "label": "Apply 0.35 ATR floor",
+      "trade_delta": 0,
+      "win_rate_delta": 1.06,
+      "profit_factor_delta": 0.0294,
+      "total_r_delta": 1.6244,
+      "drawdown_delta_r": 0.012,
+      "ending_equity_delta": 1616.95,
+      "ladder_reset_delta": 1,
+      "ladder_advance_delta": -1
+    },
+    {
+      "view": "operational_journal:raw",
+      "variant_id": "atr_floor_035",
+      "label": "Apply 0.35 ATR floor",
+      "trade_delta": 0,
+      "win_rate_delta": 0.63,
+      "profit_factor_delta": 0.0284,
+      "total_r_delta": 1.6244,
+      "drawdown_delta_r": 0.015,
+      "ending_equity_delta": 1535.15,
+      "ladder_reset_delta": 1,
+      "ladder_advance_delta": -1
+    },
+    {
+      "view": "operational_journal:raw",
+      "variant_id": "atr_floor_050",
+      "label": "Apply 0.50 ATR floor",
+      "trade_delta": 0,
+      "win_rate_delta": 0.63,
+      "profit_factor_delta": 0.0249,
+      "total_r_delta": 1.3864,
+      "drawdown_delta_r": 0.0134,
+      "ending_equity_delta": 1368.91,
+      "ladder_reset_delta": 1,
+      "ladder_advance_delta": -1
+    },
+    {
+      "view": "operational_journal:root_only",
+      "variant_id": "atr_floor_050",
+      "label": "Apply 0.50 ATR floor",
+      "trade_delta": 0,
+      "win_rate_delta": 1.06,
+      "profit_factor_delta": 0.0246,
+      "total_r_delta": 1.3864,
+      "drawdown_delta_r": 0.012,
+      "ending_equity_delta": 1441.85,
+      "ladder_reset_delta": 1,
+      "ladder_advance_delta": -1
+    },
+    {
+      "view": "operational_journal:raw",
+      "variant_id": "skip_small_stop_atr",
+      "label": "Skip too-small stops",
+      "trade_delta": -1,
+      "win_rate_delta": 0.36,
+      "profit_factor_delta": 0.0192,
+      "total_r_delta": 1.0,
+      "drawdown_delta_r": 0.0,
+      "ending_equity_delta": -51.47,
+      "ladder_reset_delta": 0,
+      "ladder_advance_delta": -1
+    },
+    {
+      "view": "operational_journal:root_only",
+      "variant_id": "skip_small_stop_atr",
+      "label": "Skip too-small stops",
+      "trade_delta": -1,
+      "win_rate_delta": 0.49,
+      "profit_factor_delta": 0.0169,
+      "total_r_delta": 1.0,
+      "drawdown_delta_r": 0.0,
+      "ending_equity_delta": -54.22,
+      "ladder_reset_delta": 0,
+      "ladder_advance_delta": -1
+    },
+    {
+      "view": "since_inception_replay:raw",
+      "variant_id": "fixed_widen_10",
+      "label": "Widen stop +10%",
+      "trade_delta": 0,
+      "win_rate_delta": 2.53,
+      "profit_factor_delta": 0.0056,
+      "total_r_delta": 1.0,
+      "drawdown_delta_r": 0.0111,
+      "ending_equity_delta": 1044.41,
+      "ladder_reset_delta": 7,
+      "ladder_advance_delta": -7
+    },
+    {
+      "view": "operational_journal:root_only",
+      "variant_id": "skip_high_noise",
+      "label": "Skip high-noise sessions",
+      "trade_delta": -9,
+      "win_rate_delta": 0.14,
+      "profit_factor_delta": 0.0047,
+      "total_r_delta": 1.0,
+      "drawdown_delta_r": 0.0163,
+      "ending_equity_delta": 1427.27,
+      "ladder_reset_delta": -4,
+      "ladder_advance_delta": -5
+    },
+    {
+      "view": "since_inception_replay:root_only",
+      "variant_id": "symbol_point_floor",
+      "label": "Apply symbol point floor",
+      "trade_delta": 0,
+      "win_rate_delta": 1.53,
+      "profit_factor_delta": 0.0009,
+      "total_r_delta": 0.7078,
+      "drawdown_delta_r": 0.0187,
+      "ending_equity_delta": 1894.77,
+      "ladder_reset_delta": 2,
+      "ladder_advance_delta": -2
+    },
+    {
+      "view": "since_inception_replay:raw",
+      "variant_id": "symbol_point_floor",
+      "label": "Apply symbol point floor",
+      "trade_delta": 0,
+      "win_rate_delta": 1.44,
+      "profit_factor_delta": 0.0026,
+      "total_r_delta": 0.5013,
+      "drawdown_delta_r": 0.0174,
+      "ending_equity_delta": 1466.13,
+      "ladder_reset_delta": 4,
+      "ladder_advance_delta": -4
+    },
+    {
+      "view": "operational_journal:raw",
+      "variant_id": "skip_high_noise",
+      "label": "Skip high-noise sessions",
+      "trade_delta": -12,
+      "win_rate_delta": 0.54,
+      "profit_factor_delta": 0.029,
+      "total_r_delta": -0.0,
+      "drawdown_delta_r": 0.014,
+      "ending_equity_delta": 1199.42,
+      "ladder_reset_delta": -6,
+      "ladder_advance_delta": -6
+    },
+    {
+      "view": "since_inception_replay:root_only",
+      "variant_id": "skip_high_noise",
+      "label": "Skip high-noise sessions",
+      "trade_delta": -10,
+      "win_rate_delta": -0.79,
+      "profit_factor_delta": -0.022,
+      "total_r_delta": 0.0,
+      "drawdown_delta_r": 0.0187,
+      "ending_equity_delta": 1888.43,
+      "ladder_reset_delta": -5,
+      "ladder_advance_delta": -5
+    },
+    {
+      "view": "operational_journal:raw",
+      "variant_id": "atr_floor_025",
+      "label": "Apply 0.25 ATR floor",
+      "trade_delta": 0,
+      "win_rate_delta": 0.0,
+      "profit_factor_delta": -0.0,
+      "total_r_delta": -0.0,
+      "drawdown_delta_r": 0.0,
+      "ending_equity_delta": 0.0,
+      "ladder_reset_delta": 0,
+      "ladder_advance_delta": 0
+    },
+    {
+      "view": "operational_journal:root_only",
+      "variant_id": "atr_floor_025",
+      "label": "Apply 0.25 ATR floor",
+      "trade_delta": 0,
+      "win_rate_delta": 0.0,
+      "profit_factor_delta": 0.0,
+      "total_r_delta": 0.0,
+      "drawdown_delta_r": 0.0,
+      "ending_equity_delta": 0.0,
+      "ladder_reset_delta": 0,
+      "ladder_advance_delta": 0
+    },
+    {
+      "view": "operational_journal:root_only",
+      "variant_id": "skip_duplicate_cluster",
+      "label": "Skip duplicate clusters",
+      "trade_delta": 0,
+      "win_rate_delta": 0.0,
+      "profit_factor_delta": 0.0,
+      "total_r_delta": 0.0,
+      "drawdown_delta_r": 0.0,
+      "ending_equity_delta": 0.0,
+      "ladder_reset_delta": 0,
+      "ladder_advance_delta": 0
+    },
+    {
+      "view": "since_inception_replay:raw",
+      "variant_id": "atr_floor_025",
+      "label": "Apply 0.25 ATR floor",
+      "trade_delta": 0,
+      "win_rate_delta": 0.0,
+      "profit_factor_delta": 0.0,
+      "total_r_delta": 0.0,
+      "drawdown_delta_r": 0.0,
+      "ending_equity_delta": 0.0,
+      "ladder_reset_delta": 0,
+      "ladder_advance_delta": 0
+    },
+    {
+      "view": "since_inception_replay:raw",
+      "variant_id": "skip_small_stop_atr",
+      "label": "Skip too-small stops",
+      "trade_delta": 0,
+      "win_rate_delta": 0.0,
+      "profit_factor_delta": 0.0,
+      "total_r_delta": 0.0,
+      "drawdown_delta_r": 0.0,
+      "ending_equity_delta": 0.0,
+      "ladder_reset_delta": 0,
+      "ladder_advance_delta": 0
+    },
+    {
+      "view": "since_inception_replay:root_only",
+      "variant_id": "atr_floor_025",
+      "label": "Apply 0.25 ATR floor",
+      "trade_delta": 0,
+      "win_rate_delta": 0.0,
+      "profit_factor_delta": 0.0,
+      "total_r_delta": 0.0,
+      "drawdown_delta_r": 0.0,
+      "ending_equity_delta": 0.0,
+      "ladder_reset_delta": 0,
+      "ladder_advance_delta": 0
+    },
+    {
+      "view": "since_inception_replay:root_only",
+      "variant_id": "skip_small_stop_atr",
+      "label": "Skip too-small stops",
+      "trade_delta": 0,
+      "win_rate_delta": 0.0,
+      "profit_factor_delta": 0.0,
+      "total_r_delta": 0.0,
+      "drawdown_delta_r": 0.0,
+      "ending_equity_delta": 0.0,
+      "ladder_reset_delta": 0,
+      "ladder_advance_delta": 0
+    },
+    {
+      "view": "since_inception_replay:root_only",
+      "variant_id": "skip_duplicate_cluster",
+      "label": "Skip duplicate clusters",
+      "trade_delta": 0,
+      "win_rate_delta": 0.0,
+      "profit_factor_delta": 0.0,
+      "total_r_delta": 0.0,
+      "drawdown_delta_r": 0.0,
+      "ending_equity_delta": 0.0,
+      "ladder_reset_delta": 0,
+      "ladder_advance_delta": 0
+    },
+    {
+      "view": "since_inception_replay:raw",
+      "variant_id": "atr_floor_035",
+      "label": "Apply 0.35 ATR floor",
+      "trade_delta": 0,
+      "win_rate_delta": 0.0,
+      "profit_factor_delta": -0.0014,
+      "total_r_delta": -0.1905,
+      "drawdown_delta_r": -0.0001,
+      "ending_equity_delta": -8.27,
+      "ladder_reset_delta": 0,
+      "ladder_advance_delta": 0
+    },
+    {
+      "view": "since_inception_replay:root_only",
+      "variant_id": "atr_floor_035",
+      "label": "Apply 0.35 ATR floor",
+      "trade_delta": 0,
+      "win_rate_delta": 0.0,
+      "profit_factor_delta": -0.0024,
+      "total_r_delta": -0.1905,
+      "drawdown_delta_r": -0.0001,
+      "ending_equity_delta": -9.9,
+      "ladder_reset_delta": 0,
+      "ladder_advance_delta": 0
+    },
+    {
+      "view": "since_inception_replay:raw",
+      "variant_id": "atr_floor_050",
+      "label": "Apply 0.50 ATR floor",
+      "trade_delta": 0,
+      "win_rate_delta": 0.0,
+      "profit_factor_delta": -0.0031,
+      "total_r_delta": -0.4334,
+      "drawdown_delta_r": -0.0002,
+      "ending_equity_delta": -18.82,
+      "ladder_reset_delta": 0,
+      "ladder_advance_delta": 0
+    },
+    {
+      "view": "since_inception_replay:root_only",
+      "variant_id": "atr_floor_050",
+      "label": "Apply 0.50 ATR floor",
+      "trade_delta": 0,
+      "win_rate_delta": 0.0,
+      "profit_factor_delta": -0.0056,
+      "total_r_delta": -0.4334,
+      "drawdown_delta_r": -0.0002,
+      "ending_equity_delta": -22.52,
+      "ladder_reset_delta": 0,
+      "ladder_advance_delta": 0
+    },
+    {
+      "view": "operational_journal:raw",
+      "variant_id": "delay_1bar",
+      "label": "Delay entry by 1 bar",
+      "trade_delta": -2,
+      "win_rate_delta": 0.08,
+      "profit_factor_delta": -0.0036,
+      "total_r_delta": -0.5496,
+      "drawdown_delta_r": 0.0122,
+      "ending_equity_delta": 955.4,
+      "ladder_reset_delta": -1,
+      "ladder_advance_delta": -1
+    },
+    {
+      "view": "operational_journal:root_only",
+      "variant_id": "symbol_point_floor",
+      "label": "Apply symbol point floor",
+      "trade_delta": 0,
+      "win_rate_delta": 4.26,
+      "profit_factor_delta": -0.026,
+      "total_r_delta": -0.5951,
+      "drawdown_delta_r": 0.0073,
+      "ending_equity_delta": 7.33,
+      "ladder_reset_delta": 4,
+      "ladder_advance_delta": -4
+    },
+    {
+      "view": "operational_journal:root_only",
+      "variant_id": "fixed_widen_20",
+      "label": "Widen stop +20%",
+      "trade_delta": -1,
+      "win_rate_delta": 3.72,
+      "profit_factor_delta": -0.0275,
+      "total_r_delta": -0.6673,
+      "drawdown_delta_r": -0.0061,
+      "ending_equity_delta": -1680.11,
+      "ladder_reset_delta": 3,
+      "ladder_advance_delta": -4
+    },
+    {
+      "view": "since_inception_replay:raw",
+      "variant_id": "delay_1bar",
+      "label": "Delay entry by 1 bar",
+      "trade_delta": -1,
+      "win_rate_delta": -0.18,
+      "profit_factor_delta": -0.0063,
+      "total_r_delta": -0.8819,
+      "drawdown_delta_r": 0.0109,
+      "ending_equity_delta": 852.83,
+      "ladder_reset_delta": -1,
+      "ladder_advance_delta": 0
+    },
+    {
+      "view": "operational_journal:raw",
+      "variant_id": "symbol_point_floor",
+      "label": "Apply symbol point floor",
+      "trade_delta": 0,
+      "win_rate_delta": 2.52,
+      "profit_factor_delta": -0.0185,
+      "total_r_delta": -2.4192,
+      "drawdown_delta_r": 0.0027,
+      "ending_equity_delta": -380.95,
+      "ladder_reset_delta": 4,
+      "ladder_advance_delta": -4
+    },
+    {
+      "view": "operational_journal:root_only",
+      "variant_id": "fixed_widen_30",
+      "label": "Widen stop +30%",
+      "trade_delta": -1,
+      "win_rate_delta": 3.72,
+      "profit_factor_delta": -0.0903,
+      "total_r_delta": -3.616,
+      "drawdown_delta_r": -0.0092,
+      "ending_equity_delta": -2284.48,
+      "ladder_reset_delta": 3,
+      "ladder_advance_delta": -4
+    },
+    {
+      "view": "since_inception_replay:raw",
+      "variant_id": "skip_high_noise",
+      "label": "Skip high-noise sessions",
+      "trade_delta": -18,
+      "win_rate_delta": -0.83,
+      "profit_factor_delta": -0.0317,
+      "total_r_delta": -4.0,
+      "drawdown_delta_r": -0.0202,
+      "ending_equity_delta": -2048.62,
+      "ladder_reset_delta": -11,
+      "ladder_advance_delta": -7
+    },
+    {
+      "view": "operational_journal:raw",
+      "variant_id": "fixed_widen_20",
+      "label": "Widen stop +20%",
+      "trade_delta": -1,
+      "win_rate_delta": 3.52,
+      "profit_factor_delta": -0.0477,
+      "total_r_delta": -4.834,
+      "drawdown_delta_r": 0.0258,
+      "ending_equity_delta": 2085.48,
+      "ladder_reset_delta": 5,
+      "ladder_advance_delta": -6
+    },
+    {
+      "view": "operational_journal:raw",
+      "variant_id": "fixed_widen_30",
+      "label": "Widen stop +30%",
+      "trade_delta": -2,
+      "win_rate_delta": 3.91,
+      "profit_factor_delta": -0.1257,
+      "total_r_delta": -9.9237,
+      "drawdown_delta_r": 0.0217,
+      "ending_equity_delta": 1137.6,
+      "ladder_reset_delta": 5,
+      "ladder_advance_delta": -7
+    },
+    {
+      "view": "since_inception_replay:raw",
+      "variant_id": "skip_duplicate_cluster",
+      "label": "Skip duplicate clusters",
+      "trade_delta": -146,
+      "win_rate_delta": -8.64,
+      "profit_factor_delta": -0.2851,
+      "total_r_delta": -20.0,
+      "drawdown_delta_r": 0.1216,
+      "ending_equity_delta": 12210.84,
+      "ladder_reset_delta": -83,
+      "ladder_advance_delta": -63
+    },
+    {
+      "view": "operational_journal:raw",
+      "variant_id": "skip_duplicate_cluster",
+      "label": "Skip duplicate clusters",
+      "trade_delta": -65,
+      "win_rate_delta": -10.86,
+      "profit_factor_delta": -0.4612,
+      "total_r_delta": -29.0,
+      "drawdown_delta_r": 0.0537,
+      "ending_equity_delta": 4587.51,
+      "ladder_reset_delta": -47,
+      "ladder_advance_delta": -18
+    }
+  ],
+  "per_symbol_breakdown": {
+    "AUD_USD": {
+      "sl_hits": 54,
+      "reasons": {
+        "structure_invalidated_before_reversal": 4,
+        "continuation_failed_cleanly": 24,
+        "insufficient_reward_after_survival": 6,
+        "high_noise_session": 8,
+        "duplicate_cluster_exposure": 7,
+        "stop_too_tight": 3,
+        "entry_too_early": 2
+      },
+      "saved_by": {
+        "Require one-bar follow-through": 31,
+        "Skip high-noise session": 3,
+        "Skip duplicate cluster": 6,
+        "Delay entry by 1 bar": 4
+      }
+    },
+    "EUR_USD": {
+      "sl_hits": 41,
+      "reasons": {
+        "entry_too_early": 2,
+        "structure_invalidated_before_reversal": 4,
+        "insufficient_reward_after_survival": 2,
+        "duplicate_cluster_exposure": 14,
+        "continuation_failed_cleanly": 14,
+        "stop_too_tight": 5
+      },
+      "saved_by": {
+        "Delay entry by 1 bar": 2,
+        "Require one-bar follow-through": 22,
+        "Widen stop +10%": 4,
+        "Skip duplicate cluster": 7
+      }
+    },
+    "GBP_JPY": {
+      "sl_hits": 21,
+      "reasons": {
+        "duplicate_cluster_exposure": 3,
+        "high_noise_session": 2,
+        "structure_invalidated_before_reversal": 4,
+        "insufficient_reward_after_survival": 10,
+        "continuation_failed_cleanly": 2
+      },
+      "saved_by": {
+        "Require one-bar follow-through": 12,
+        "Skip high-noise session": 2,
+        "Skip duplicate cluster": 1
+      }
+    },
+    "NAS100_USD": {
+      "sl_hits": 47,
+      "reasons": {
+        "continuation_failed_cleanly": 12,
+        "insufficient_reward_after_survival": 12,
+        "high_noise_session": 2,
+        "stop_too_tight": 4,
+        "duplicate_cluster_exposure": 9,
+        "structure_invalidated_before_reversal": 8
+      },
+      "saved_by": {
+        "Require one-bar follow-through": 24,
+        "Skip high-noise session": 2,
+        "Widen stop +10%": 2,
+        "Skip duplicate cluster": 5
+      }
+    },
+    "NZD_USD": {
+      "sl_hits": 55,
+      "reasons": {
+        "insufficient_reward_after_survival": 12,
+        "structure_invalidated_before_reversal": 4,
+        "continuation_failed_cleanly": 26,
+        "duplicate_cluster_exposure": 9,
+        "high_noise_session": 4
+      },
+      "saved_by": {
+        "Require one-bar follow-through": 32,
+        "Skip duplicate cluster": 7,
+        "Skip high-noise session": 2
+      }
+    },
+    "SPX500_USD": {
+      "sl_hits": 54,
+      "reasons": {
+        "insufficient_reward_after_survival": 22,
+        "duplicate_cluster_exposure": 10,
+        "structure_invalidated_before_reversal": 10,
+        "continuation_failed_cleanly": 8,
+        "stop_too_tight": 2,
+        "high_noise_session": 2
+      },
+      "saved_by": {
+        "Require one-bar follow-through": 41,
+        "Skip duplicate cluster": 5
+      }
+    },
+    "UK100_GBP": {
+      "sl_hits": 25,
+      "reasons": {
+        "entry_too_early": 2,
+        "insufficient_reward_after_survival": 4,
+        "continuation_failed_cleanly": 6,
+        "structure_invalidated_before_reversal": 2,
+        "duplicate_cluster_exposure": 11
+      },
+      "saved_by": {
+        "Delay entry by 1 bar": 2,
+        "Require one-bar follow-through": 14,
+        "Skip duplicate cluster": 3,
+        "Skip high-noise session": 2
+      }
+    },
+    "USD_JPY": {
+      "sl_hits": 42,
+      "reasons": {
+        "duplicate_cluster_exposure": 14,
+        "structure_invalidated_before_reversal": 6,
+        "insufficient_reward_after_survival": 14,
+        "high_noise_session": 2,
+        "continuation_failed_cleanly": 6
+      },
+      "saved_by": {
+        "Require one-bar follow-through": 27,
+        "Skip duplicate cluster": 5,
+        "Skip high-noise session": 2,
+        "Widen stop +10%": 2
+      }
+    }
+  },
+  "sl_breakdown_rows": [
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "raw",
+      "symbol": "AUD_USD",
+      "timeframe": "5m",
+      "ladder_step": 0,
+      "sl_hits": 6,
+      "top_reason": "duplicate_cluster_exposure"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "raw",
+      "symbol": "AUD_USD",
+      "timeframe": "5m",
+      "ladder_step": 1,
+      "sl_hits": 6,
+      "top_reason": "insufficient_reward_after_survival"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "raw",
+      "symbol": "AUD_USD",
+      "timeframe": "5m",
+      "ladder_step": 2,
+      "sl_hits": 4,
+      "top_reason": "high_noise_session"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "raw",
+      "symbol": "AUD_USD",
+      "timeframe": "5m",
+      "ladder_step": 3,
+      "sl_hits": 1,
+      "top_reason": "continuation_failed_cleanly"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "raw",
+      "symbol": "EUR_USD",
+      "timeframe": "5m",
+      "ladder_step": 0,
+      "sl_hits": 3,
+      "top_reason": "entry_too_early"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "raw",
+      "symbol": "EUR_USD",
+      "timeframe": "5m",
+      "ladder_step": 1,
+      "sl_hits": 1,
+      "top_reason": "structure_invalidated_before_reversal"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "raw",
+      "symbol": "EUR_USD",
+      "timeframe": "5m",
+      "ladder_step": 2,
+      "sl_hits": 1,
+      "top_reason": "structure_invalidated_before_reversal"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "raw",
+      "symbol": "GBP_JPY",
+      "timeframe": "15m",
+      "ladder_step": 0,
+      "sl_hits": 2,
+      "top_reason": "duplicate_cluster_exposure"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "raw",
+      "symbol": "GBP_JPY",
+      "timeframe": "15m",
+      "ladder_step": 1,
+      "sl_hits": 1,
+      "top_reason": "high_noise_session"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "raw",
+      "symbol": "GBP_JPY",
+      "timeframe": "15m",
+      "ladder_step": 2,
+      "sl_hits": 1,
+      "top_reason": "structure_invalidated_before_reversal"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "raw",
+      "symbol": "GBP_JPY",
+      "timeframe": "15m",
+      "ladder_step": 3,
+      "sl_hits": 1,
+      "top_reason": "insufficient_reward_after_survival"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "raw",
+      "symbol": "NAS100_USD",
+      "timeframe": "5m",
+      "ladder_step": 0,
+      "sl_hits": 3,
+      "top_reason": "continuation_failed_cleanly"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "raw",
+      "symbol": "NAS100_USD",
+      "timeframe": "5m",
+      "ladder_step": 1,
+      "sl_hits": 2,
+      "top_reason": "insufficient_reward_after_survival"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "raw",
+      "symbol": "NAS100_USD",
+      "timeframe": "5m",
+      "ladder_step": 2,
+      "sl_hits": 1,
+      "top_reason": "insufficient_reward_after_survival"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "raw",
+      "symbol": "NAS100_USD",
+      "timeframe": "5m",
+      "ladder_step": 3,
+      "sl_hits": 3,
+      "top_reason": "insufficient_reward_after_survival"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "raw",
+      "symbol": "NZD_USD",
+      "timeframe": "5m",
+      "ladder_step": 0,
+      "sl_hits": 3,
+      "top_reason": "duplicate_cluster_exposure"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "raw",
+      "symbol": "NZD_USD",
+      "timeframe": "5m",
+      "ladder_step": 1,
+      "sl_hits": 3,
+      "top_reason": "insufficient_reward_after_survival"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "raw",
+      "symbol": "NZD_USD",
+      "timeframe": "5m",
+      "ladder_step": 2,
+      "sl_hits": 1,
+      "top_reason": "insufficient_reward_after_survival"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "raw",
+      "symbol": "NZD_USD",
+      "timeframe": "5m",
+      "ladder_step": 3,
+      "sl_hits": 3,
+      "top_reason": "insufficient_reward_after_survival"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "raw",
+      "symbol": "SPX500_USD",
+      "timeframe": "5m",
+      "ladder_step": 0,
+      "sl_hits": 4,
+      "top_reason": "insufficient_reward_after_survival"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "raw",
+      "symbol": "SPX500_USD",
+      "timeframe": "5m",
+      "ladder_step": 1,
+      "sl_hits": 4,
+      "top_reason": "insufficient_reward_after_survival"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "raw",
+      "symbol": "SPX500_USD",
+      "timeframe": "5m",
+      "ladder_step": 2,
+      "sl_hits": 2,
+      "top_reason": "insufficient_reward_after_survival"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "raw",
+      "symbol": "SPX500_USD",
+      "timeframe": "5m",
+      "ladder_step": 3,
+      "sl_hits": 2,
+      "top_reason": "structure_invalidated_before_reversal"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "raw",
+      "symbol": "UK100_GBP",
+      "timeframe": "5m",
+      "ladder_step": 0,
+      "sl_hits": 2,
+      "top_reason": "entry_too_early"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "raw",
+      "symbol": "UK100_GBP",
+      "timeframe": "5m",
+      "ladder_step": 1,
+      "sl_hits": 2,
+      "top_reason": "insufficient_reward_after_survival"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "raw",
+      "symbol": "UK100_GBP",
+      "timeframe": "5m",
+      "ladder_step": 2,
+      "sl_hits": 1,
+      "top_reason": "continuation_failed_cleanly"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "raw",
+      "symbol": "USD_JPY",
+      "timeframe": "5m",
+      "ladder_step": 0,
+      "sl_hits": 2,
+      "top_reason": "duplicate_cluster_exposure"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "raw",
+      "symbol": "USD_JPY",
+      "timeframe": "5m",
+      "ladder_step": 1,
+      "sl_hits": 2,
+      "top_reason": "structure_invalidated_before_reversal"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "raw",
+      "symbol": "USD_JPY",
+      "timeframe": "5m",
+      "ladder_step": 2,
+      "sl_hits": 2,
+      "top_reason": "structure_invalidated_before_reversal"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "root_only",
+      "symbol": "AUD_USD",
+      "timeframe": "5m",
+      "ladder_step": 0,
+      "sl_hits": 4,
+      "top_reason": "structure_invalidated_before_reversal"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "root_only",
+      "symbol": "AUD_USD",
+      "timeframe": "5m",
+      "ladder_step": 1,
+      "sl_hits": 2,
+      "top_reason": "insufficient_reward_after_survival"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "root_only",
+      "symbol": "AUD_USD",
+      "timeframe": "5m",
+      "ladder_step": 2,
+      "sl_hits": 2,
+      "top_reason": "high_noise_session"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "root_only",
+      "symbol": "AUD_USD",
+      "timeframe": "5m",
+      "ladder_step": 3,
+      "sl_hits": 1,
+      "top_reason": "continuation_failed_cleanly"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "root_only",
+      "symbol": "EUR_USD",
+      "timeframe": "5m",
+      "ladder_step": 0,
+      "sl_hits": 2,
+      "top_reason": "entry_too_early"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "root_only",
+      "symbol": "EUR_USD",
+      "timeframe": "5m",
+      "ladder_step": 1,
+      "sl_hits": 1,
+      "top_reason": "structure_invalidated_before_reversal"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "root_only",
+      "symbol": "EUR_USD",
+      "timeframe": "5m",
+      "ladder_step": 2,
+      "sl_hits": 1,
+      "top_reason": "structure_invalidated_before_reversal"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "root_only",
+      "symbol": "GBP_JPY",
+      "timeframe": "15m",
+      "ladder_step": 0,
+      "sl_hits": 2,
+      "top_reason": "high_noise_session"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "root_only",
+      "symbol": "GBP_JPY",
+      "timeframe": "15m",
+      "ladder_step": 1,
+      "sl_hits": 1,
+      "top_reason": "structure_invalidated_before_reversal"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "root_only",
+      "symbol": "GBP_JPY",
+      "timeframe": "15m",
+      "ladder_step": 2,
+      "sl_hits": 1,
+      "top_reason": "insufficient_reward_after_survival"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "root_only",
+      "symbol": "NAS100_USD",
+      "timeframe": "5m",
+      "ladder_step": 0,
+      "sl_hits": 3,
+      "top_reason": "continuation_failed_cleanly"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "root_only",
+      "symbol": "NAS100_USD",
+      "timeframe": "5m",
+      "ladder_step": 1,
+      "sl_hits": 2,
+      "top_reason": "insufficient_reward_after_survival"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "root_only",
+      "symbol": "NAS100_USD",
+      "timeframe": "5m",
+      "ladder_step": 2,
+      "sl_hits": 1,
+      "top_reason": "insufficient_reward_after_survival"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "root_only",
+      "symbol": "NAS100_USD",
+      "timeframe": "5m",
+      "ladder_step": 3,
+      "sl_hits": 3,
+      "top_reason": "insufficient_reward_after_survival"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "root_only",
+      "symbol": "NZD_USD",
+      "timeframe": "5m",
+      "ladder_step": 0,
+      "sl_hits": 2,
+      "top_reason": "structure_invalidated_before_reversal"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "root_only",
+      "symbol": "NZD_USD",
+      "timeframe": "5m",
+      "ladder_step": 1,
+      "sl_hits": 1,
+      "top_reason": "insufficient_reward_after_survival"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "root_only",
+      "symbol": "NZD_USD",
+      "timeframe": "5m",
+      "ladder_step": 2,
+      "sl_hits": 1,
+      "top_reason": "insufficient_reward_after_survival"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "root_only",
+      "symbol": "NZD_USD",
+      "timeframe": "5m",
+      "ladder_step": 3,
+      "sl_hits": 3,
+      "top_reason": "insufficient_reward_after_survival"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "root_only",
+      "symbol": "SPX500_USD",
+      "timeframe": "5m",
+      "ladder_step": 0,
+      "sl_hits": 4,
+      "top_reason": "insufficient_reward_after_survival"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "root_only",
+      "symbol": "SPX500_USD",
+      "timeframe": "5m",
+      "ladder_step": 1,
+      "sl_hits": 3,
+      "top_reason": "insufficient_reward_after_survival"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "root_only",
+      "symbol": "SPX500_USD",
+      "timeframe": "5m",
+      "ladder_step": 2,
+      "sl_hits": 2,
+      "top_reason": "insufficient_reward_after_survival"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "root_only",
+      "symbol": "SPX500_USD",
+      "timeframe": "5m",
+      "ladder_step": 3,
+      "sl_hits": 1,
+      "top_reason": "structure_invalidated_before_reversal"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "root_only",
+      "symbol": "UK100_GBP",
+      "timeframe": "5m",
+      "ladder_step": 0,
+      "sl_hits": 2,
+      "top_reason": "entry_too_early"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "root_only",
+      "symbol": "UK100_GBP",
+      "timeframe": "5m",
+      "ladder_step": 1,
+      "sl_hits": 2,
+      "top_reason": "insufficient_reward_after_survival"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "root_only",
+      "symbol": "UK100_GBP",
+      "timeframe": "5m",
+      "ladder_step": 2,
+      "sl_hits": 1,
+      "top_reason": "continuation_failed_cleanly"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "root_only",
+      "symbol": "USD_JPY",
+      "timeframe": "5m",
+      "ladder_step": 0,
+      "sl_hits": 2,
+      "top_reason": "structure_invalidated_before_reversal"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "root_only",
+      "symbol": "USD_JPY",
+      "timeframe": "5m",
+      "ladder_step": 1,
+      "sl_hits": 1,
+      "top_reason": "structure_invalidated_before_reversal"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "symbol": "AUD_USD",
+      "timeframe": "5m",
+      "ladder_step": 0,
+      "sl_hits": 6,
+      "top_reason": "continuation_failed_cleanly"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "symbol": "AUD_USD",
+      "timeframe": "5m",
+      "ladder_step": 1,
+      "sl_hits": 4,
+      "top_reason": "continuation_failed_cleanly"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "symbol": "AUD_USD",
+      "timeframe": "5m",
+      "ladder_step": 2,
+      "sl_hits": 3,
+      "top_reason": "continuation_failed_cleanly"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "symbol": "AUD_USD",
+      "timeframe": "5m",
+      "ladder_step": 3,
+      "sl_hits": 2,
+      "top_reason": "continuation_failed_cleanly"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "symbol": "EUR_USD",
+      "timeframe": "5m",
+      "ladder_step": 0,
+      "sl_hits": 7,
+      "top_reason": "duplicate_cluster_exposure"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "symbol": "EUR_USD",
+      "timeframe": "5m",
+      "ladder_step": 1,
+      "sl_hits": 5,
+      "top_reason": "duplicate_cluster_exposure"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "symbol": "EUR_USD",
+      "timeframe": "5m",
+      "ladder_step": 2,
+      "sl_hits": 4,
+      "top_reason": "duplicate_cluster_exposure"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "symbol": "EUR_USD",
+      "timeframe": "5m",
+      "ladder_step": 3,
+      "sl_hits": 7,
+      "top_reason": "duplicate_cluster_exposure"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "symbol": "GBP_JPY",
+      "timeframe": "15m",
+      "ladder_step": 0,
+      "sl_hits": 4,
+      "top_reason": "insufficient_reward_after_survival"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "symbol": "GBP_JPY",
+      "timeframe": "15m",
+      "ladder_step": 1,
+      "sl_hits": 3,
+      "top_reason": "structure_invalidated_before_reversal"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "symbol": "NAS100_USD",
+      "timeframe": "5m",
+      "ladder_step": 0,
+      "sl_hits": 5,
+      "top_reason": "duplicate_cluster_exposure"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "symbol": "NAS100_USD",
+      "timeframe": "5m",
+      "ladder_step": 1,
+      "sl_hits": 3,
+      "top_reason": "duplicate_cluster_exposure"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "symbol": "NAS100_USD",
+      "timeframe": "5m",
+      "ladder_step": 2,
+      "sl_hits": 3,
+      "top_reason": "duplicate_cluster_exposure"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "symbol": "NAS100_USD",
+      "timeframe": "5m",
+      "ladder_step": 3,
+      "sl_hits": 8,
+      "top_reason": "duplicate_cluster_exposure"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "symbol": "NZD_USD",
+      "timeframe": "5m",
+      "ladder_step": 0,
+      "sl_hits": 5,
+      "top_reason": "continuation_failed_cleanly"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "symbol": "NZD_USD",
+      "timeframe": "5m",
+      "ladder_step": 1,
+      "sl_hits": 5,
+      "top_reason": "continuation_failed_cleanly"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "symbol": "NZD_USD",
+      "timeframe": "5m",
+      "ladder_step": 2,
+      "sl_hits": 4,
+      "top_reason": "continuation_failed_cleanly"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "symbol": "NZD_USD",
+      "timeframe": "5m",
+      "ladder_step": 3,
+      "sl_hits": 8,
+      "top_reason": "continuation_failed_cleanly"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "symbol": "SPX500_USD",
+      "timeframe": "5m",
+      "ladder_step": 0,
+      "sl_hits": 7,
+      "top_reason": "insufficient_reward_after_survival"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "symbol": "SPX500_USD",
+      "timeframe": "5m",
+      "ladder_step": 1,
+      "sl_hits": 4,
+      "top_reason": "duplicate_cluster_exposure"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "symbol": "SPX500_USD",
+      "timeframe": "5m",
+      "ladder_step": 2,
+      "sl_hits": 4,
+      "top_reason": "duplicate_cluster_exposure"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "symbol": "SPX500_USD",
+      "timeframe": "5m",
+      "ladder_step": 3,
+      "sl_hits": 5,
+      "top_reason": "continuation_failed_cleanly"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "symbol": "UK100_GBP",
+      "timeframe": "5m",
+      "ladder_step": 0,
+      "sl_hits": 2,
+      "top_reason": "insufficient_reward_after_survival"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "symbol": "UK100_GBP",
+      "timeframe": "5m",
+      "ladder_step": 1,
+      "sl_hits": 2,
+      "top_reason": "structure_invalidated_before_reversal"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "symbol": "UK100_GBP",
+      "timeframe": "5m",
+      "ladder_step": 2,
+      "sl_hits": 1,
+      "top_reason": "duplicate_cluster_exposure"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "symbol": "UK100_GBP",
+      "timeframe": "5m",
+      "ladder_step": 3,
+      "sl_hits": 8,
+      "top_reason": "duplicate_cluster_exposure"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "symbol": "USD_JPY",
+      "timeframe": "5m",
+      "ladder_step": 0,
+      "sl_hits": 8,
+      "top_reason": "duplicate_cluster_exposure"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "symbol": "USD_JPY",
+      "timeframe": "5m",
+      "ladder_step": 1,
+      "sl_hits": 7,
+      "top_reason": "insufficient_reward_after_survival"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "symbol": "USD_JPY",
+      "timeframe": "5m",
+      "ladder_step": 2,
+      "sl_hits": 5,
+      "top_reason": "insufficient_reward_after_survival"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "symbol": "USD_JPY",
+      "timeframe": "5m",
+      "ladder_step": 3,
+      "sl_hits": 2,
+      "top_reason": "insufficient_reward_after_survival"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "root_only",
+      "symbol": "AUD_USD",
+      "timeframe": "5m",
+      "ladder_step": 0,
+      "sl_hits": 5,
+      "top_reason": "continuation_failed_cleanly"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "root_only",
+      "symbol": "AUD_USD",
+      "timeframe": "5m",
+      "ladder_step": 1,
+      "sl_hits": 3,
+      "top_reason": "continuation_failed_cleanly"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "root_only",
+      "symbol": "AUD_USD",
+      "timeframe": "5m",
+      "ladder_step": 2,
+      "sl_hits": 3,
+      "top_reason": "continuation_failed_cleanly"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "root_only",
+      "symbol": "AUD_USD",
+      "timeframe": "5m",
+      "ladder_step": 3,
+      "sl_hits": 2,
+      "top_reason": "continuation_failed_cleanly"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "root_only",
+      "symbol": "EUR_USD",
+      "timeframe": "5m",
+      "ladder_step": 0,
+      "sl_hits": 2,
+      "top_reason": "continuation_failed_cleanly"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "root_only",
+      "symbol": "EUR_USD",
+      "timeframe": "5m",
+      "ladder_step": 1,
+      "sl_hits": 2,
+      "top_reason": "continuation_failed_cleanly"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "root_only",
+      "symbol": "EUR_USD",
+      "timeframe": "5m",
+      "ladder_step": 2,
+      "sl_hits": 2,
+      "top_reason": "continuation_failed_cleanly"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "root_only",
+      "symbol": "EUR_USD",
+      "timeframe": "5m",
+      "ladder_step": 3,
+      "sl_hits": 3,
+      "top_reason": "continuation_failed_cleanly"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "root_only",
+      "symbol": "GBP_JPY",
+      "timeframe": "15m",
+      "ladder_step": 0,
+      "sl_hits": 3,
+      "top_reason": "insufficient_reward_after_survival"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "root_only",
+      "symbol": "GBP_JPY",
+      "timeframe": "15m",
+      "ladder_step": 1,
+      "sl_hits": 2,
+      "top_reason": "structure_invalidated_before_reversal"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "root_only",
+      "symbol": "NAS100_USD",
+      "timeframe": "5m",
+      "ladder_step": 0,
+      "sl_hits": 3,
+      "top_reason": "stop_too_tight"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "root_only",
+      "symbol": "NAS100_USD",
+      "timeframe": "5m",
+      "ladder_step": 1,
+      "sl_hits": 2,
+      "top_reason": "structure_invalidated_before_reversal"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "root_only",
+      "symbol": "NAS100_USD",
+      "timeframe": "5m",
+      "ladder_step": 2,
+      "sl_hits": 2,
+      "top_reason": "structure_invalidated_before_reversal"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "root_only",
+      "symbol": "NAS100_USD",
+      "timeframe": "5m",
+      "ladder_step": 3,
+      "sl_hits": 3,
+      "top_reason": "structure_invalidated_before_reversal"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "root_only",
+      "symbol": "NZD_USD",
+      "timeframe": "5m",
+      "ladder_step": 0,
+      "sl_hits": 4,
+      "top_reason": "continuation_failed_cleanly"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "root_only",
+      "symbol": "NZD_USD",
+      "timeframe": "5m",
+      "ladder_step": 1,
+      "sl_hits": 4,
+      "top_reason": "continuation_failed_cleanly"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "root_only",
+      "symbol": "NZD_USD",
+      "timeframe": "5m",
+      "ladder_step": 2,
+      "sl_hits": 3,
+      "top_reason": "continuation_failed_cleanly"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "root_only",
+      "symbol": "NZD_USD",
+      "timeframe": "5m",
+      "ladder_step": 3,
+      "sl_hits": 5,
+      "top_reason": "continuation_failed_cleanly"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "root_only",
+      "symbol": "SPX500_USD",
+      "timeframe": "5m",
+      "ladder_step": 0,
+      "sl_hits": 4,
+      "top_reason": "insufficient_reward_after_survival"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "root_only",
+      "symbol": "SPX500_USD",
+      "timeframe": "5m",
+      "ladder_step": 1,
+      "sl_hits": 2,
+      "top_reason": "structure_invalidated_before_reversal"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "root_only",
+      "symbol": "SPX500_USD",
+      "timeframe": "5m",
+      "ladder_step": 2,
+      "sl_hits": 2,
+      "top_reason": "structure_invalidated_before_reversal"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "root_only",
+      "symbol": "SPX500_USD",
+      "timeframe": "5m",
+      "ladder_step": 3,
+      "sl_hits": 4,
+      "top_reason": "continuation_failed_cleanly"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "root_only",
+      "symbol": "UK100_GBP",
+      "timeframe": "5m",
+      "ladder_step": 0,
+      "sl_hits": 1,
+      "top_reason": "insufficient_reward_after_survival"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "root_only",
+      "symbol": "UK100_GBP",
+      "timeframe": "5m",
+      "ladder_step": 1,
+      "sl_hits": 1,
+      "top_reason": "structure_invalidated_before_reversal"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "root_only",
+      "symbol": "USD_JPY",
+      "timeframe": "5m",
+      "ladder_step": 0,
+      "sl_hits": 5,
+      "top_reason": "insufficient_reward_after_survival"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "root_only",
+      "symbol": "USD_JPY",
+      "timeframe": "5m",
+      "ladder_step": 1,
+      "sl_hits": 5,
+      "top_reason": "insufficient_reward_after_survival"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "root_only",
+      "symbol": "USD_JPY",
+      "timeframe": "5m",
+      "ladder_step": 2,
+      "sl_hits": 1,
+      "top_reason": "insufficient_reward_after_survival"
+    }
+  ],
+  "top_small_overshoot_cases": [
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "setup_id": "cwt-eur_usd-5m-scenario1-long-202604080130",
+      "symbol": "EUR_USD",
+      "timeframe": "5m",
+      "side": "long",
+      "signal_timestamp": "2026-04-08T01:30:00+00:00",
+      "stop_overshoot_r": 0.0044,
+      "mfe_after_sl_r": 1.1718,
+      "recommended_action": "Require one-bar follow-through"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "setup_id": "cwt-gbp_jpy-15m-scenario1-long-202604081100",
+      "symbol": "GBP_JPY",
+      "timeframe": "15m",
+      "side": "long",
+      "signal_timestamp": "2026-04-08T11:00:00+00:00",
+      "stop_overshoot_r": 0.0051,
+      "mfe_after_sl_r": 1.633,
+      "recommended_action": "Keep baseline"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "root_only",
+      "setup_id": "cwt-gbp_jpy-15m-scenario1-long-202604081100",
+      "symbol": "GBP_JPY",
+      "timeframe": "15m",
+      "side": "long",
+      "signal_timestamp": "2026-04-08T11:00:00+00:00",
+      "stop_overshoot_r": 0.0051,
+      "mfe_after_sl_r": 1.633,
+      "recommended_action": "Keep baseline"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "raw",
+      "setup_id": "cwt-nzd_usd-5m-scenario1-long-202604150515",
+      "symbol": "NZD_USD",
+      "timeframe": "5m",
+      "side": "long",
+      "signal_timestamp": "2026-04-15T05:15:00+00:00",
+      "stop_overshoot_r": 0.0147,
+      "mfe_after_sl_r": 1.0475,
+      "recommended_action": "Keep baseline"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "root_only",
+      "setup_id": "cwt-nzd_usd-5m-scenario1-long-202604150515",
+      "symbol": "NZD_USD",
+      "timeframe": "5m",
+      "side": "long",
+      "signal_timestamp": "2026-04-15T05:15:00+00:00",
+      "stop_overshoot_r": 0.0147,
+      "mfe_after_sl_r": 1.0475,
+      "recommended_action": "Keep baseline"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "setup_id": "cwt-spx500_usd-5m-scenario1-long-202604080535",
+      "symbol": "SPX500_USD",
+      "timeframe": "5m",
+      "side": "long",
+      "signal_timestamp": "2026-04-08T05:35:00+00:00",
+      "stop_overshoot_r": 0.0153,
+      "mfe_after_sl_r": 1.5316,
+      "recommended_action": "Require one-bar follow-through"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "root_only",
+      "setup_id": "cwt-spx500_usd-5m-scenario1-long-202604080535",
+      "symbol": "SPX500_USD",
+      "timeframe": "5m",
+      "side": "long",
+      "signal_timestamp": "2026-04-08T05:35:00+00:00",
+      "stop_overshoot_r": 0.0153,
+      "mfe_after_sl_r": 1.5316,
+      "recommended_action": "Require one-bar follow-through"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "setup_id": "cwt-eur_usd-5m-scenario1-long-202604091320",
+      "symbol": "EUR_USD",
+      "timeframe": "5m",
+      "side": "long",
+      "signal_timestamp": "2026-04-09T13:20:00+00:00",
+      "stop_overshoot_r": 0.0158,
+      "mfe_after_sl_r": 3.7472,
+      "recommended_action": "Require one-bar follow-through"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "setup_id": "cwt-nas100_usd-5m-scenario1-long-202604100135",
+      "symbol": "NAS100_USD",
+      "timeframe": "5m",
+      "side": "long",
+      "signal_timestamp": "2026-04-10T01:35:00+00:00",
+      "stop_overshoot_r": 0.0166,
+      "mfe_after_sl_r": 1.3467,
+      "recommended_action": "Require one-bar follow-through"
+    },
+    {
+      "source_section": "operational_journal",
+      "trade_lens": "raw",
+      "setup_id": "cwt-aud_usd-5m-scenario1-long-202604142315",
+      "symbol": "AUD_USD",
+      "timeframe": "5m",
+      "side": "long",
+      "signal_timestamp": "2026-04-14T23:15:00+00:00",
+      "stop_overshoot_r": 0.019,
+      "mfe_after_sl_r": 4.4076,
+      "recommended_action": "Skip high-noise session"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "setup_id": "cwt-spx500_usd-5m-scenario1-long-202604100130",
+      "symbol": "SPX500_USD",
+      "timeframe": "5m",
+      "side": "long",
+      "signal_timestamp": "2026-04-10T01:30:00+00:00",
+      "stop_overshoot_r": 0.021,
+      "mfe_after_sl_r": 2.4931,
+      "recommended_action": "Skip duplicate cluster"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "setup_id": "cwt-eur_usd-5m-scenario1-long-202604071820",
+      "symbol": "EUR_USD",
+      "timeframe": "5m",
+      "side": "long",
+      "signal_timestamp": "2026-04-07T18:20:00+00:00",
+      "stop_overshoot_r": 0.0263,
+      "mfe_after_sl_r": 14.6683,
+      "recommended_action": "Widen stop +10%"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "root_only",
+      "setup_id": "cwt-eur_usd-5m-scenario1-long-202604071820",
+      "symbol": "EUR_USD",
+      "timeframe": "5m",
+      "side": "long",
+      "signal_timestamp": "2026-04-07T18:20:00+00:00",
+      "stop_overshoot_r": 0.0263,
+      "mfe_after_sl_r": 14.6683,
+      "recommended_action": "Widen stop +10%"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "setup_id": "cwt-eur_usd-5m-scenario1-long-202604091605",
+      "symbol": "EUR_USD",
+      "timeframe": "5m",
+      "side": "long",
+      "signal_timestamp": "2026-04-09T16:05:00+00:00",
+      "stop_overshoot_r": 0.0269,
+      "mfe_after_sl_r": 1.2963,
+      "recommended_action": "Require one-bar follow-through"
+    },
+    {
+      "source_section": "since_inception_replay",
+      "trade_lens": "raw",
+      "setup_id": "cwt-nzd_usd-5m-scenario1-long-202604090410",
+      "symbol": "NZD_USD",
+      "timeframe": "5m",
+      "side": "long",
+      "signal_timestamp": "2026-04-09T04:10:00+00:00",
+      "stop_overshoot_r": 0.0311,
+      "mfe_after_sl_r": 2.2586,
+      "recommended_action": "Skip duplicate cluster"
+    }
+  ]
+}

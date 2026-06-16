@@ -1,0 +1,47 @@
+{
+    "name":  "little_rzy_4h_baseline_zero_cost",
+    "provider":  "oanda",
+    "oanda_environment":  "practice",
+    "symbols":  [
+                    "WTICO_USD",
+                    "BCO_USD",
+                    "XAG_USD",
+                    "UK100_GBP",
+                    "NAS100_USD",
+                    "XAU_USD"
+                ],
+    "granularity":  "H4",
+    "timeframe":  "4h",
+    "higher_timeframe":  "1d",
+    "use_market_profile":  true,
+    "costs":  {
+                  "commission_per_trade":  0,
+                  "spread_points":  0,
+                  "slippage_points":  0
+              },
+    "constraints":  {
+                        "max_open_risk":  null,
+                        "max_trades_per_day":  null,
+                        "max_trades_per_symbol_per_day":  null,
+                        "max_daily_drawdown":  null,
+                        "allow_partial_size":  true
+                    },
+    "segments":  [
+                     {
+                         "name":  "segment_2023_h1",
+                         "start":  "2023-01-01",
+                         "end":  "2023-06-30"
+                     },
+                     {
+                         "name":  "segment_2023_h2",
+                         "start":  "2023-07-01",
+                         "end":  "2023-12-31"
+                     },
+                     {
+                         "name":  "segment_2024_h1",
+                         "start":  "2024-01-01",
+                         "end":  "2024-06-30"
+                     }
+                 ],
+    "output_dir":  "output/research/little_rzy_4h_baseline"
+}

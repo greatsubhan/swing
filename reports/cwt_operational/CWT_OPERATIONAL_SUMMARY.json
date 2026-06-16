@@ -1,0 +1,346 @@
+{
+  "strategy_id": "strategy_four",
+  "strategy_name": "Cambist With Trend",
+  "generated_from": {
+    "journal_file": "C:\\Users\\Seeker\\Documents\\swing-pr1\\platform_output\\strategy_four\\signal_journal.json",
+    "route_cycle_log": "C:\\Users\\Seeker\\Documents\\swing-pr1\\platform_output\\strategy_four\\route_cycle_log.csv",
+    "reinforcement_log": "C:\\Users\\Seeker\\Documents\\swing-pr1\\platform_output\\strategy_four\\reinforcement_decisions.jsonl"
+  },
+  "performance": {
+    "total_signals": 114,
+    "closed_signals": 112,
+    "open_signals": 2,
+    "tp_hits": 56,
+    "sl_hits": 56,
+    "other_closures": 0,
+    "win_rate": 0.5,
+    "avg_hold_hours": 3.746279761904762,
+    "total_realized_r": 0.0,
+    "avg_closed_r": 0.0
+  },
+  "symbol_breakdown": [
+    {
+      "symbol": "AUD_USD",
+      "timeframe": "5m",
+      "side": "long",
+      "signals": 24,
+      "closed": 24,
+      "open": 0,
+      "tp_hits": 11,
+      "sl_hits": 13,
+      "win_rate": 0.4583
+    },
+    {
+      "symbol": "GBP_JPY",
+      "timeframe": "15m",
+      "side": "long",
+      "signals": 21,
+      "closed": 21,
+      "open": 0,
+      "tp_hits": 17,
+      "sl_hits": 4,
+      "win_rate": 0.8095
+    },
+    {
+      "symbol": "SPX500_USD",
+      "timeframe": "5m",
+      "side": "long",
+      "signals": 18,
+      "closed": 18,
+      "open": 0,
+      "tp_hits": 8,
+      "sl_hits": 10,
+      "win_rate": 0.4444
+    },
+    {
+      "symbol": "NAS100_USD",
+      "timeframe": "5m",
+      "side": "long",
+      "signals": 15,
+      "closed": 14,
+      "open": 1,
+      "tp_hits": 7,
+      "sl_hits": 7,
+      "win_rate": 0.5
+    },
+    {
+      "symbol": "EUR_USD",
+      "timeframe": "5m",
+      "side": "long",
+      "signals": 7,
+      "closed": 7,
+      "open": 0,
+      "tp_hits": 3,
+      "sl_hits": 4,
+      "win_rate": 0.4286
+    },
+    {
+      "symbol": "NZD_USD",
+      "timeframe": "5m",
+      "side": "long",
+      "signals": 6,
+      "closed": 6,
+      "open": 0,
+      "tp_hits": 0,
+      "sl_hits": 6,
+      "win_rate": 0.0
+    },
+    {
+      "symbol": "USD_JPY",
+      "timeframe": "5m",
+      "side": "long",
+      "signals": 6,
+      "closed": 6,
+      "open": 0,
+      "tp_hits": 3,
+      "sl_hits": 3,
+      "win_rate": 0.5
+    },
+    {
+      "symbol": "UK100_GBP",
+      "timeframe": "5m",
+      "side": "long",
+      "signals": 5,
+      "closed": 5,
+      "open": 0,
+      "tp_hits": 2,
+      "sl_hits": 3,
+      "win_rate": 0.4
+    },
+    {
+      "symbol": "EUR_USD",
+      "timeframe": "5m",
+      "side": "short",
+      "signals": 2,
+      "closed": 2,
+      "open": 0,
+      "tp_hits": 1,
+      "sl_hits": 1,
+      "win_rate": 0.5
+    },
+    {
+      "symbol": "NAS100_USD",
+      "timeframe": "5m",
+      "side": "short",
+      "signals": 2,
+      "closed": 2,
+      "open": 0,
+      "tp_hits": 2,
+      "sl_hits": 0,
+      "win_rate": 1.0
+    },
+    {
+      "symbol": "UK100_GBP",
+      "timeframe": "5m",
+      "side": "short",
+      "signals": 2,
+      "closed": 2,
+      "open": 0,
+      "tp_hits": 0,
+      "sl_hits": 2,
+      "win_rate": 0.0
+    },
+    {
+      "symbol": "USD_JPY",
+      "timeframe": "5m",
+      "side": "short",
+      "signals": 2,
+      "closed": 2,
+      "open": 0,
+      "tp_hits": 0,
+      "sl_hits": 2,
+      "win_rate": 0.0
+    },
+    {
+      "symbol": "AUD_USD",
+      "timeframe": "5m",
+      "side": "short",
+      "signals": 1,
+      "closed": 1,
+      "open": 0,
+      "tp_hits": 0,
+      "sl_hits": 1,
+      "win_rate": 0.0
+    },
+    {
+      "symbol": "GBP_JPY",
+      "timeframe": "15m",
+      "side": "short",
+      "signals": 1,
+      "closed": 0,
+      "open": 1,
+      "tp_hits": 0,
+      "sl_hits": 0,
+      "win_rate": null
+    },
+    {
+      "symbol": "NZD_USD",
+      "timeframe": "5m",
+      "side": "short",
+      "signals": 1,
+      "closed": 1,
+      "open": 0,
+      "tp_hits": 1,
+      "sl_hits": 0,
+      "win_rate": 1.0
+    },
+    {
+      "symbol": "SPX500_USD",
+      "timeframe": "5m",
+      "side": "short",
+      "signals": 1,
+      "closed": 1,
+      "open": 0,
+      "tp_hits": 1,
+      "sl_hits": 0,
+      "win_rate": 1.0
+    }
+  ],
+  "duplicate_clusters": [
+    {
+      "symbol": "AUD_USD",
+      "timeframe": "5m",
+      "side": "long",
+      "signals": 24,
+      "same_hour_bursts": 11,
+      "first_signal": "2026-04-13T22:35:00+00:00",
+      "last_signal": "2026-04-16T05:55:00+00:00"
+    },
+    {
+      "symbol": "GBP_JPY",
+      "timeframe": "15m",
+      "side": "long",
+      "signals": 21,
+      "same_hour_bursts": 9,
+      "first_signal": "2026-04-13T11:00:00+00:00",
+      "last_signal": "2026-04-15T05:15:00+00:00"
+    },
+    {
+      "symbol": "SPX500_USD",
+      "timeframe": "5m",
+      "side": "long",
+      "signals": 18,
+      "same_hour_bursts": 3,
+      "first_signal": "2026-04-14T22:10:00+00:00",
+      "last_signal": "2026-04-17T05:45:00+00:00"
+    },
+    {
+      "symbol": "NAS100_USD",
+      "timeframe": "5m",
+      "side": "long",
+      "signals": 15,
+      "same_hour_bursts": 7,
+      "first_signal": "2026-04-13T19:20:00+00:00",
+      "last_signal": "2026-04-16T05:30:00+00:00"
+    },
+    {
+      "symbol": "EUR_USD",
+      "timeframe": "5m",
+      "side": "long",
+      "signals": 7,
+      "same_hour_bursts": 4,
+      "first_signal": "2026-04-13T23:05:00+00:00",
+      "last_signal": "2026-04-14T23:35:00+00:00"
+    },
+    {
+      "symbol": "NZD_USD",
+      "timeframe": "5m",
+      "side": "long",
+      "signals": 6,
+      "same_hour_bursts": 3,
+      "first_signal": "2026-04-13T23:05:00+00:00",
+      "last_signal": "2026-04-15T07:05:00+00:00"
+    },
+    {
+      "symbol": "USD_JPY",
+      "timeframe": "5m",
+      "side": "long",
+      "signals": 6,
+      "same_hour_bursts": 1,
+      "first_signal": "2026-04-13T11:25:00+00:00",
+      "last_signal": "2026-04-17T05:15:00+00:00"
+    },
+    {
+      "symbol": "UK100_GBP",
+      "timeframe": "5m",
+      "side": "long",
+      "signals": 5,
+      "same_hour_bursts": 1,
+      "first_signal": "2026-04-15T06:20:00+00:00",
+      "last_signal": "2026-04-15T11:40:00+00:00"
+    },
+    {
+      "symbol": "NAS100_USD",
+      "timeframe": "5m",
+      "side": "short",
+      "signals": 2,
+      "same_hour_bursts": 1,
+      "first_signal": "2026-04-13T11:40:00+00:00",
+      "last_signal": "2026-04-13T11:50:00+00:00"
+    },
+    {
+      "symbol": "EUR_USD",
+      "timeframe": "5m",
+      "side": "short",
+      "signals": 2,
+      "same_hour_bursts": 0,
+      "first_signal": "2026-04-03T20:55:00+00:00",
+      "last_signal": "2026-04-13T11:55:00+00:00"
+    }
+  ],
+  "reinforcement_summary": {
+    "root_signals": 185,
+    "reinforcements": 371,
+    "avg_reinforcement_strength": 85.45,
+    "top_root_symbols": [
+      [
+        "SPX500_USD",
+        65
+      ],
+      [
+        "AUD_USD",
+        34
+      ],
+      [
+        "UK100_GBP",
+        32
+      ],
+      [
+        "NAS100_USD",
+        17
+      ],
+      [
+        "GBP_JPY",
+        16
+      ]
+    ]
+  },
+  "route_log_summary": {
+    "cycles": 142,
+    "dispatch_error_cycles": 23,
+    "avg_signals_found": 8.8,
+    "avg_suppressed_duplicates": 4.62,
+    "latest_cycle": {
+      "route": "strategy_four",
+      "run_time_utc": "2026-04-17T08:11:34.441342+00:00",
+      "rows_scanned": "8",
+      "signals_found": "12",
+      "fresh_signals": "4",
+      "recovered_entries": "8",
+      "outcomes_pending": "1",
+      "outcomes_sent": "0",
+      "suppressed_duplicates": "1",
+      "dispatch_errors": "0",
+      "quiet_reason": "0",
+      "null": [
+        "11",
+        "0",
+        ""
+      ]
+    }
+  },
+  "recommendations": [
+    "Reinforcement is doing useful work: clustered same-structure alerts are present, especially on the busiest symbols, so keeping one tradable root signal plus reinforcement updates is justified.",
+    "There have been some dispatch-error cycles in the route log. Keep the new watchdog/restart layer in place and continue watching webhook delivery, but the errors are not yet large enough to justify strategy-level changes."
+  ]
+}

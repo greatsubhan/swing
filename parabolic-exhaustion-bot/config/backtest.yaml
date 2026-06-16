@@ -1,0 +1,595 @@
+signal_expiry_sessions: 2
+entry_mode: next_bar_open
+stop_reference: signal_bar_high
+stop_buffer_points: 0.0
+target_r: 1.5
+intrabar_priority: stop_first
+spread_points: 0.0
+slippage_points: 0.0
+commission_points: 0.0
+borrow_cost_points_per_day: 0.0
+force_exit_minutes_before_close: 5
+
+replay:
+  use_kill_zones_for_entry: true
+  use_5m_context_filter: false
+  allowed_5m_trend_states:
+    - down
+    - transition
+  require_5m_below_vwap_for_entry: false
+  pre_entry_invalidation_on_close_above_vwap: true
+  post_entry_invalidation_on_close_above_vwap: true
+  add_size_pct_of_initial: 40.0
+  max_adds_per_trade: 1
+
+validation_parameter_sets:
+  - id: idx_ps07_baseline_on
+    market_family: indices
+    extension_mode: atr_multiple
+    extension_value: 3.0
+    volume_rank_min: 0.85
+    slope_score_min: 60.0
+    target_r: 2.0
+    partial_take_r: 1.5
+    stop_buffer_points: 0.25
+    killzone_only: true
+    notes: Baseline around ps07 for indices with kill-zone gating enabled.
+  - id: idx_ps07_baseline_off
+    market_family: indices
+    extension_mode: atr_multiple
+    extension_value: 3.0
+    volume_rank_min: 0.85
+    slope_score_min: 60.0
+    target_r: 2.0
+    partial_take_r: 1.5
+    stop_buffer_points: 0.25
+    killzone_only: false
+    notes: Baseline around ps07 for indices without kill-zone gating.
+  - id: idx_looser_ext_on
+    market_family: indices
+    extension_mode: atr_multiple
+    extension_value: 2.5
+    volume_rank_min: 0.80
+    slope_score_min: 55.0
+    target_r: 2.0
+    partial_take_r: 1.5
+    stop_buffer_points: 0.25
+    killzone_only: true
+    notes: Looser extension and slope filter for indices with kill-zone gating.
+  - id: idx_looser_ext_off
+    market_family: indices
+    extension_mode: atr_multiple
+    extension_value: 2.5
+    volume_rank_min: 0.80
+    slope_score_min: 55.0
+    target_r: 2.0
+    partial_take_r: 1.5
+    stop_buffer_points: 0.25
+    killzone_only: false
+    notes: Looser extension and slope filter for indices without kill-zone gating.
+  - id: idx_tighter_stop_on
+    market_family: indices
+    extension_mode: atr_multiple
+    extension_value: 3.0
+    volume_rank_min: 0.85
+    slope_score_min: 60.0
+    target_r: 1.5
+    partial_take_r: 1.25
+    stop_buffer_points: 0.15
+    killzone_only: true
+    notes: Tighter stop and smaller target for indices with kill-zone gating.
+  - id: idx_tighter_stop_off
+    market_family: indices
+    extension_mode: atr_multiple
+    extension_value: 3.0
+    volume_rank_min: 0.85
+    slope_score_min: 60.0
+    target_r: 1.5
+    partial_take_r: 1.25
+    stop_buffer_points: 0.15
+    killzone_only: false
+    notes: Tighter stop and smaller target for indices without kill-zone gating.
+  - id: idx_wider_stop_on
+    market_family: indices
+    extension_mode: atr_multiple
+    extension_value: 3.25
+    volume_rank_min: 0.85
+    slope_score_min: 60.0
+    target_r: 2.0
+    partial_take_r: 1.5
+    stop_buffer_points: 0.35
+    killzone_only: true
+    notes: Wider stop variant for indices with kill-zone gating.
+  - id: idx_wider_stop_off
+    market_family: indices
+    extension_mode: atr_multiple
+    extension_value: 3.25
+    volume_rank_min: 0.85
+    slope_score_min: 60.0
+    target_r: 2.0
+    partial_take_r: 1.5
+    stop_buffer_points: 0.35
+    killzone_only: false
+    notes: Wider stop variant for indices without kill-zone gating.
+  - id: met_balanced_on
+    market_family: metals
+    extension_mode: atr_multiple
+    extension_value: 2.0
+    volume_rank_min: 0.70
+    slope_score_min: 50.0
+    target_r: 1.0
+    partial_take_r: 1.0
+    stop_buffer_points: 0.0
+    killzone_only: true
+    notes: Balanced metals filter with kill-zone gating enabled.
+  - id: met_balanced_off
+    market_family: metals
+    extension_mode: atr_multiple
+    extension_value: 2.0
+    volume_rank_min: 0.70
+    slope_score_min: 50.0
+    target_r: 1.0
+    partial_take_r: 1.0
+    stop_buffer_points: 0.0
+    killzone_only: false
+    notes: Balanced metals filter without kill-zone gating.
+  - id: met_smaller_target_on
+    market_family: metals
+    extension_mode: atr_multiple
+    extension_value: 2.25
+    volume_rank_min: 0.70
+    slope_score_min: 50.0
+    target_r: 0.75
+    partial_take_r: 0.75
+    stop_buffer_points: 0.0
+    killzone_only: true
+    notes: Smaller target profile for metals with kill-zone gating.
+  - id: met_smaller_target_off
+    market_family: metals
+    extension_mode: atr_multiple
+    extension_value: 2.25
+    volume_rank_min: 0.70
+    slope_score_min: 50.0
+    target_r: 0.75
+    partial_take_r: 0.75
+    stop_buffer_points: 0.0
+    killzone_only: false
+    notes: Smaller target profile for metals without kill-zone gating.
+  - id: met_buffered_on
+    market_family: metals
+    extension_mode: atr_multiple
+    extension_value: 2.5
+    volume_rank_min: 0.75
+    slope_score_min: 55.0
+    target_r: 1.0
+    partial_take_r: 0.75
+    stop_buffer_points: 0.10
+    killzone_only: true
+    notes: Buffered stop profile for metals with kill-zone gating.
+  - id: met_buffered_off
+    market_family: metals
+    extension_mode: atr_multiple
+    extension_value: 2.5
+    volume_rank_min: 0.75
+    slope_score_min: 55.0
+    target_r: 1.0
+    partial_take_r: 0.75
+    stop_buffer_points: 0.10
+    killzone_only: false
+    notes: Buffered stop profile for metals without kill-zone gating.
+
+flow_validation_parameter_sets:
+  - id: flow_balanced_on
+    symbols: [NAS100_USD, US30_USD]
+    min_daily_atr_pct: 0.60
+    min_vwap_slope_atr: 0.03
+    pullback_distance_atr: 0.35
+    max_extension_atr: 1.25
+    stop_atr_buffer: 0.75
+    stop_lookback_bars: 3
+    target_r: 1.5
+    partial_take_r: 1.0
+    killzone_only: true
+    max_trades_per_day: 2
+    notes: Balanced trend-pullback profile with kill-zone gating.
+  - id: flow_balanced_off
+    symbols: [NAS100_USD, US30_USD]
+    min_daily_atr_pct: 0.60
+    min_vwap_slope_atr: 0.03
+    pullback_distance_atr: 0.35
+    max_extension_atr: 1.25
+    stop_atr_buffer: 0.75
+    stop_lookback_bars: 3
+    target_r: 1.5
+    partial_take_r: 1.0
+    killzone_only: false
+    max_trades_per_day: 2
+    notes: Balanced trend-pullback profile without kill-zone gating.
+  - id: flow_faster_on
+    symbols: [NAS100_USD, US30_USD]
+    min_daily_atr_pct: 0.50
+    min_vwap_slope_atr: 0.02
+    pullback_distance_atr: 0.50
+    max_extension_atr: 1.50
+    stop_atr_buffer: 0.85
+    stop_lookback_bars: 3
+    target_r: 1.25
+    partial_take_r: 0.75
+    killzone_only: true
+    max_trades_per_day: 3
+    notes: Looser, faster profile inside kill zones.
+  - id: flow_faster_off
+    symbols: [NAS100_USD, US30_USD]
+    min_daily_atr_pct: 0.50
+    min_vwap_slope_atr: 0.02
+    pullback_distance_atr: 0.50
+    max_extension_atr: 1.50
+    stop_atr_buffer: 0.85
+    stop_lookback_bars: 3
+    target_r: 1.25
+    partial_take_r: 0.75
+    killzone_only: false
+    max_trades_per_day: 3
+    notes: Looser, faster profile across active sessions.
+  - id: flow_trendier_on
+    symbols: [NAS100_USD, US30_USD]
+    min_daily_atr_pct: 0.65
+    min_vwap_slope_atr: 0.05
+    pullback_distance_atr: 0.30
+    max_extension_atr: 1.10
+    stop_atr_buffer: 0.75
+    stop_lookback_bars: 4
+    target_r: 1.75
+    partial_take_r: 1.0
+    killzone_only: true
+    max_trades_per_day: 2
+    notes: Stronger trend confirmation with slightly wider lookback.
+  - id: flow_trendier_off
+    symbols: [NAS100_USD, US30_USD]
+    min_daily_atr_pct: 0.65
+    min_vwap_slope_atr: 0.05
+    pullback_distance_atr: 0.30
+    max_extension_atr: 1.10
+    stop_atr_buffer: 0.75
+    stop_lookback_bars: 4
+    target_r: 1.75
+    partial_take_r: 1.0
+    killzone_only: false
+    max_trades_per_day: 2
+    notes: Stronger trend confirmation without kill-zone gating.
+  - id: flow_tighter_stop_on
+    symbols: [NAS100_USD, US30_USD]
+    min_daily_atr_pct: 0.60
+    min_vwap_slope_atr: 0.03
+    pullback_distance_atr: 0.35
+    max_extension_atr: 1.10
+    stop_atr_buffer: 0.50
+    stop_lookback_bars: 3
+    target_r: 1.25
+    partial_take_r: 0.75
+    killzone_only: true
+    max_trades_per_day: 2
+    notes: Tighter stop and quicker target profile.
+  - id: flow_tighter_stop_off
+    symbols: [NAS100_USD, US30_USD]
+    min_daily_atr_pct: 0.60
+    min_vwap_slope_atr: 0.03
+    pullback_distance_atr: 0.35
+    max_extension_atr: 1.10
+    stop_atr_buffer: 0.50
+    stop_lookback_bars: 3
+    target_r: 1.25
+    partial_take_r: 0.75
+    killzone_only: false
+    max_trades_per_day: 2
+    notes: Tighter stop and quicker target without kill zones.
+  - id: flow_wider_targets_on
+    symbols: [NAS100_USD, US30_USD]
+    min_daily_atr_pct: 0.55
+    min_vwap_slope_atr: 0.03
+    pullback_distance_atr: 0.40
+    max_extension_atr: 1.40
+    stop_atr_buffer: 1.00
+    stop_lookback_bars: 4
+    target_r: 2.00
+    partial_take_r: 1.0
+    killzone_only: true
+    max_trades_per_day: 2
+    notes: Wider target profile for stronger session trends.
+  - id: flow_wider_targets_off
+    symbols: [NAS100_USD, US30_USD]
+    min_daily_atr_pct: 0.55
+    min_vwap_slope_atr: 0.03
+    pullback_distance_atr: 0.40
+    max_extension_atr: 1.40
+    stop_atr_buffer: 1.00
+    stop_lookback_bars: 4
+    target_r: 2.00
+    partial_take_r: 1.0
+    killzone_only: false
+    max_trades_per_day: 2
+    notes: Wider target profile without kill-zone gating.
+  - id: flow_session_push_on
+    symbols: [NAS100_USD, US30_USD]
+    min_daily_atr_pct: 0.45
+    min_vwap_slope_atr: 0.01
+    pullback_distance_atr: 0.60
+    max_extension_atr: 1.80
+    stop_atr_buffer: 0.85
+    stop_lookback_bars: 2
+    target_r: 1.00
+    partial_take_r: 0.75
+    killzone_only: true
+    max_trades_per_day: 3
+    notes: Highest-frequency profile aimed at session momentum bursts.
+  - id: flow_session_push_off
+    symbols: [NAS100_USD, US30_USD]
+    min_daily_atr_pct: 0.45
+    min_vwap_slope_atr: 0.01
+    pullback_distance_atr: 0.60
+    max_extension_atr: 1.80
+    stop_atr_buffer: 0.85
+    stop_lookback_bars: 2
+    target_r: 1.00
+    partial_take_r: 0.75
+    killzone_only: false
+    max_trades_per_day: 3
+    notes: Highest-frequency profile across active sessions.
+
+flow_open_validation_parameter_sets:
+  - id: flow_open_0930_bal_on
+    symbols: [NAS100_USD, US30_USD]
+    opening_window_variant: open_0930_1030
+    min_daily_atr_pct: 0.55
+    min_vwap_slope_atr: 0.03
+    pullback_distance_atr: 0.40
+    max_extension_atr: 1.40
+    stop_atr_buffer: 0.90
+    stop_lookback_bars: 4
+    target_r: 1.75
+    partial_take_r: 1.0
+    killzone_only: true
+    max_trades_per_day: 2
+    notes: Opening-hour balanced profile with kill-zone gating from 09:30.
+  - id: flow_open_0930_bal_off
+    symbols: [NAS100_USD, US30_USD]
+    opening_window_variant: open_0930_1030
+    min_daily_atr_pct: 0.55
+    min_vwap_slope_atr: 0.03
+    pullback_distance_atr: 0.40
+    max_extension_atr: 1.40
+    stop_atr_buffer: 0.90
+    stop_lookback_bars: 4
+    target_r: 1.75
+    partial_take_r: 1.0
+    killzone_only: false
+    max_trades_per_day: 2
+    notes: Opening-hour balanced profile without kill-zone gating from 09:30.
+  - id: flow_open_0930_fast_on
+    symbols: [NAS100_USD, US30_USD]
+    opening_window_variant: open_0930_1030
+    min_daily_atr_pct: 0.45
+    min_vwap_slope_atr: 0.015
+    pullback_distance_atr: 0.55
+    max_extension_atr: 1.60
+    stop_atr_buffer: 0.70
+    stop_lookback_bars: 3
+    target_r: 1.00
+    partial_take_r: 0.75
+    killzone_only: true
+    max_trades_per_day: 3
+    notes: Opening-hour faster profile with kill-zone gating from 09:30.
+  - id: flow_open_0930_fast_off
+    symbols: [NAS100_USD, US30_USD]
+    opening_window_variant: open_0930_1030
+    min_daily_atr_pct: 0.45
+    min_vwap_slope_atr: 0.015
+    pullback_distance_atr: 0.55
+    max_extension_atr: 1.60
+    stop_atr_buffer: 0.70
+    stop_lookback_bars: 3
+    target_r: 1.00
+    partial_take_r: 0.75
+    killzone_only: false
+    max_trades_per_day: 3
+    notes: Opening-hour faster profile without kill-zone gating from 09:30.
+  - id: flow_open_0935_bal_on
+    symbols: [NAS100_USD, US30_USD]
+    opening_window_variant: open_0935_1030
+    min_daily_atr_pct: 0.55
+    min_vwap_slope_atr: 0.03
+    pullback_distance_atr: 0.40
+    max_extension_atr: 1.40
+    stop_atr_buffer: 0.90
+    stop_lookback_bars: 4
+    target_r: 1.75
+    partial_take_r: 1.0
+    killzone_only: true
+    max_trades_per_day: 2
+    notes: Opening-hour balanced profile with kill-zone gating from 09:35.
+  - id: flow_open_0935_bal_off
+    symbols: [NAS100_USD, US30_USD]
+    opening_window_variant: open_0935_1030
+    min_daily_atr_pct: 0.55
+    min_vwap_slope_atr: 0.03
+    pullback_distance_atr: 0.40
+    max_extension_atr: 1.40
+    stop_atr_buffer: 0.90
+    stop_lookback_bars: 4
+    target_r: 1.75
+    partial_take_r: 1.0
+    killzone_only: false
+    max_trades_per_day: 2
+    notes: Opening-hour balanced profile without kill-zone gating from 09:35.
+  - id: flow_open_0935_fast_on
+    symbols: [NAS100_USD, US30_USD]
+    opening_window_variant: open_0935_1030
+    min_daily_atr_pct: 0.45
+    min_vwap_slope_atr: 0.015
+    pullback_distance_atr: 0.55
+    max_extension_atr: 1.60
+    stop_atr_buffer: 0.70
+    stop_lookback_bars: 3
+    target_r: 1.00
+    partial_take_r: 0.75
+    killzone_only: true
+    max_trades_per_day: 3
+    notes: Opening-hour faster profile with kill-zone gating from 09:35.
+  - id: flow_open_0935_fast_off
+    symbols: [NAS100_USD, US30_USD]
+    opening_window_variant: open_0935_1030
+    min_daily_atr_pct: 0.45
+    min_vwap_slope_atr: 0.015
+    pullback_distance_atr: 0.55
+    max_extension_atr: 1.60
+    stop_atr_buffer: 0.70
+    stop_lookback_bars: 3
+    target_r: 1.00
+    partial_take_r: 0.75
+    killzone_only: false
+    max_trades_per_day: 3
+    notes: Opening-hour faster profile without kill-zone gating from 09:35.
+  - id: flow_open_0945_bal_on
+    symbols: [NAS100_USD, US30_USD]
+    opening_window_variant: open_0945_1030
+    min_daily_atr_pct: 0.55
+    min_vwap_slope_atr: 0.03
+    pullback_distance_atr: 0.40
+    max_extension_atr: 1.40
+    stop_atr_buffer: 0.90
+    stop_lookback_bars: 4
+    target_r: 1.75
+    partial_take_r: 1.0
+    killzone_only: true
+    max_trades_per_day: 2
+    notes: Opening-hour balanced profile with kill-zone gating from 09:45.
+  - id: flow_open_0945_bal_off
+    symbols: [NAS100_USD, US30_USD]
+    opening_window_variant: open_0945_1030
+    min_daily_atr_pct: 0.55
+    min_vwap_slope_atr: 0.03
+    pullback_distance_atr: 0.40
+    max_extension_atr: 1.40
+    stop_atr_buffer: 0.90
+    stop_lookback_bars: 4
+    target_r: 1.75
+    partial_take_r: 1.0
+    killzone_only: false
+    max_trades_per_day: 2
+    notes: Opening-hour balanced profile without kill-zone gating from 09:45.
+  - id: flow_open_0945_fast_on
+    symbols: [NAS100_USD, US30_USD]
+    opening_window_variant: open_0945_1030
+    min_daily_atr_pct: 0.45
+    min_vwap_slope_atr: 0.015
+    pullback_distance_atr: 0.55
+    max_extension_atr: 1.60
+    stop_atr_buffer: 0.70
+    stop_lookback_bars: 3
+    target_r: 1.00
+    partial_take_r: 0.75
+    killzone_only: true
+    max_trades_per_day: 3
+    notes: Opening-hour faster profile with kill-zone gating from 09:45.
+  - id: flow_open_0945_fast_off
+    symbols: [NAS100_USD, US30_USD]
+    opening_window_variant: open_0945_1030
+    min_daily_atr_pct: 0.45
+    min_vwap_slope_atr: 0.015
+    pullback_distance_atr: 0.55
+    max_extension_atr: 1.60
+    stop_atr_buffer: 0.70
+    stop_lookback_bars: 3
+    target_r: 1.00
+    partial_take_r: 0.75
+    killzone_only: false
+    max_trades_per_day: 3
+    notes: Opening-hour faster profile without kill-zone gating from 09:45.
+  - id: flow_open_1000_bal_on
+    symbols: [NAS100_USD, US30_USD]
+    opening_window_variant: open_1000_1100
+    min_daily_atr_pct: 0.55
+    min_vwap_slope_atr: 0.03
+    pullback_distance_atr: 0.40
+    max_extension_atr: 1.40
+    stop_atr_buffer: 0.90
+    stop_lookback_bars: 4
+    target_r: 1.75
+    partial_take_r: 1.0
+    killzone_only: true
+    max_trades_per_day: 2
+    notes: Opening-hour balanced profile with kill-zone gating from 10:00.
+  - id: flow_open_1000_bal_off
+    symbols: [NAS100_USD, US30_USD]
+    opening_window_variant: open_1000_1100
+    min_daily_atr_pct: 0.55
+    min_vwap_slope_atr: 0.03
+    pullback_distance_atr: 0.40
+    max_extension_atr: 1.40
+    stop_atr_buffer: 0.90
+    stop_lookback_bars: 4
+    target_r: 1.75
+    partial_take_r: 1.0
+    killzone_only: false
+    max_trades_per_day: 2
+    notes: Opening-hour balanced profile without kill-zone gating from 10:00.
+  - id: flow_open_1000_fast_on
+    symbols: [NAS100_USD, US30_USD]
+    opening_window_variant: open_1000_1100
+    min_daily_atr_pct: 0.45
+    min_vwap_slope_atr: 0.015
+    pullback_distance_atr: 0.55
+    max_extension_atr: 1.60
+    stop_atr_buffer: 0.70
+    stop_lookback_bars: 3
+    target_r: 1.00
+    partial_take_r: 0.75
+    killzone_only: true
+    max_trades_per_day: 3
+    notes: Opening-hour faster profile with kill-zone gating from 10:00.
+  - id: flow_open_1000_fast_off
+    symbols: [NAS100_USD, US30_USD]
+    opening_window_variant: open_1000_1100
+    min_daily_atr_pct: 0.45
+    min_vwap_slope_atr: 0.015
+    pullback_distance_atr: 0.55
+    max_extension_atr: 1.60
+    stop_atr_buffer: 0.70
+    stop_lookback_bars: 3
+    target_r: 1.00
+    partial_take_r: 0.75
+    killzone_only: false
+    max_trades_per_day: 3
+    notes: Opening-hour faster profile without kill-zone gating from 10:00.
+
+parameter_grid:
+  extension_modes:
+    - atr_multiple
+    - points
+  extension_values:
+    - 2.0
+    - 3.0
+  volume_rank_values:
+    - 0.7
+    - 0.85
+  slope_score_values:
+    - 50.0
+    - 60.0
+  signal_timeframes:
+    - 1m
+    - 5m
+  target_r_values:
+    - 1.0
+    - 1.5
+  stop_buffer_points:
+    - 0.0
+    - 0.25
+
+walk_forward_windows:
+  - name: baseline
+    in_sample_start: 2023-01-01
+    in_sample_end: 2023-12-31
+    validation_start: 2024-01-01
+    validation_end: 2024-06-30
+    out_of_sample_start: 2024-07-01
+    out_of_sample_end: 2024-12-31

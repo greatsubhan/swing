@@ -3,13 +3,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Protocol
+from typing import Any, Protocol
 
 from .models import ScanResult
 
 
 @dataclass
 class StrategyScanRequest:
+    strategy_id: str
     watchlist: str
     granularity: str
     higher_timeframe: str
@@ -18,6 +19,12 @@ class StrategyScanRequest:
     price: str
     output_dir: Path
     use_market_profile: bool = True
+    log_signals: bool = False
+    log_filtered_setups: bool = False
+    signal_log_file: str | None = None
+    filtered_log_file: str | None = None
+    catch_up_hours: float | None = None
+    extra: dict[str, Any] | None = None
 
 
 class StrategyPlugin(Protocol):

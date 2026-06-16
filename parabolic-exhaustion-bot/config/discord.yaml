@@ -1,0 +1,8 @@
+enabled: true
+webhook_env_var: DISCORD_WEBHOOK_URL
+channel_name:
+username: Parabolic Exhaustion Bot
+avatar_url:
+rate_limit_per_minute: 20
+retry_attempts: 3
+retry_backoff_seconds: 2.0

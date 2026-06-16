@@ -57,6 +57,15 @@ class Signal:
     alerts: List[str]
     reason_summary: str
     setup_id: str
+    profile_name: str | None = None
+    atr_at_entry: float | None = None
+    bar_range_at_entry: float | None = None
+    retrace_pct: float | None = None
+    impulse_atr_multiple: float | None = None
+    volatility_regime: str | None = None
+    session: str | None = None
+    structure_tag: str | None = None
+    higher_timeframe_bias: str | None = None
 
     def to_dict(self) -> Dict[str, Any]:
         data = asdict(self)
@@ -82,14 +91,18 @@ class SetupCandidate:
     trendline_tolerance: float
     target: float
     measured_distance: float
+    retrace_pct: float
+    impulse_atr_multiple: float
     risk_reward: float
     validity_reason: str
 
 
 @dataclass
 class TradeResult:
+    trade_id: str
     symbol: str
     timeframe: str
+    profile_name: str
     side: str
     signal_time: str
     entry_time: str
@@ -99,12 +112,24 @@ class TradeResult:
     target_price: float
     exit_price: float
     exit_reason: str
+    size_fraction: float
+    gross_pnl: float
+    commission_paid: float
+    net_pnl: float
     pnl_r: float
     pnl_pct: float
     bars_held: int
     trend_maturity: int
     quality_score: int
     bollinger_context: str
+    atr_at_entry: float | None
+    bar_range_at_entry: float | None
+    retrace_pct: float | None
+    rr_target: float | None
+    volatility_regime: str | None
+    session: str | None
+    structure_tag: str | None
+    higher_timeframe_bias: str | None
     setup_id: str
 
 
@@ -119,7 +144,23 @@ class PerformanceSummary:
     avg_hold_bars: float
     longs: int
     shorts: int
+    total_net_pnl: float = 0.0
+    total_commission: float = 0.0
+    max_drawdown_currency: float = 0.0
+    skipped_trades: int = 0
+    partial_size_trades: int = 0
     by_symbol: Dict[str, Dict[str, float]] = field(default_factory=dict)
     by_timeframe: Dict[str, Dict[str, float]] = field(default_factory=dict)
     by_trend_maturity: Dict[str, Dict[str, float]] = field(default_factory=dict)
     by_bollinger_bucket: Dict[str, Dict[str, float]] = field(default_factory=dict)
+
+
+@dataclass
+class SimulationDiagnostics:
+    skipped_max_open_risk: int = 0
+    skipped_max_trades_per_day: int = 0
+    skipped_max_trades_per_symbol_per_day: int = 0
+    skipped_max_daily_drawdown: int = 0
+    skipped_filters: int = 0
+    partial_size_trades: int = 0
+    accepted_trades: int = 0

@@ -1,0 +1,78 @@
+{
+  "assumption": {
+    "watchlist": "core-mixed",
+    "inception_utc_assumed": "2026-04-05T12:10:00+00:00",
+    "note": "Assumed from the April 5, 2026 live CWT implementation window."
+  },
+  "total_signals": 312,
+  "tp_hits": 136,
+  "sl_hits": 141,
+  "open_signals": 35,
+  "total_realized_r": -5.0,
+  "by_symbol": [
+    {
+      "symbol": "NAS100_USD",
+      "timeframe": "5m",
+      "signals": 36,
+      "tp_hits": 8,
+      "sl_hits": 19,
+      "open": 9
+    },
+    {
+      "symbol": "SPX500_USD",
+      "timeframe": "5m",
+      "signals": 44,
+      "tp_hits": 18,
+      "sl_hits": 20,
+      "open": 6
+    },
+    {
+      "symbol": "UK100_GBP",
+      "timeframe": "5m",
+      "signals": 15,
+      "tp_hits": 1,
+      "sl_hits": 13,
+      "open": 1
+    },
+    {
+      "symbol": "USD_JPY",
+      "timeframe": "5m",
+      "signals": 52,
+      "tp_hits": 28,
+      "sl_hits": 22,
+      "open": 2
+    },
+    {
+      "symbol": "NZD_USD",
+      "timeframe": "5m",
+      "signals": 43,
+      "tp_hits": 21,
+      "sl_hits": 22,
+      "open": 0
+    },
+    {
+      "symbol": "AUD_USD",
+      "timeframe": "5m",
+      "signals": 34,
+      "tp_hits": 12,
+      "sl_hits": 15,
+      "open": 7
+    },
+    {
+      "symbol": "EUR_USD",
+      "timeframe": "5m",
+      "signals": 51,
+      "tp_hits": 23,
+      "sl_hits": 23,
+      "open": 5
+    },
+    {
+      "symbol": "GBP_JPY",
+      "timeframe": "15m",
+      "signals": 37,
+      "tp_hits": 25,
+      "sl_hits": 7,
+      "open": 5
+    }
+  ]
+}

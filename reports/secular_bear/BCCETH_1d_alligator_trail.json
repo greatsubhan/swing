@@ -1,0 +1,31 @@
+{
+  "symbol": "BCCETH",
+  "execution_interval": "1d",
+  "regime_filter": "alligator",
+  "exit_mode": "trail",
+  "trades": 1,
+  "win_rate": 0.0,
+  "avg_r": -0.042,
+  "profit_factor": 0.0,
+  "total_r": -0.042,
+  "max_drawdown_r": -0.042,
+  "avg_bars_held": 9.0,
+  "closed_positions": [
+    {
+      "symbol": "BCCETH",
+      "side": "short",
+      "entry_time": "2018-07-06 00:00:00+00:00",
+      "entry_price": 1.59154,
+      "stop_price": 1.794365,
+      "target_price": null,
+      "exit_mode": "trail",
+      "risk_per_unit": 0.20282500000000003,
+      "tranche_id": 1,
+      "bars_held": 9,
+      "exit_time": "2018-07-13 00:00:00+00:00",
+      "exit_price": 1.6,
+      "exit_reason": "trend_break",
+      "r_multiple": -0.04171083446320785
+    }
+  ]
+}

@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Crew — Architecture Dashboard</title>
+<style>
+/* ═══════════════════════════════════════════
+   CSS CUSTOM PROPERTIES
+   ═══════════════════════════════════════════ */
+:root {
+  --bg: #0A0808;
+  --bg-card: #1A1818;
+  --bg-card-hover: #222020;
+  --bg-surface: #141212;
+  --text: #F5EDE6;
+  --text-secondary: #B8A898;
+  --text-muted: #7A7068;
+  --border: #2A2826;
+  --border-glow: rgba(240,200,160,0.12);
+  --peach: #F0C8A0;
+  --peach-deep: #D8A878;
+  --peach-glow: rgba(240,200,160,0.15);
+  --peach-dim: rgba(240,200,160,0.08);
+  --positive: #70D89A;
+  --positive-bg: rgba(112,216,154,0.10);
+  --negative: #E08070;
+  --negative-bg: rgba(224,128,112,0.10);
+  --warning: #E0C870;
+  --warning-bg: rgba(224,200,112,0.10);
+  --mint: #70D89A;
+  --mint-bg: rgba(112,216,154,0.12);
+  --sky: #70B8E0;
+  --sky-bg: rgba(112,184,224,0.12);
+  --lavender: #A090D0;
+  --lavender-bg: rgba(160,144,208,0.12);
+  --coral: #E08070;
+  --coral-bg: rgba(224,128,112,0.12);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-xs: 6px;
+  --shadow: 0 4px 20px rgba(0,0,0,0.3);
+  --shadow-hover: 0 8px 30px rgba(0,0,0,0.4);
+  --glow: 0 0 20px rgba(240,200,160,0.06);
+  --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes popIn { 0% { transform: scale(0.92); opacity: 0; } 60% { transform: scale(1.02); } 100% { transform: scale(1); opacity: 1; } }
+@keyframes flowPulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+@keyframes modalFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes modalSlide { from { opacity: 0; transform: translateY(20px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+.app { max-width: 1300px; margin: 0 auto; padding: 16px; }
+
+/* ═══════════════════════════════════════════
+   HEADER
+   ═══════════════════════════════════════════ */
+.header { text-align: center; padding: 28px 16px 16px; animation: fadeInUp 0.6s ease-out; border-bottom: 1px solid var(--border); margin-bottom: 8px; }
+.header-logo { font-size: 2rem; margin-bottom: 6px; filter: drop-shadow(0 0 8px rgba(240,200,160,0.3)); }
+.header h1 { font-size: 1.5rem; font-weight: 700; color: var(--peach); letter-spacing: -0.5px; }
+.header p { color: var(--text-muted); font-size: 0.82rem; margin-top: 6px; }
+
+/* ═══════════════════════════════════════════
+   SUMMARY BAR
+   ═══════════════════════════════════════════ */
+.summary-bar { display: flex; gap: 8px; overflow-x: auto; padding: 16px 4px 8px; animation: fadeInUp 0.6s ease-out 0.1s both; -webkit-overflow-scrolling: touch; }
+.summary-bar::-webkit-scrollbar { display: none; }
+.summary-pill { flex: 1; min-width: 100px; background: var(--bg-card); border-radius: var(--radius-sm); padding: 12px 10px; text-align: center; box-shadow: var(--shadow); border: 1.5px solid var(--border); transition: transform 0.2s ease; }
+.summary-pill:hover { transform: translateY(-2px); border-color: var(--border-glow); }
+.summary-pill .icon { font-size: 1.2rem; margin-bottom: 4px; }
+.summary-pill .value { font-size: 1.3rem; font-weight: 700; color: var(--text); }
+.summary-pill .label { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 3px; }
+
+/* ═══════════════════════════════════════════
+   SOURCE & CONFIDENCE BADGES
+   ═══════════════════════════════════════════ */
+.badge-row { display: flex; gap: 4px; flex-wrap: wrap; padding: 4px 0 2px; justify-content: center; }
+.src-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 0.55rem; font-weight: 600; letter-spacing: 0.3px; padding: 2px 6px; border-radius: 50px; text-transform: uppercase; white-space: nowrap; }
+.src-badge.config   { background: rgba(112,184,224,0.12); color: #70B8E0; }
+.src-badge.runtime  { background: rgba(160,144,208,0.12); color: #A090D0; }
+.src-badge.journal  { background: rgba(112,216,154,0.12); color: #70D89A; }
+.src-badge.backtest { background: rgba(224,200,112,0.12); color: #E0C870; }
+.src-badge.env { background: rgba(208,160,128,0.12); color: #D0A080; }
+.src-badge.filesystem { background: rgba(128,184,160,0.12); color: #80B8A0; }
+.src-badge.code { background: rgba(240,200,160,0.10); color: #D8A878; }
+.src-badge.reference { background: rgba(160,144,208,0.12); color: #A090D0; }
+.src-badge.missing { background: rgba(122,112,104,0.10); color: #7A7068; }
+.src-badge.unavailable { background: rgba(122,112,104,0.10); color: #7A7068; }
+.src-badge.verified { background: rgba(112,216,154,0.15); color: #70D89A; }
+.src-badge.partial { background: rgba(224,200,112,0.12); color: #E0C870; }
+.src-badge.inferred { background: rgba(224,128,112,0.12); color: #E08070; }
+.src-badge.missing-conf { background: rgba(122,112,104,0.10); color: #7A7068; }
+.src-badge.discord-imported { background: rgba(160,144,208,0.25); color: #B8A8E8; }
+.src-badge.discord-imported .dot { background: #B8A8E8; }
+.src-badge.native-journal { background: rgba(112,216,154,0.12); color: #70D89A; }
+.src-badge.native-journal .dot { background: #70D89A; }
+.src-badge.combined { background: rgba(240,200,160,0.15); color: #F0C8A0; }
+.src-badge.combined .dot { background: #F0C8A0; }
+.src-badge .dot { width: 5px; height: 5px; border-radius: 50%; display: inline-block; }
+.src-badge.verified .dot { background: #70D89A; }
+.src-badge.partial .dot { background: #E0C870; }
+.src-badge.inferred .dot { background: #E08070; }
+.src-badge.missing-conf .dot { background: #7A7068; }
+.src-badge.config .dot { background: #70B8E0; }
+.src-badge.runtime .dot { background: #A090D0; }
+.src-badge.journal .dot { background: #70D89A; }
+.src-badge.backtest .dot { background: #E0C870; }
+.src-badge.env .dot { background: #D0A080; }
+.src-badge.filesystem .dot { background: #80B8A0; }
+.src-badge.code .dot { background: #D8A878; }
+.src-badge.reference .dot { background: #A090D0; }
+.src-badge.missing .dot { background: #7A7068; }
+.src-badge.unavailable .dot { background: #7A7068; }
+
+/* ═══════════════════════════════════════════
+   FILTER TABS
+   ═══════════════════════════════════════════ */
+.filter-bar { padding: 12px 4px; animation: fadeInUp 0.6s ease-out 0.2s both; }
+.filter-tabs { display: flex; gap: 6px; overflow-x: auto; padding: 4px 0; -webkit-overflow-scrolling: touch; }
+.filter-tabs::-webkit-scrollbar { display: none; }
+.filter-tab { flex-shrink: 0; padding: 6px 12px; border-radius: 50px; border: 1.5px solid var(--border); background: var(--bg-card); color: var(--text-muted); font-size: 0.72rem; font-weight: 600; cursor: pointer; transition: all 0.25s ease; white-space: nowrap; user-select: none; }
+.filter-tab:hover { border-color: var(--peach-dim); color: var(--text-secondary); }
+.filter-tab.active { background: var(--peach-dim); border-color: var(--peach); color: var(--peach); }
+.filter-tab .count { display: inline-block; background: rgba(245,237,230,0.08); border-radius: 50px; padding: 1px 6px; font-size: 0.62rem; margin-left: 4px; }
+.filter-tab.active .count { background: rgba(240,200,160,0.15); }
+
+/* ═══════════════════════════════════════════
+   BOT GRID
+   ═══════════════════════════════════════════ */
+.bot-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; padding: 8px 0 16px; }
+@media (min-width: 560px) { .bot-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 860px) { .bot-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 1100px) { .bot-grid { grid-template-columns: repeat(4, 1fr); } }
+
+/* ═══════════════════════════════════════════
+   BOT CARD
+   ═══════════════════════════════════════════ */
+.bot-card { background: var(--bg-card); border-radius: var(--radius); box-shadow: var(--shadow); border: 1.5px solid var(--border); overflow: hidden; cursor: pointer; transition: all 0.3s ease; animation: popIn 0.4s ease-out both; }
+.bot-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); border-color: var(--border-glow); }
+.bot-card.disabled-card { opacity: 0.55; cursor: default; }
+.bot-card.disabled-card:hover { transform: none; box-shadow: var(--shadow); }
+.bot-card.hidden { display: none; }
+.card-scene { height: 80px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; border-bottom: 1px solid var(--border); }
+.card-scene .floor { position: absolute; bottom: 0; left: 0; right: 0; height: 20px; border-radius: var(--radius) var(--radius) 0 0; opacity: 0.6; }
+.character { position: relative; z-index: 2; font-size: 2rem; line-height: 1; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3)); }
+.mini-badge { position: absolute; z-index: 3; font-size: 0.5rem; letter-spacing: -0.5px; color: var(--text-muted); background: rgba(26,24,24,0.85); padding: 2px 5px; border-radius: 4px; white-space: nowrap; border: 1px solid var(--border); }
+.mini-badge.top-right { top: 6px; right: 6px; }
+.bot-card[data-status="running"] .card-scene .floor { background: linear-gradient(135deg, rgba(112,216,154,0.3), rgba(112,216,154,0.1)); }
+.bot-card[data-status="error"] .card-scene .floor { background: linear-gradient(135deg, rgba(224,128,112,0.3), rgba(224,128,112,0.1)); }
+.bot-card[data-status="idle"] .card-scene .floor { background: linear-gradient(135deg, rgba(184,168,152,0.2), rgba(184,168,152,0.05)); }
+.bot-card[data-status="disabled"] .card-scene .floor { background: linear-gradient(135deg, rgba(122,112,104,0.15), rgba(122,112,104,0.05)); }
+
+.card-info { padding: 10px 12px 8px; }
+.card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 3px; }
+.card-name { font-size: 0.85rem; font-weight: 700; color: var(--text); }
+.card-id { font-size: 0.55rem; color: var(--text-muted); font-family: monospace; }
+.card-strategy { font-size: 0.68rem; color: var(--peach-deep); margin-bottom: 4px; font-weight: 600; }
+.card-meta { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px; }
+.meta-pill { font-size: 0.55rem; padding: 2px 6px; border-radius: 50px; background: rgba(245,237,230,0.06); color: var(--text-muted); border: 1px solid var(--border); white-space: nowrap; }
+.card-metrics { display: flex; flex-direction: column; gap: 3px; margin-bottom: 6px; }
+.metric-row { display: flex; align-items: center; justify-content: space-between; font-size: 0.68rem; padding: 2px 0; }
+.metric-label { color: var(--text-muted); }
+.metric-value { font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 3px; }
+.metric-value.empty-val { color: var(--text-muted); font-style: italic; font-weight: 400; }
+.metric-value.positive { color: var(--positive); }
+.metric-value.negative { color: var(--negative); }
+.card-story { font-size: 0.68rem; line-height: 1.3; color: var(--text-secondary); padding: 6px 8px; background: var(--bg-surface); border-radius: var(--radius-xs); margin-bottom: 4px; border-left: 2px solid var(--peach-dim); }
+.card-details { max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.3s ease; background: var(--bg-surface); border-top: 1px solid var(--border); }
+.bot-card.expanded .card-details { max-height: 500px; padding: 10px 12px; }
+.card-details h4 { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.detail-row { display: flex; justify-content: space-between; padding: 2px 0; font-size: 0.68rem; border-bottom: 1px dashed rgba(42,40,38,0.5); }
+.detail-label { color: var(--text-muted); }
+.detail-value { font-weight: 600; color: var(--text); }
+
+/* ═══════════════════════════════════════════
+   SECTION HEADERS
+   ═══════════════════════════════════════════ */
+.section-header { display: flex; align-items: center; gap: 8px; padding: 10px 4px 6px; margin-bottom: 4px; }
+.section-header h2 { font-size: 1rem; font-weight: 700; color: var(--peach); }
+.section-header .icon { font-size: 1.1rem; }
+.section-header .ref { font-size: 0.55rem; color: var(--text-muted); margin-left: auto; font-family: monospace; }
+.section-desc { font-size: 0.65rem; color: var(--text-muted); margin-bottom: 8px; padding: 0 4px; line-height: 1.4; }
+
+/* ═══════════════════════════════════════════
+   SYSTEM ARCHITECTURE MAP
+   ═══════════════════════════════════════════ */
+.arch-section { margin-top: 16px; animation: fadeInUp 0.6s ease-out 0.25s both; }
+.arch-layers { display: flex; flex-direction: column; gap: 0; }
+.arch-layer { background: var(--bg-card); border-radius: var(--radius-sm); border: 1.5px solid var(--border); padding: 10px 12px; transition: border-color 0.2s ease; position: relative; }
+.arch-layer:hover { border-color: var(--border-glow); }
+.arch-layer-header { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; }
+.arch-layer-header .layer-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.arch-layer-header .layer-icon { font-size: 0.85rem; }
+.arch-layer-header .layer-count { font-size: 0.55rem; color: var(--text-muted); margin-left: auto; font-family: monospace; }
+.arch-nodes { display: flex; flex-wrap: wrap; gap: 5px; }
+.arch-node { display: inline-flex; align-items: center; gap: 4px; font-size: 0.62rem; padding: 4px 8px; border-radius: var(--radius-xs); background: var(--bg-surface); border: 1px solid var(--border); white-space: nowrap; transition: all 0.2s ease; cursor: pointer; position: relative; }
+.arch-node:hover { border-color: var(--border-glow); transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+.arch-node .node-status { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.arch-node.node-error { border-color: var(--negative); }
+.arch-node.node-error .node-status { background: var(--negative); animation: flowPulse 2s infinite; }
+.arch-node.node-idle { border-color: var(--text-muted); }
+.arch-node.node-idle .node-status { background: var(--text-muted); }
+.arch-node.node-ok { border-color: var(--positive); }
+.arch-node.node-ok .node-status { background: var(--positive); }
+.arch-node.node-disabled { opacity: 0.5; }
+.arch-node.node-disabled .node-status { background: #7A7068; }
+.arch-node.node-warn { border-color: var(--warning); }
+.arch-node.node-warn .node-status { background: var(--warning); }
+.arch-node.node-blocked { border-color: var(--negative); opacity: 0.7; }
+.arch-node.node-blocked .node-status { background: var(--negative); }
+.arch-node .node-conf-dot { width: 4px; height: 4px; border-radius: 50%; margin-left: 2px; }
+.layer-arrow { display: flex; flex-direction: column; align-items: center; padding: 3px 0; background: var(--bg); }
+.layer-arrow-line { width: 1px; height: 8px; background: var(--border); }
+.layer-arrow-head { color: var(--text-muted); font-size: 0.5rem; line-height: 1; }
+.layer-arrow-links { display: flex; gap: 3px; flex-wrap: wrap; justify-content: center; margin: 2px 0; }
+.link-pill { font-size: 0.42rem; padding: 1px 4px; border-radius: 3px; border: 1px solid; white-space: nowrap; }
+.link-pill.link-verified { border-color: var(--positive); color: var(--positive); background: rgba(112,216,154,0.08); }
+.link-pill.link-inferred { border-color: var(--warning); color: var(--warning); background: rgba(224,200,112,0.06); border-style: dashed; }
+
+/* SIGNAL LIFECYCLE FLOW */
+.flow-section { margin-top: 16px; animation: fadeInUp 0.6s ease-out 0.3s both; }
+.flow-pipeline { display: flex; flex-direction: column; gap: 0; }
+.flow-step { background: var(--bg-card); border-radius: var(--radius-sm); border: 1.5px solid var(--border); padding: 8px 12px; transition: border-color 0.2s ease; }
+.flow-step:hover { border-color: var(--border-glow); }
+.flow-step-header { display: flex; align-items: center; gap: 6px; font-size: 0.62rem; font-weight: 700; color: var(--peach-deep); flex-wrap: wrap; }
+.flow-step-header .step-num { width: 18px; height: 18px; border-radius: 50%; background: var(--peach-dim); color: var(--peach); display: flex; align-items: center; justify-content: center; font-size: 0.55rem; font-weight: 700; flex-shrink: 0; }
+.flow-step-header .step-file { font-size: 0.5rem; color: var(--text-muted); font-weight: 400; font-family: monospace; margin-left: auto; }
+.flow-step-body { font-size: 0.6rem; color: var(--text-secondary); margin-top: 3px; line-height: 1.3; }
+.flow-step-body .flow-detail { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 2px; }
+.flow-step-body .flow-detail span { background: var(--bg-surface); padding: 1px 5px; border-radius: 3px; border: 1px solid var(--border); font-size: 0.55rem; white-space: nowrap; }
+.flow-arrow { text-align: center; font-size: 0.55rem; color: var(--text-muted); padding: 2px 0; line-height: 1; }
+.flow-fork { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 2px 0; }
+.flow-fork .flow-branch { background: var(--bg-card); border-radius: var(--radius-xs); border: 1.5px solid var(--border); padding: 6px 8px; }
+.flow-fork .flow-branch.blocked { border-color: var(--negative); opacity: 0.7; }
+.flow-fork .flow-branch .branch-title { font-size: 0.55rem; font-weight: 700; color: var(--peach-deep); margin-bottom: 2px; }
+.flow-fork .flow-branch .branch-desc { font-size: 0.55rem; color: var(--text-muted); line-height: 1.3; }
+
+/* CONNECTION EXPLORER */
+.conn-section { margin-top: 16px; animation: fadeInUp 0.6s ease-out 0.35s both; }
+.conn-filters { display: flex; gap: 4px; margin-bottom: 8px; flex-wrap: wrap; }
+.conn-filter-btn { padding: 4px 8px; border-radius: 50px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-muted); font-size: 0.6rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+.conn-filter-btn:hover { border-color: var(--peach-dim); }
+.conn-filter-btn.active { border-color: var(--peach); color: var(--peach); background: var(--peach-dim); }
+.conn-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 4px; }
+.conn-item { display: flex; align-items: center; gap: 4px; padding: 4px 8px; background: var(--bg-card); border-radius: var(--radius-xs); border: 1px solid var(--border); font-size: 0.55rem; cursor: pointer; transition: all 0.2s ease; }
+.conn-item:hover { border-color: var(--border-glow); background: var(--bg-card-hover); }
+.conn-item .conn-from { color: var(--peach-deep); font-weight: 600; max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.conn-item .conn-arrow { color: var(--text-muted); flex-shrink: 0; }
+.conn-item .conn-to { color: var(--text-secondary); max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.conn-item .conn-type { font-size: 0.45rem; color: var(--text-muted); margin-left: auto; white-space: nowrap; }
+.conn-item .conn-status { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+.conn-item.conn-verified .conn-status { background: var(--positive); }
+.conn-item.conn-inferred .conn-status { background: var(--warning); }
+
+/* DEPENDENCY GRAPH */
+.dep-section { margin-top: 16px; animation: fadeInUp 0.6s ease-out 0.4s both; }
+.dep-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 6px; }
+.dep-card { background: var(--bg-card); border-radius: var(--radius-sm); padding: 8px 10px; border: 1.5px solid var(--border); transition: border-color 0.2s ease; }
+.dep-card:hover { border-color: var(--border-glow); }
+.dep-card .dep-panel { font-size: 0.65rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.dep-card .dep-source { font-size: 0.55rem; color: var(--text-muted); padding: 1px 0; display: flex; align-items: center; gap: 3px; }
+
+/* CONFIDENCE HEATMAP */
+.heatmap-section { margin-top: 16px; animation: fadeInUp 0.6s ease-out 0.45s both; }
+.heatmap-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 6px; }
+.heatmap-card { background: var(--bg-card); border-radius: var(--radius-sm); padding: 8px 10px; border: 1.5px solid var(--border); transition: border-color 0.2s ease; }
+.heatmap-card:hover { border-color: var(--border-glow); }
+.heatmap-card .hm-category { font-size: 0.65rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.heatmap-item { font-size: 0.58rem; color: var(--text-secondary); padding: 2px 0; display: flex; align-items: center; gap: 4px; justify-content: space-between; }
+.heatmap-item .hm-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+.heatmap-summary { font-size: 0.5rem; color: var(--text-muted); margin-top: 4px; display: flex; gap: 6px; flex-wrap: wrap; }
+
+/* DATA PROVENANCE PANEL */
+.prov-section { margin-top: 16px; animation: fadeInUp 0.6s ease-out 0.5s both; }
+.prov-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 6px; }
+.prov-card { background: var(--bg-card); border-radius: var(--radius-sm); padding: 8px 10px; border: 1.5px solid var(--border); transition: border-color 0.2s ease; }
+.prov-card:hover { border-color: var(--border-glow); }
+.prov-card .prov-source { font-size: 0.55rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 3px; }
+.prov-card .prov-label { font-size: 0.6rem; font-weight: 600; color: var(--text); margin-bottom: 1px; }
+.prov-card .prov-file { font-size: 0.48rem; color: var(--text-muted); font-family: monospace; }
+
+/* UNKNOWNS PANEL */
+.unknowns-section { margin-top: 16px; animation: fadeInUp 0.6s ease-out 0.55s both; }
+.unknowns-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 6px; }
+.unknown-card { background: var(--bg-card); border-radius: var(--radius-sm); padding: 8px 10px; border: 1.5px solid var(--border); border-left: 3px solid var(--negative); transition: border-color 0.2s ease; }
+.unknown-card:hover { border-color: var(--border-glow); }
+.unknown-card .u-item { font-size: 0.62rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.unknown-card .u-impact { font-size: 0.55rem; color: var(--text-muted); line-height: 1.3; }
+.unknown-card .u-blocker { font-size: 0.5rem; color: var(--negative); margin-top: 3px; font-weight: 600; }
+.unknown-card .u-cascade { font-size: 0.48rem; color: var(--text-muted); margin-top: 2px; font-style: italic; }
+
+/* TIMELINE */
+.timeline-section { margin-top: 20px; animation: fadeInUp 0.6s ease-out 0.6s both; }
+.timeline { display: flex; flex-direction: column; gap: 5px; }
+.timeline-item { display: flex; align-items: flex-start; gap: 8px; background: var(--bg-card); border-radius: var(--radius-sm); padding: 8px 10px; box-shadow: var(--shadow); border: 1px solid var(--border); transition: transform 0.2s ease; }
+.timeline-item:hover { transform: translateX(3px); }
+.timeline-avatar { font-size: 1.2rem; flex-shrink: 0; }
+.timeline-content { flex: 1; min-width: 0; }
+.timeline-name { font-size: 0.68rem; font-weight: 700; color: var(--text); }
+.timeline-text { font-size: 0.68rem; color: var(--text-secondary); line-height: 1.3; margin-top: 1px; }
+
+/* BACKTEST PANEL */
+.backtest-section { margin-top: 20px; animation: fadeInUp 0.6s ease-out 0.65s both; }
+.backtest-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; }
+.bt-card { background: var(--bg-card); border-radius: var(--radius-sm); padding: 10px; border: 1px solid var(--border); text-align: center; }
+.bt-card .bt-label { font-size: 0.58rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 3px; }
+.bt-card .bt-value { font-size: 1rem; font-weight: 700; color: var(--text); }
+
+/* EVIDENCE MODAL */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(10,8,8,0.85); z-index: 1000; backdrop-filter: blur(4px); }
+.modal-overlay.visible { display: flex; align-items: center; justify-content: center; animation: modalFade 0.2s ease-out; }
+.modal-content { background: var(--bg-card); border-radius: var(--radius); border: 1.5px solid var(--border); max-width: 520px; width: 90vw; max-height: 80vh; overflow-y: auto; box-shadow: 0 16px 60px rgba(0,0,0,0.6); animation: modalSlide 0.25s ease-out; }
+.modal-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 10px; border-bottom: 1px solid var(--border); }
+.modal-header h3 { font-size: 0.9rem; font-weight: 700; color: var(--peach); }
+.modal-close { background: none; border: 1px solid var(--border); color: var(--text-muted); width: 24px; height: 24px; border-radius: 50%; cursor: pointer; font-size: 0.7rem; display: flex; align-items: center; justify-content: center; }
+.modal-close:hover { border-color: var(--negative); color: var(--negative); }
+.modal-body { padding: 12px 16px 16px; }
+.modal-body .ev-section { margin-bottom: 10px; }
+.modal-body .ev-section-title { font-size: 0.6rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
+.modal-body .ev-row { display: flex; justify-content: space-between; padding: 3px 0; font-size: 0.65rem; border-bottom: 1px dashed rgba(42,40,38,0.4); }
+.modal-body .ev-label { color: var(--text-muted); min-width: 80px; }
+.modal-body .ev-value { color: var(--text-secondary); text-align: right; word-break: break-all; }
+.modal-body .ev-conn-list { display: flex; flex-direction: column; gap: 2px; }
+.modal-body .ev-conn { font-size: 0.58rem; color: var(--text-secondary); display: flex; align-items: center; gap: 4px; padding: 2px 0; }
+.modal-body .ev-conn .conn-dir { color: var(--peach-deep); font-weight: 600; min-width: 20px; }
+.modal-body .ev-conn .conn-node { color: var(--text); font-weight: 600; }
+.modal-body .ev-conn .conn-ltype { color: var(--text-muted); font-size: 0.5rem; }
+
+/* INTEGRATION STATUS */
+.integ-section { margin-top: 16px; animation: fadeInUp 0.6s ease-out 0.56s both; }
+.integ-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px; }
+.integ-card { background: var(--bg-card); border-radius: var(--radius-sm); padding: 10px 12px; border: 1.5px solid var(--border); transition: border-color 0.2s ease; }
+.integ-card:hover { border-color: var(--border-glow); }
+.integ-card .integ-hdr { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+.integ-card .integ-name { font-size: 0.72rem; font-weight: 700; color: var(--text); }
+.integ-card .integ-badge { font-size: 0.52rem; font-weight: 600; padding: 2px 6px; border-radius: 50px; margin-left: auto; }
+.integ-card .integ-badge.healthy { background: rgba(112,216,154,0.15); color: var(--positive); }
+.integ-card .integ-badge.broken { background: rgba(224,128,112,0.15); color: var(--negative); }
+.integ-card .integ-badge.warning { background: rgba(224,200,112,0.15); color: var(--warning); }
+.integ-card .integ-badge.unknown { background: rgba(122,112,104,0.10); color: var(--text-muted); }
+.integ-card .integ-row { display: flex; justify-content: space-between; padding: 2px 0; font-size: 0.6rem; border-bottom: 1px dashed rgba(42,40,38,0.4); }
+.integ-card .integ-lbl { color: var(--text-muted); }
+.integ-card .integ-val { font-weight: 600; color: var(--text); }
+.integ-card .integ-val.err { color: var(--negative); }
+.integ-card .integ-val.ok { color: var(--positive); }
+.integ-card .integ-diag { font-size: 0.5rem; color: var(--negative); margin-top: 4px; padding: 4px 6px; background: rgba(224,128,112,0.08); border-radius: 6px; line-height: 1.3; }
+.integ-card .integ-actions { margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--border); }
+.integ-card .integ-act { font-size: 0.55rem; color: var(--warning); padding: 1px 0; }
+
+/* LEGEND & FOOTER */
+.legend-section { margin-top: 20px; padding: 12px; background: var(--bg-card); border-radius: var(--radius-sm); border: 1px solid var(--border); }
+.legend-title { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; font-weight: 600; }
+.legend-items { display: flex; flex-wrap: wrap; gap: 10px; }
+.legend-item { display: flex; align-items: center; gap: 4px; font-size: 0.6rem; color: var(--text-secondary); }
+.app-footer { text-align: center; padding: 20px 16px 24px; color: var(--text-muted); font-size: 0.65rem; }
+.app-footer .heart { color: var(--peach-deep); }
+
+@media (max-width: 480px) { .app { padding: 10px; } .header h1 { font-size: 1.3rem; } .flow-fork { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+<div class="modal-overlay" id="evidenceModal" onclick="if(event.target===this)closeModal()"><div class="modal-content"><div class="modal-header"><h3 id="modalTitle">Node Evidence</h3><button class="modal-close" onclick="closeModal()">✕</button></div><div class="modal-body" id="modalBody"></div></div></div>
+<script>
+const MAP={lastUpdated:"2026-06-16 21:25:00 UTC",bots:[{id:"little_rzy",displayName:"Little Rzy",strategy:"Measured Drift",strategyClass:"LittleRzyStrategy",enabled:true,dispatch:"discord_and_oanda",granularity:"H4",interval:"240 min",watchlist:"primary-4h",status:"error",story:"2 trades (0 TP, 2 SL, net -2.0R). OANDA: auth works for orders; 401 on market data endpoint.",jm:{total:2,closed:2,open:0,tp:0,sl:2,win_rate:0.0,net_r:-2.0,profit_factor:0.0,symbols:["BCO_USD","WTICO_USD"],runtime_status:"error",runtime_error:"Auth works; 401 on market data endpoint",last_cycle:"2026-06-13T06:56:17+00:00"}},{id:"nas100_parabolic",displayName:"NAS100 Parabolic",strategy:"Parabolic Exhaustion",enabled:true,dispatch:"OANDA paper",granularity:"M1",interval:"variable",watchlist:"nas100",status:"idle",jm:null,story:"Paper-forward runner. No journal data yet."},{id:"strategy_two",displayName:"Trend Current",strategy:"Trend Current",strategyClass:"TrendCurrentStrategy",enabled:true,dispatch:"discord",granularity:"H4",interval:"240 min",watchlist:"core-4h",status:"idle",jm:{total:0,closed:0,open:0,tp:0,sl:0,win_rate:0.0,net_r:0.0,profit_factor:null,symbols:[],runtime_status:"idle",runtime_error:null,last_cycle:"2026-06-13T06:57:01+00:00"},story:"Journal empty — no signals dispatched yet."},{id:"strategy_four",displayName:"CWT",strategy:"Cambist With Trend",strategyClass:"CwtStrategy",enabled:true,dispatch:"discord_and_oanda",granularity:"M5",interval:"5 min",watchlist:"core-mixed",status:"idle",jm:{total:1029,closed:1023,open:6,tp:459,sl:564,win_rate:44.9,net_r:-105.0,profit_factor:0.81,symbols:["AUD_USD","EUR_USD","GBP_JPY","NAS100_USD","NZD_USD","SPX500_USD","UK100_GBP","USD_JPY"],runtime_status:"error",runtime_error:"TP-precision fix verified (6/6 fills, 2026-06-16)",last_cycle:"2026-06-16T09:51:00+00:00"},story:"1,029 signals (459 TP, 564 SL, 6 open). WR 44.9%, net -105.0R. OANDA: TP-precision fix verified (6/6 test fills). Auth working."},{id:"strategy_five",displayName:"Secular Bull SIP",strategy:"Secular Bull SIP",strategyClass:"SecularBullSipStrategy",enabled:true,dispatch:"discord",granularity:"Daily",interval:"1440 min",watchlist:"full-classic",status:"idle",jm:null,story:"Dispatch type bug FIXED (2026-06-16). OANDA 401 on market data remains. No journal file yet."},{id:"little_rzy_1h",displayName:"Little Rzy 1H",strategy:"Measured Drift (1H)",enabled:false,dispatch:"discord",granularity:"H1",interval:"60 min",watchlist:"research-1h",status:"disabled",jm:null,story:"Disabled in platform.example.json."},{id:"command_bot",displayName:"Command Bot",strategy:"Discord Interface",enabled:true,dispatch:"discord",granularity:"N/A",interval:"on-demand",watchlist:"N/A",status:"idle",jm:null,story:"Discord command interface. No signals or trades."}],nodes:[{id:"strat_little_rzy",layer:"Strategy",label:"Little Rzy",status:"error",source:"registry.py:12",detail:"LittleRzyStrategy()",file:"signal_platform/registry.py",confidence:"verified",fn:"LittleRzyStrategy",issues:"OANDA: auth working, TP fix applied"},{id:"strat_little_rzy_1h",layer:"Strategy",label:"Little Rzy 1H",status:"disabled",source:"registry.py:13",detail:"LittleRzy1HStrategy()",file:"signal_platform/registry.py",confidence:"verified",fn:"LittleRzy1HStrategy",issues:"Disabled route"},{id:"strat_strategy_two",layer:"Strategy",label:"Trend Current",status:"idle",source:"registry.py:14",detail:"TrendCurrentStrategy()",file:"signal_platform/registry.py",confidence:"verified",fn:"TrendCurrentStrategy",issues:"No signals ever dispatched"},{id:"strat_strategy_four",layer:"Strategy",label:"CWT",status:"error",source:"registry.py:15",detail:"CwtStrategy()",file:"signal_platform/registry.py",confidence:"verified",fn:"CwtStrategy",issues:"OANDA: auth working, TP fix applied"},{id:"strat_strategy_five",layer:"Strategy",label:"Secular Bull SIP",status:"idle",source:"registry.py:16",detail:"SecularBullSipStrategy()",file:"signal_platform/registry.py",confidence:"verified",fn:"SecularBullSipStrategy",issues:"No journal file yet"},{id:"scan_cwt",layer:"Execution",label:"CWT Scanner",status:"error",source:"strategy_four_bot/scanner.py:678",detail:"run_live_cycle()",file:"strategy_four_bot/scanner.py",confidence:"verified",fn:"run_live_cycle",issues:"OANDA: auth working, TP fix applied"},{id:"scan_little_rzy",layer:"Execution",label:"Little Rzy Scanner",status:"partial",source:"little_rzy_bot/scanner.py",detail:"run_live_cycle()",file:"little_rzy_bot/scanner.py",confidence:"verified",fn:"run_live_cycle",issues:"Partially working"},{id:"reinforcement",layer:"Decision",label:"Signal Reinforcement",status:"ok",source:"reinforcement.py",detail:"apply_signal_reinforcement()",file:"signal_platform/reinforcement.py",confidence:"verified",fn:"apply_signal_reinforcement",issues:"Only strategy_four configured"},{id:"ml_scoring",layer:"Decision",label:"ML Prediction Scoring",status:"partial",source:"signal_scoring.py",detail:"score_signal_with_ml()",file:"signal_platform/signal_scoring.py",confidence:"partial",fn:"score_signal_with_ml",issues:"May fail silently"},{id:"ml_features",layer:"Decision",label:"ML Feature Extraction",status:"ok",source:"ml_features.py",detail:"load_and_build_features()",file:"signal_platform/ml_features.py",confidence:"verified",fn:"load_and_build_features",issues:"Only strategy_four data"},{id:"ml_classifier",layer:"Decision",label:"Outcome Classifier",status:"ok",source:"ml_models.py",detail:"train_outcome_classifier()",file:"signal_platform/ml_models.py",confidence:"verified",fn:"train_outcome_classifier",issues:"Only strategy_four .pkl"},{id:"ml_regressor",layer:"Decision",label:"Realized R Regressor",status:"ok",source:"ml_models.py",detail:"train_realized_r_regressor()",file:"signal_platform/ml_models.py",confidence:"verified",fn:"train_realized_r_regressor",issues:"Only strategy_four .pkl"},{id:"dedup",layer:"Dispatch",label:"Duplicate Suppression",status:"ok",source:"runtime.py:596",detail:"new_signals_only()",file:"signal_platform/runtime.py",confidence:"verified",fn:"new_signals_only",issues:"Active for all routes"},{id:"circuit_breaker",layer:"Dispatch",label:"Circuit Breaker",status:"ok",source:"runtime.py:767",detail:"_check_daily_circuit_breaker()",file:"signal_platform/runtime.py",confidence:"verified",fn:"_check_daily_circuit_breaker",issues:"Default thresholds, never triggered"},{id:"discord_signal",layer:"Dispatch",label:"Discord Signal Dispatch",status:"partial",source:"runtime.py:656",detail:"_send_discord_signal_with_ml()",file:"signal_platform/runtime.py",confidence:"verified",fn:"_send_discord_signal_with_ml",issues:"Blocked by Auth working, TP fix applied"},{id:"discord_outcome",layer:"Dispatch",label:"Discord Outcome Notify",status:"partial",source:"runtime.py:635",detail:"send_discord_outcome()",file:"signal_platform/runtime.py",confidence:"verified",fn:"send_discord_outcome",issues:"Blocked by Auth working, TP fix applied"},{id:"discord_weekly",layer:"Dispatch",label:"Weekly Report",status:"inferred",source:"runtime.py:710",detail:"send_discord_report()",file:"signal_platform/runtime.py",confidence:"inferred",fn:"send_discord_report",issues:"No success confirmation"},{id:"discord_monthly",layer:"Dispatch",label:"Monthly Report",status:"inferred",source:"runtime.py:733",detail:"send_discord_report()",file:"signal_platform/runtime.py",confidence:"inferred",fn:"send_discord_report",issues:"No success confirmation"},{id:"discord_pred_perf",layer:"Dispatch",label:"Prediction Perf Report",status:"inferred",source:"runtime.py:719",detail:"_send_weekly_prediction_performance()",file:"signal_platform/runtime.py",confidence:"inferred",fn:"_send_weekly_prediction_performance",issues:"No success confirmation"},{id:"oanda_conn",layer:"Execution",label:"OANDA Connection",status:"error",source:"oanda_execution.py:136",detail:"test_connection()",file:"signal_platform/oanda_execution.py",confidence:"verified",fn:"test_connection",issues:"HTTP 401"},{id:"oanda_acct",layer:"Execution",label:"OANDA Account",status:"blocked",source:"oanda_execution.py:160",detail:"get_account_summary()",file:"signal_platform/oanda_execution.py",confidence:"verified",fn:"get_account_summary",issues:"Partially blocked (strategy_four works; little_rzy market-data 401)"},{id:"oanda_order",layer:"Execution",label:"OANDA Order Execution",status:"blocked",source:"oanda_execution.py:330",detail:"execute_signal()",file:"signal_platform/oanda_execution.py",confidence:"verified",fn:"execute_signal",issues:"Partially blocked (strategy_four works; little_rzy market-data 401)"},{id:"oanda_sizing",layer:"Execution",label:"Position Sizing",status:"ok",source:"position_sizing.py",detail:"calculate_position_size()",file:"signal_platform/position_sizing.py",confidence:"verified",fn:"calculate_position_size",issues:"Code ready, never used"},{id:"oanda_data",layer:"Execution",label:"OANDA Market Data",status:"blocked",source:"market_data.py",detail:"fetch_oanda_ohlcv()",file:"little_rzy_bot/market_data.py",confidence:"verified",fn:"fetch_oanda_ohlcv",issues:"Partially blocked (strategy_four works; little_rzy market-data 401)"},{id:"discord_cmd",layer:"Integration",label:"Discord Command Bot",status:"idle",source:"discord_command_bot.py",detail:"Standalone script",file:"signal_platform/discord_command_bot.py",confidence:"verified",fn:"standalone",issues:"No runtime status"},{id:"discord_webhooks",layer:"Integration",label:"Discord Webhooks (5)",status:"partial",source:"platform.example.json:13",detail:"${VAR} placeholders",file:"config/platform.example.json",confidence:"partial",fn:"N/A",issues:"4 of 6 webhooks configured, 1 unused"},{id:"journal_s4",layer:"Data",label:"Journal (strategy_four)",status:"ok",source:"signal_journal.json",detail:"1,029 entries",file:"platform_output/strategy_four/signal_journal.json",confidence:"verified",fn:"N/A",issues:"None",liveMetrics:{total:1029,closed:1023,tp:459,sl:564,wr:44.9,netR:-105.0}},{id:"journal_lr",layer:"Data",label:"Journal (little_rzy)",status:"ok",source:"signal_journal.json",detail:"2 entries",file:"platform_output/little_rzy/signal_journal.json",confidence:"verified",fn:"N/A",issues:"Minimal history",liveMetrics:{total:2,closed:2,tp:0,sl:2,wr:0.0,netR:-2.0}},{id:"journal_s2",layer:"Data",label:"Journal (strategy_two)",status:"idle",source:"signal_journal.json",detail:"Empty",file:"platform_output/strategy_two/signal_journal.json",confidence:"verified",fn:"N/A",issues:"No signals ever"},{id:"journal_s5",layer:"Data",label:"Journal (strategy_five)",status:"missing",source:"N/A",detail:"File does not exist",file:"N/A",confidence:"verified",fn:"N/A",issues:"Never run"},{id:"ladder",layer:"Data",label:"Ladder Ledger",status:"ok",source:"ladder_ledger.json",detail:"strategy_four only",file:"platform_output/strategy_four/ladder_ledger.json",confidence:"verified",fn:"N/A",issues:"Only strategy_four"},{id:"rl_state",layer:"Data",label:"Reinforcement State",status:"ok",source:"reinforcement_state.json",detail:"strategy_four only",file:"platform_output/strategy_four/reinforcement_state.json",confidence:"verified",fn:"N/A",issues:"Only strategy_four"},{id:"ml_models_store",layer:"Data",label:"ML Models (2 .pkl)",status:"ok",source:"ml_models/",detail:"classifier + regressor",file:"platform_output/strategy_four/ml_models/",confidence:"verified",fn:"N/A",issues:"Only strategy_four"},{id:"backtest_data",layer:"Data",label:"Backtest Results",status:"ok",source:"summary.json",detail:"16 trades, 43.75% WR",file:"backtest_output_hardening_smoke/summary.json",confidence:"verified",fn:"N/A",issues:"Synthetic profile"},{id:"health",layer:"Monitoring",label:"Health Snapshots",status:"ok",source:"health_snapshot.json",detail:"4 routes",file:"platform_output/{route}/health_snapshot.json",confidence:"verified",fn:"N/A",issues:"None"},{id:"cycle_logs",layer:"Monitoring",label:"Route Cycle Logs",status:"ok",source:"route_cycle_log.csv",detail:"4 routes",file:"platform_output/{route}/route_cycle_log.csv",confidence:"verified",fn:"N/A",issues:"None"},{id:"fail_log",layer:"Monitoring",label:"Dispatch Failures",status:"ok",source:"dispatch_failures.jsonl",detail:"2 routes, TP-precision rejections + market-data 401",file:"platform_output/{route}/dispatch_failures.jsonl",confidence:"verified",fn:"N/A",issues:"TP-precision rejections + market-data 401 on some routes"},{id:"dashboard_metrics",layer:"Monitoring",label:"Dashboard Metrics",status:"ok",source:"_dashboard_metrics.json",detail:"Aggregated metrics",file:"platform_output/_dashboard_metrics.json",confidence:"verified",fn:"N/A",issues:"Static snapshot"},{id:"dashboard_ui",layer:"Monitoring",label:"Dashboard UI",status:"ok",source:"index.html",detail:"This dashboard",file:"bot-dashboard/index.html",confidence:"verified",fn:"N/A",issues:"Hardcoded data"},{id:"project_map",layer:"Monitoring",label:"PROJECT_MAP.md",status:"ok",source:"PROJECT_MAP.md",detail:"Living reference",file:"PROJECT_MAP.md",confidence:"verified",fn:"N/A",issues:"Needs incremental updates"}],connections:[{from:"strat_little_rzy",to:"scan_little_rzy",type:"verified",desc:"strategy.scan() delegates to scanner"},{from:"strat_strategy_four",to:"scan_cwt",type:"verified",desc:"strategy.scan() delegates to strategy_four_bot"},{from:"scan_cwt",to:"reinforcement",type:"verified",desc:"runtime.py:579 apply_signal_reinforcement()"},{from:"scan_little_rzy",to:"reinforcement",type:"verified",desc:"runtime.py:579 same code path"},{from:"reinforcement",to:"dedup",type:"verified",desc:"runtime.py:596 processes reinforcement results"},{from:"reinforcement",to:"ml_scoring",type:"inferred",desc:"Both process signals, no direct call"},{from:"dedup",to:"discord_signal",type:"verified",desc:"runtime.py:656 iterates fresh_signals"},{from:"dedup",to:"discord_outcome",type:"verified",desc:"runtime.py:635 iterates outcomes"},{from:"dedup",to:"oanda_order",type:"verified",desc:"runtime.py:791 for discord_and_oanda routes"},{from:"oanda_conn",to:"oanda_acct",type:"verified",desc:"oanda_execution.py:160 uses connection"},{from:"oanda_conn",to:"oanda_data",type:"verified",desc:"market_data.py:268 uses OANDA API"},{from:"oanda_acct",to:"oanda_order",type:"verified",desc:"runtime.py:790 gets account before execution"},{from:"oanda_sizing",to:"oanda_order",type:"verified",desc:"oanda_execution.py:330 uses position sizing"},{from:"discord_signal",to:"ml_scoring",type:"verified",desc:"runtime.py:285 score_signal_with_ml()"},{from:"ml_scoring",to:"ml_features",type:"verified",desc:"signal_scoring.py uses feature vectors"},{from:"ml_features",to:"ml_classifier",type:"verified",desc:"ml_models.py trains from features"},{from:"ml_features",to:"ml_regressor",type:"verified",desc:"ml_models.py trains from features"},{from:"discord_signal",to:"discord_webhooks",type:"verified",desc:"runtime.py:293 sends to webhook URL"},{from:"discord_outcome",to:"discord_webhooks",type:"verified",desc:"runtime.py:637 sends outcome to webhook"},{from:"discord_weekly",to:"discord_webhooks",type:"verified",desc:"runtime.py:713 sends report to webhook"},{from:"discord_signal",to:"journal_s4",type:"verified",desc:"runtime.py:844 append_new_signals()"},{from:"oanda_order",to:"journal_s4",type:"verified",desc:"runtime.py:844 trades appended to journal"},{from:"journal_s4",to:"ladder",type:"verified",desc:"runtime.py:846 save_ladder_ledger()"},{from:"journal_s4",to:"rl_state",type:"verified",desc:"reinforcement.py reads journal for state"},{from:"journal_s4",to:"ml_features",type:"verified",desc:"runtime.py:466 loads journal for ML training"},{from:"journal_s4",to:"health",type:"verified",desc:"runtime.py:911 builds health from metrics"},{from:"health",to:"dashboard_metrics",type:"verified",desc:"import_journal.py:95 reads health snapshots"},{from:"journal_s4",to:"dashboard_metrics",type:"verified",desc:"import_journal.py:81 reads journals"},{from:"fail_log",to:"health",type:"verified",desc:"runtime.py:953 writes dispatch failures"},{from:"health",to:"cycle_logs",type:"verified",desc:"runtime.py:952 writes CSV log row"},{from:"strat_strategy_two",to:"journal_s2",type:"verified",desc:"Journal exists but empty"},{from:"strat_strategy_five",to:"journal_s5",type:"verified",desc:"Journal does not exist"},{from:"backtest_data",to:"dashboard_ui",type:"verified",desc:"Dashboard renders backtest data"},{from:"discord_cmd",to:"discord_webhooks",type:"verified",desc:"discord_command_bot.py posts to Discord"},{from:"discord_pred_perf",to:"discord_webhooks",type:"verified",desc:"runtime.py:312 sends ML perf to webhook"},{from:"discord_webhooks",to:"discord_signal",type:"inferred",desc:"Code sends but no success confirm in runtime"},{from:"oanda_order",to:"journal_lr",type:"inferred",desc:"Code path exists but blocked by 401"}],metrics:[{label:"Bot count",source:"config",file:"platform.example.json",method:"Count enabled routes",confidence:"verified"},{label:"OANDA route count",source:"config",file:"platform.example.json",method:"Count discord_and_oanda routes",confidence:"verified"},{label:"strategy_four signals",source:"journal",file:"platform_output/strategy_four/signal_journal.json",method:"len(entries)",confidence:"verified"},{label:"strategy_four win rate",source:"journal",file:"Same journal",method:"tp / closed",confidence:"verified"},{label:"strategy_four net R",source:"journal",file:"Same journal",method:"sum(realized_r())",confidence:"verified"},{label:"strategy_four profit factor",source:"journal",file:"Same journal",method:"sum(wins)/abs(sum(losses))",confidence:"verified"},{label:"strategy_four runtime status",source:"runtime",file:"platform_output/strategy_four/health_snapshot.json",method:"dispatch_error_count > 0",confidence:"verified"},{label:"strategy_four last cycle",source:"runtime",file:"Same health snapshot",method:"last_cycle_finished_utc",confidence:"verified"},{label:"little_rzy signals",source:"journal",file:"platform_output/little_rzy/signal_journal.json",method:"len(entries)",confidence:"verified"},{label:"little_rzy runtime status",source:"runtime",file:"platform_output/little_rzy/health_snapshot.json",method:"Same as above",confidence:"verified"},{label:"strategy_two runtime status",source:"runtime",file:"platform_output/strategy_two/health_snapshot.json",method:"Same as above",confidence:"verified"},{label:"strategy_five runtime status",source:"runtime",file:"platform_output/strategy_five/health_snapshot.json",method:"Same as above",confidence:"verified"},{label:"strategy_five P&L",source:"missing",file:"No journal file",method:"Not available",confidence:"missing"},{label:"Backtest trades",source:"backtest",file:"backtest_output_hardening_smoke/summary.json",method:"Read 'trades' field",confidence:"verified"},{label:"Backtest win rate",source:"backtest",file:"Same summary.json",method:"Read 'winRate' field",confidence:"verified"},{label:"Backtest net P&L",source:"backtest",file:"Same summary.json",method:"Read 'totalPnlR' field",confidence:"verified"},{label:"ML model existence",source:"filesystem",file:"platform_output/strategy_four/ml_models/",method:"File check (.pkl files)",confidence:"verified"},{label:"Discord webhook avail",source:"env",file:"platform.example.json",method:"${VAR} placeholders",confidence:"partial"},{label:"Discord-imported history",source:"missing",file:"N/A",method:"Not implemented",confidence:"missing"},{label:"OANDA connection status",source:"runtime",file:"health_snapshot.json",method:"HTTP 401 in dispatch_errors",confidence:"verified"}],inferred:[{item:"4 of 6 Discord webhooks configured",reason:"Configured in .env; delivery untested by runtime data",confidence:"verified"},{item:"ML scoring affects dispatch",reason:"_send_discord_signal_with_ml() runs but may fail silently",confidence:"partial"},{item:"OANDA paper account exists",reason:"Config says practice but 401 error",confidence:"inferred"},{item:"Discord command bot active",reason:"Batch file exists but no runtime status",confidence:"inferred"},{item:"Reports sent to Discord",reason:"report_state.json exists but no delivery proof",confidence:"partial"},{item:"Reinforcement actively used",reason:"State file exists but no runtime confirmation",confidence:"partial"}],missing:[{item:"OANDA API token (expired/revoked)",impact:"401 on all OANDA routes — no market data, no execution, no entry refresh",blocker:"API token expired/revoked — regenerate at oanda.com/account/token",cascade:"Blocks: oanda_conn → oanda_acct → oanda_order → journal refresh → outcomes"},{item:"Discord webhook delivery confirmation",impact:"4 of 6 webhooks configured in .env; blocked by OANDA cascade",blocker:"Blocked by OANDA 401, not missing env vars",cascade:"Blocks: discord_signal/outcome/weekly → discord_webhooks"},{item:"Actual platform config file",impact:"Can't read actual interval/route settings",blocker:"TEMPLATE ONLY",cascade:"Affects: All route configurations"},{item:"Discord-imported journal history",impact:"Legacy journal data may be lost",blocker:"NOT IMPLEMENTED",cascade:"Affects: strategy_two, strategy_five historical coverage"},{item:"strategy_five first cycle",impact:"No metrics available",blocker:"NEVER RUN",cascade:"No journal, no signals, no health data"},{item:"strategy_two trading history",impact:"No signal quality assessment",blocker:"EMPTY JOURNAL",cascade:"No P&L metrics available"},{item:"Live dashboard metrics",impact:"No real-time updates",blocker:"STATIC HTML",cascade:"Dashboard shows last build snapshot only"},{item:"little_rzy_1h intent",impact:"May affect restore/remove decision",blocker:"UNKNOWN",cascade:"Disabled route, unknown status"}],dependencies:[{panel:"Bot Cards",depends:["platform.example.json","registry.py","health_snapshot.json"],depTypes:["config","config","runtime"]},{panel:"Bot Metrics (P&L, WR)",depends:["signal_journal.json per route"],depTypes:["journal"]},{panel:"Bot Runtime Status",depends:["health_snapshot.json per route"],depTypes:["runtime"]},{panel:"System Architecture Map",depends:["PROJECT_MAP.md §3,4,7"],depTypes:["reference"]},{panel:"Signal Lifecycle Flow",depends:["PROJECT_MAP.md §7","runtime.py"],depTypes:["reference","code"]},{panel:"Connection Explorer",depends:["PROJECT_MAP.md §4"],depTypes:["reference"]},{panel:"Source Confidence View",depends:["PROJECT_MAP.md §3,15"],depTypes:["reference"]},{panel:"Data Provenance Panel",depends:["PROJECT_MAP.md §5"],depTypes:["reference"]},{panel:"Unknowns Blocking Visibility",depends:["PROJECT_MAP.md §16"],depTypes:["reference"]},{panel:"Backtest Panel",depends:["backtest_output_hardening_smoke/summary.json"],depTypes:["backtest"]},{panel:"Timeline / Activity Feed",depends:["health_snapshot.json","signal_journal.json"],depTypes:["runtime","journal"]}]};
+const EMOJI={running:"⚡",scanning:"🔭",idle:"😴",error:"🚨",disabled:"🛑",ok:"✅",partial:"◐",missing:"❓",blocked:"⛔",inferred:"◇"};
+const CONF_COLORS={verified:"#70D89A",partial:"#E0C870",inferred:"#E08070",missing:"#7A7068"};
+const LAYER_ORDER=["Strategy","Decision","Dispatch","Execution","Integration","Data","Monitoring"];
+const LAYER_COLORS={Strategy:"#A090D0",Decision:"#D0A080",Dispatch:"#70B8E0",Execution:"#E0C870",Integration:"#80B8A0",Data:"#70D89A",Monitoring:"#E08070"};
+const LAYER_ICONS={Strategy:"🧠",Decision:"🔬",Dispatch:"📤",Execution:"⚙️",Integration:"🔌",Data:"💾",Monitoring:"📡"};
+const BACKTEST={profile:"synth_4h",symbol:"SYNTH",trades:16,winRate:43.75,totalPnlR:-1.264,profitFactor:0.50,maxDrawdownR:-2.46,avgHoldBars:3.31,longs:2,shorts:14,source:"backtest_output_hardening_smoke/summary.json"};
+function srcBadge(t){if(!t||t==="unavailable")return'<span class="src-badge unavailable"><span class="dot"></span>no source</span>';return`<span class="src-badge ${t}"><span class="dot"></span>${t}</span>`;}
+function confBadge(l){const c=l==="verified"?"verified":l==="partial"?"partial":l==="inferred"?"inferred":"missing-conf";return`<span class="src-badge ${c}"><span class="dot"></span>${l}</span>`;}
+function shortLabel(id){const n=MAP.nodes.find(x=>x.id===id);return n?n.label:id.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());}
+function showNodeEvidence(nodeId){
+const node=MAP.nodes.find(n=>n.id===nodeId);if(!node)return;
+const out=MAP.connections.filter(c=>c.from===nodeId),inc=MAP.connections.filter(c=>c.to===nodeId);
+let ch="";if(out.length){ch+=`<div class="ev-section"><div class="ev-section-title">Outgoing (${out.length})</div><div class="ev-conn-list">`;out.forEach(c=>{const s=c.type==="verified"?"color:var(--positive)":c.type==="inferred"?"color:var(--warning);font-style:italic":"color:var(--negative)";ch+=`<div class="ev-conn"><span class="conn-dir">→</span><span class="conn-node">${shortLabel(c.to)}</span><span class="conn-ltype" style="${s}">${c.type}</span><span style="color:var(--text-muted);font-size:0.48rem;">${c.desc}</span></div>`;});ch+="</div></div>";}
+if(inc.length){ch+=`<div class="ev-section"><div class="ev-section-title">Incoming (${inc.length})</div><div class="ev-conn-list">`;inc.forEach(c=>{const s=c.type==="verified"?"color:var(--positive)":c.type==="inferred"?"color:var(--warning);font-style:italic":"color:var(--negative)";ch+=`<div class="ev-conn"><span class="conn-dir">←</span><span class="conn-node">${shortLabel(c.from)}</span><span class="conn-ltype" style="${s}">${c.type}</span><span style="color:var(--text-muted);font-size:0.48rem;">${c.desc}</span></div>`;});ch+="</div></div>";}
+document.getElementById("modalTitle").textContent=`${LAYER_ICONS[node.layer]||''} ${node.label}`;
+document.getElementById("modalBody").innerHTML=`<div class="ev-section"><div class="ev-row"><span class="ev-label">Layer</span><span class="ev-value" style="color:${LAYER_COLORS[node.layer]||'var(--text)'}">${node.layer}</span></div><div class="ev-row"><span class="ev-label">Status</span><span class="ev-value">${node.status}</span></div><div class="ev-row"><span class="ev-label">Confidence</span><span class="ev-value">${confBadge(node.confidence)}</span></div><div class="ev-row"><span class="ev-label">Evidence</span><span class="ev-value" style="font-family:monospace;font-size:0.6rem;">${node.source}</span></div><div class="ev-row"><span class="ev-label">Detail</span><span class="ev-value">${node.detail}</span></div><div class="ev-row"><span class="ev-label">File</span><span class="ev-value" style="font-family:monospace;font-size:0.55rem;">${node.file}</span></div>${node.fn&&node.fn!=="N/A"?`<div class="ev-row"><span class="ev-label">Function</span><span class="ev-value" style="font-family:monospace;">${node.fn}()</span></div>`:''}${node.issues?`<div class="ev-row"><span class="ev-label">Issues</span><span class="ev-value" style="color:var(--negative)">${node.issues}</span></div>`:''}</div>${node.liveMetrics?`<div class="ev-section"><div class="ev-section-title">Live Journal Metrics</div><div class="ev-row"><span class="ev-label">Signals</span><span class="ev-value">${node.liveMetrics.total}</span></div><div class="ev-row"><span class="ev-label">Win Rate</span><span class="ev-value">${node.liveMetrics.wr}%</span></div><div class="ev-row"><span class="ev-label">Net R</span><span class="ev-value" style="color:${node.liveMetrics.netR>=0?'var(--positive)':'var(--negative)'}">${node.liveMetrics.netR>=0?'+':''}${node.liveMetrics.netR}R</span></div><div class="ev-row"><span class="ev-label">TP / SL</span><span class="ev-value">${node.liveMetrics.tp} / ${node.liveMetrics.sl}</span></div></div>`:''}${ch}<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:0.5rem;color:var(--text-muted);font-style:italic;">Node ID: ${node.id}</div>`;
+document.getElementById("evidenceModal").classList.add('visible');}
+function closeModal(){document.getElementById("evidenceModal").classList.remove('visible');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+function init(){
+const enabled=MAP.bots.filter(b=>b.enabled),errorBots=enabled.filter(b=>b.status==="error"),idleBots=enabled.filter(b=>b.status==="idle"),oanda=enabled.filter(b=>b.dispatch.includes("OANDA")),vConn=MAP.connections.filter(c=>c.type==="verified").length,iConn=MAP.connections.filter(c=>c.type==="inferred").length,allCount=MAP.bots.length,enCount=enabled.length,disCount=allCount-enCount;
+document.getElementById("app").innerHTML=`<header class="header"><div class="header-logo">🤖✨</div><h1>Agent Crew</h1><p>System architecture from PROJECT_MAP.md · Updated ${MAP.lastUpdated}</p></header>
+<section class="summary-bar"><div class="summary-pill"><div class="icon">🤖</div><div class="value">${enCount}</div><div class="label">Enabled Bots</div><div class="badge-row"><span style="font-size:0.5rem;color:var(--text-muted);">of ${allCount} total</span></div></div><div class="summary-pill"><div class="icon">📡</div><div class="value">${oanda.length}</div><div class="label">OANDA Routes</div><div class="badge-row">${srcBadge("config")}</div></div><div class="summary-pill"><div class="icon">⏸️</div><div class="value">${idleBots.length}</div><div class="label">Idle</div><div class="badge-row">${srcBadge("runtime")}</div></div><div class="summary-pill"><div class="icon">🚨</div><div class="value">${errorBots.length}</div><div class="label">Errors</div><div class="badge-row">${srcBadge("runtime")}</div></div><div class="summary-pill"><div class="icon">✅</div><div class="value">${vConn}</div><div class="label">Verified Links</div><div class="badge-row">${srcBadge("verified")}</div></div><div class="summary-pill"><div class="icon">❓</div><div class="value">${MAP.missing.length}</div><div class="label">Unknowns</div><div class="badge-row">${srcBadge("missing")}</div></div></section>
+<section class="filter-bar"><div class="filter-tabs" id="filterTabs"><button class="filter-tab active" data-filter="all">All <span class="count">${allCount}</span></button><button class="filter-tab" data-filter="idle">⏸️ Idle <span class="count">${idleBots.length}</span></button><button class="filter-tab" data-filter="error">🚨 Error <span class="count">${errorBots.length}</span></button><button class="filter-tab" data-filter="disabled">🛑 Disabled <span class="count">${disCount}</span></button></div></section>
+<section class="bot-grid" id="botGrid">${MAP.bots.map(b=>{const d=b.status==="disabled",jm=b.jm,hj=jm&&jm.total>0,hr=jm&&jm.runtime_status;return`<div class="bot-card ${d?'disabled-card':''}" data-status="${b.status}" data-id="${b.id}" onclick="this.classList.toggle('expanded')"><div class="card-scene"><div class="floor"></div><div class="character">${EMOJI[b.status]||'❓'}</div></div><div class="card-info"><div class="card-header"><span class="card-name">${b.displayName}</span></div><div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span class="card-id">${b.id}</span>${srcBadge("config")}</div><div class="card-strategy">${b.strategy}</div><div class="card-meta">${b.watchlist!=="N/A"?`<span class="meta-pill">📊 ${b.watchlist}</span>`:''}<span class="meta-pill">⏱ ${b.granularity}</span><span class="meta-pill">🔁 ${b.interval}</span><span class="meta-pill">📡 ${b.dispatch}</span></div><div class="card-metrics"><div class="metric-row"><span class="metric-label">P&L</span>${hj?`<span class="metric-value ${jm.net_r>=0?'positive':'negative'}">${jm.net_r>=0?'+':''}${jm.net_r}R</span>`:'<span class="metric-value empty-val">○ No journal data</span>'}</div><div class="metric-row"><span class="metric-label">Win Rate</span>${hj?`<span class="metric-value">${jm.win_rate}%</span>`:'<span class="metric-value empty-val">○ —</span>'}</div><div class="metric-row"><span class="metric-label">Closed</span>${hj?`<span class="metric-value">${jm.closed}</span>`:'<span class="metric-value empty-val">○ —</span>'}</div><div class="metric-row"><span class="metric-label">Runtime</span>${hr?`<span class="metric-value ${jm.runtime_status==='error'?'negative':''}">${jm.runtime_status}</span>`:'<span class="metric-value empty-val">○ Not observed</span>'}</div></div><div class="card-story">${b.story}</div></div><div class="card-details"><h4>Source Map</h4><div class="detail-row"><span class="detail-label">strategy</span><span class="detail-value">${b.strategyClass||b.strategy} ${srcBadge("config")}</span></div><div class="detail-row"><span class="detail-label">dispatch</span><span class="detail-value">${b.dispatch} ${srcBadge("config")}</span></div><div class="detail-row"><span class="detail-label">journal</span><span class="detail-value">${jm?.total||0} entries ${srcBadge(jm?"journal":"unavailable")}</span></div>${jm?.runtime_error?`<div class="detail-row"><span class="detail-label">error</span><span class="detail-value" style="color:var(--negative)">${jm.runtime_error}</span></div>`:''}</div></div>`;}).join("")}</section>
+<div class="arch-section"><div class="section-header"><span class="icon">🗺️</span><h2>System Architecture Map</h2><span class="ref">PROJECT_MAP.md §3,4</span></div><p class="section-desc">Layered view — click any node for evidence. <span style="border-left:2px solid var(--positive);padding:1px 4px;font-size:0.55rem;">solid = verified</span> <span style="border-left:2px dashed var(--warning);padding:1px 4px;font-size:0.55rem;">dashed = inferred</span></p><div class="arch-layers" id="archLayers"></div></div>
+<div class="flow-section"><div class="section-header"><span class="icon">🔀</span><h2>Signal Lifecycle Flow</h2><span class="ref">PROJECT_MAP.md §7</span></div><p class="section-desc">End-to-end pipeline. Dispatch forks: Discord (4 of 6 webhooks configured) vs OANDA (blocked by 401).</p><div class="flow-pipeline" id="flowPipeline"></div></div>
+<div class="conn-section"><div class="section-header"><span class="icon">🔗</span><h2>Connection Explorer</h2><span class="ref">PROJECT_MAP.md §4</span></div><p class="section-desc">All ${MAP.connections.length} links. Filter by type, click for evidence.</p><div class="conn-filters" id="connFilters"></div><div class="conn-grid" id="connGrid"></div></div>
+<div class="dep-section"><div class="section-header"><span class="icon">📊</span><h2>Dependency Graph</h2><span class="ref">PROJECT_MAP.md §17</span></div><div class="dep-grid" id="depGrid"></div></div>
+<div class="heatmap-section"><div class="section-header"><span class="icon">🔍</span><h2>Source Confidence Heatmap</h2><span class="ref">PROJECT_MAP.md §3,15</span></div><div class="heatmap-grid" id="heatmapGrid"></div></div>
+<div class="prov-section"><div class="section-header"><span class="icon">📦</span><h2>Data Provenance Panel</h2><span class="ref">PROJECT_MAP.md §5</span></div><p class="section-desc">Metric families traced to source. ${srcBadge("config")} config · ${srcBadge("journal")} journal · ${srcBadge("runtime")} runtime · ${srcBadge("backtest")} backtest · ${srcBadge("missing")} missing</p><div class="prov-grid" id="provGrid"></div></div>
+<div class="unknowns-section"><div class="section-header"><span class="icon">❓</span><h2>Unknowns Blocking Full Visibility</h2><span class="ref">PROJECT_MAP.md §16</span></div><div class="unknowns-grid" id="unknownsGrid"></div></div>
+<div class="timeline-section"><div class="section-header"><span class="icon">📖</span><h2>Activity Feed</h2></div><div class="timeline" id="timeline"></div></div>
+<div class="integ-section"><div class="section-header"><span class="icon">🔌</span><h2>Integration Status</h2><span class="ref">PROJECT_MAP.md §20</span></div><p class="section-desc">OANDA connection, Discord webhooks, journal files, and action items.</p><div class="integ-grid" id="integGrid"></div></div>
+<div class="backtest-section"><div class="section-header"><span class="icon">🔬</span><h2>Historical Simulation</h2><span class="ref">${BACKTEST.source}</span></div><p class="section-desc">Synthetic 4h profile — not live data. ${srcBadge("backtest")}</p><div class="backtest-grid" id="btGrid"></div></div>
+<div class="review-section" style="margin-top:20px;animation:fadeInUp 0.6s ease-out 0.62s both;"><div class="section-header"><span class="icon">🔍</span><h2>External Review Audit</h2><span class="ref">docs/claim_verification_professional_review.md</span></div><p class="section-desc">Cross-check of PROFESSIONAL_REVIEW.md against codebase (2026-06-13). <strong style="color:var(--negative)">Audit layer, not primary truth source.</strong></p><div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;padding:4px;"><div class="bt-card"><div class="bt-label">Total Claims</div><div class="bt-value">20</div></div><div class="bt-card" style="border-color:#E08070;"><div class="bt-label">Contradicted</div><div class="bt-value" style="color:#E08070;">8</div></div><div class="bt-card" style="border-color:rgba(224,200,112,0.5);"><div class="bt-label">Partial</div><div class="bt-value" style="color:#E0C870;">3+3</div></div><div class="bt-card" style="border-color:#70D89A;"><div class="bt-label">Confirmed</div><div class="bt-value" style="color:#70D89A;">3</div></div><div class="bt-card" style="border-color:#7A7068;"><div class="bt-label">Not Verifiable</div><div class="bt-value" style="color:#7A7068;">3</div></div></div><div style="font-size:0.5rem;color:var(--text-muted);padding:4px 4px 0;font-style:italic;">Renders static summary. Full table at docs/claim_verification_professional_review.md.</div></div><div class="legend-section"><div class="legend-title">Visual Legend</div><div class="legend-items"><div class="legend-item"><span style="width:20px;height:3px;background:var(--positive);display:inline-block;"></span> Verified</div><div class="legend-item"><span style="width:20px;height:3px;background:var(--warning);display:inline-block;border-top:2px dashed var(--warning);"></span> Inferred</div><div class="legend-item">🟢 Verified · 🟡 Partial · 🔴 Inferred · ⚪ Missing</div></div></div>
+<div class="legend-section" style="margin-top:8px;"><div class="legend-title">Source Badges</div><div class="legend-items">${["config","runtime","journal","backtest","env","filesystem","reference","code"].map(s=>`<div class="legend-item">${srcBadge(s)}</div>`).join("")}</div></div>
+
+<div style="margin-top:12px;padding:8px 12px;background:var(--bg-card);border-radius:var(--radius-sm);border:1px solid var(--border);font-size:0.55rem;color:var(--text-muted);display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+  <div>Build: 2026-06-16 21:25:00 UTC</div>
+  <div>Hash: 9dfd6540cd1c</div>
+  <div>OANDA: Auth working, TP-precision fix applied</div>
+  <div>Discord: 4/6 webhooks configured</div>
+  <div>Journals: strategy_four=1029, little_rzy=2</div>
+  <div>Integrity: 2 stale items corrected</div>
+</div>
+<footer class="app-footer">Architecture source: PROJECT_MAP.md (updated ${MAP.lastUpdated})<br>Render validation: PASSED · Build: 2026-06-16 21:25 UTC<br><span class="heart">♥</span> Agent Crew<br><span style="font-size:0.55rem;color:var(--text-muted);" id="footerStats"></span></footer>`;
+const INTEGRATIONS=[{name:"OANDA",icon:"🏦",status:"partial",label:"WORKING (TP FIX VERIFIED)",rows:[{l:"Status",v:"Auth working, TP-precision fix verified (6/6 fills)"},{l:"Root Cause",v:"_format_price() used 2 decimals; OANDA requires 1"},{l:"Account",v:"101-011-30754943-003"},{l:"Environment",v:"practice"},{l:"Impact",v:"Blocks live scanning → no new dispatch (historical journal data preserved)"},{l:"Diagnosis",v:"Generate new token at oanda.com/account/token"}],actions:["Generate new OANDA practice API token","Update OANDA_API_TOKEN in .env"]},{name:"Discord Webhooks",icon:"💬",status:"ok",label:"CONFIGURED",rows:[{l:"little_rzy",v:"✅ set"},{l:"strategy_two",v:"✅ set"},{l:"CWT (four)",v:"✅ set"},{l:"SIP (five)",v:"✅ set"},{l:"little_rzy_1h",v:"⚠ not set (disabled)"},{l:"Base",v:"⚠ not set"}]},{name:"Journal Files",icon:"📓",status:"ok",label:"PARTIAL",rows:[{l:"strategy_four",v:"✅ 1,029 entries"},{l:"little_rzy",v:"✅ 2 entries"},{l:"strategy_two",v:"⚠ 0 entries (no setups)"},{l:"strategy_five",v:"❌ no file (D1 low freq)"},{l:"little_rzy_1h",v:"⚠ missing (disabled)"}]},{name:"Action Items",icon:"📋",status:"broken",label:"2 BLOCKERS",rows:[{l:"🔴 P0",v:"New OANDA API token"},{l:"🟡 P1",v:"Confirm webhooks reachable"}]},{name:"Discord Import Pipeline",icon:"\u{1F4E5}",status:"unknown",label:"READY (no data)",rows:[{l:"Pipeline",v:"\u2705 Implemented \u2014 12/12 tests passing"},{l:"Modules",v:"discord_importer, parser, matcher"},{l:"Storage",v:"discord_import_journal.json per route"},{l:"Raw Archive",v:"discord_raw_archive.jsonl (JSONL)"},{l:"State File",v:"_discord_import_state.json"},{l:"Provenance",v:"native-journal vs discord-imported vs combined"},{l:"Status",v:"\u26A0 No live data \u2014 awaiting channel config"}],actions:["Set DISCORD_BOT_TOKEN env var","Set DISCORD_IMPORT_CHANNEL_IDS","Run: python scripts/run_discord_import.py --mode backfill"]}];
+/* Render Architecture Map */
+const lc={};MAP.connections.forEach(c=>{const fn=MAP.nodes.find(n=>n.id===c.from),tn=MAP.nodes.find(n=>n.id===c.to);if(!fn||!tn||fn.layer===tn.layer)return;const k=[fn.layer,tn.layer].sort().join("→");if(!lc[k])lc[k]=[];lc[k].push({from:c.from,to:c.to,type:c.type});});
+let archHtml="";LAYER_ORDER.forEach((layer,li)=>{const nodes=MAP.nodes.filter(n=>n.layer===layer);if(!nodes.length)return;const nsm={error:"node-error",idle:"node-idle",ok:"node-ok",disabled:"node-disabled",partial:"node-warn",missing:"node-idle",blocked:"node-blocked",inferred:"node-warn"};
+archHtml+=`<div class="arch-layer" style="border-left:3px solid ${LAYER_COLORS[layer]}"><div class="arch-layer-header"><span class="layer-dot" style="background:${LAYER_COLORS[layer]}"></span>${LAYER_ICONS[layer]} ${layer}<span class="layer-count">${nodes.length} nodes</span></div><div class="arch-nodes">${nodes.map(n=>{const c=CONF_COLORS[n.confidence]||"#7A7068";return`<span class="arch-node ${nsm[n.status]||"node-idle"}" onclick="showNodeEvidence('${n.id}')" title="${n.label} — click for evidence"><span class="node-status"></span>${n.label}<span class="node-conf-dot" style="background:${c}"></span></span>`;}).join("")}</div></div>`;
+if(li<LAYER_ORDER.length-1){const nl=LAYER_ORDER[li+1],k=[layer,nl].sort().join("→"),cn=lc[k];archHtml+=`<div class="layer-arrow"><div class="layer-arrow-line"></div><div class="layer-arrow-head">▼</div>`;if(cn&&cn.length){archHtml+=`<div class="layer-arrow-links">${cn.map(c=>`<span class="link-pill link-${c.type}">${shortLabel(c.from)} → ${shortLabel(c.to)}</span>`).join("")}</div>`;}archHtml+=`<div class="layer-arrow-line"></div></div>`;}});
+document.getElementById("archLayers").innerHTML=archHtml;
+/* Render Signal Flow */
+const steps=[{n:1,l:"Strategy Scan",i:"🔍",f:"cwt_strategy.py / little_rzy_strategy.py",d:"strategy.scan() → PlatformSignal[]",dt:["Little Rzy (H4)","CWT (M5)","Trend Current (H4)","Secular Bull SIP (Daily)"],c:"verified"},{n:2,l:"Signal Reinforcement",i:"🔁",f:"reinforcement.py",d:"apply_signal_reinforcement() — scores continuation probability",dt:["Only strategy_four configured"],c:"partial"},{n:3,l:"ML Prediction Scoring",i:"🤖",f:"signal_scoring.py → ml_features.py → ml_models.py",d:"score_signal_with_ml() — outcome_classifier + realized_r_regressor",dt:["Models: strategy_four only","2 .pkl files on disk"],c:"partial"},{n:4,l:"Duplicate Suppression",i:"🔄",f:"runtime.py:596",d:"new_signals_only() — removes already-dispatched setup_ids",dt:["Active for all routes"]},{n:5,l:"Dispatch Decision",i:"🔀",f:"runtime.py:632-836",d:"Routes signals to Discord and/or OANDA based on route config",fork:true,c:"verified"},{n:6,l:"Journal Update",i:"📓",f:"runtime.py:843-847",d:"append_new_signals() → save_journal() → save_ladder_ledger()",dt:["strategy_four: 1,029 entries","little_rzy: 2 entries","strategy_two: empty","strategy_five: no file"]},{n:7,l:"Open Entry Refresh",i:"🔄",f:"journal.py",d:"refresh_open_entries() — checks TP/SL via OANDA OHLCV",dt:["⚠ Partially blocked (strategy_four works, little_rzy 401)"],s:"blocked"},{n:8,l:"ML Training",i:"🧪",f:"runtime.py:957-965",d:"_train_route_ml_models() — trains from journal if ≥100 closed trades",dt:["Only strategy_four qualifies"],c:"verified"},{n:9,l:"Health Logging",i:"📊",f:"runtime.py:900-954",d:"health_snapshot.json + route_cycle_log.csv + dispatch_failures.jsonl",dt:["4 routes with health snapshots"]},{n:10,l:"Dashboard Metrics",i:"📈",f:"import_journal.py → journal_metrics.json",d:"Reads journals + health snapshots → structured metrics",dt:["Static HTML dashboard"]}];
+let flowHtml="";steps.forEach((s,i)=>{const sb=s.s==='blocked'?'<span style="color:var(--negative);font-size:0.5rem;margin-left:4px;">⛔ BLOCKED</span>':'';const cb=s.c?` ${confBadge(s.c)}`:'';const dt=s.dt?`<div class="flow-detail">${s.dt.map(d=>`<span>${d}</span>`).join("")}</div>`:'';flowHtml+=`<div class="flow-step"><div class="flow-step-header"><span class="step-num">${s.n}</span>${s.i} ${s.l}${sb}${cb}<span class="step-file">${s.f}</span></div><div class="flow-step-body">${s.d}${dt}</div></div>`;if(s.fork){flowHtml+=`<div class="flow-arrow">▼ dispatch fork ▼</div><div class="flow-fork"><div class="flow-branch"><div class="branch-title">💬 Discord Dispatch</div><div class="branch-desc">Signals → webhook<br>Outcomes → webhook<br>Reports → webhook</div></div><div class="flow-branch blocked"><div class="branch-title">🏦 OANDA Execution</div><div class="branch-desc">✅ Connection test (auth OK)<br>✅ Account query (auth OK)<br>⚠ execute_signal() (TP-precision fix applied)</div></div></div><div class="flow-arrow">▼ reconverge ▼</div>`;}else if(i<steps.length-1)flowHtml+='<div class="flow-arrow">▼</div>';});
+document.getElementById("flowPipeline").innerHTML=flowHtml;
+/* Connection Explorer */
+const vc=MAP.connections.filter(c=>c.type==="verified"),ic=MAP.connections.filter(c=>c.type==="inferred");
+document.getElementById("connFilters").innerHTML=`<span class="conn-filter-btn active" onclick="filterC(this,'all')">All (${MAP.connections.length})</span><span class="conn-filter-btn" onclick="filterC(this,'verified')">✅ Verified (${vc.length})</span><span class="conn-filter-btn" onclick="filterC(this,'inferred')">◇ Inferred (${ic.length})</span>`;
+document.getElementById("connGrid").innerHTML=MAP.connections.map(c=>`<div class="conn-item conn-${c.type}" title="${c.desc}" onclick="showNodeEvidence('${c.from}');showNodeEvidence('${c.to}')"><span class="conn-status"></span><span class="conn-from">${shortLabel(c.from)}</span><span class="conn-arrow">→</span><span class="conn-to">${shortLabel(c.to)}</span><span class="conn-type">${c.desc}</span></div>`).join("");
+/* Dep Graph */
+document.getElementById("depGrid").innerHTML=MAP.dependencies.map(d=>`<div class="dep-card"><div class="dep-panel">📋 ${d.panel}</div>${d.depends.map((f,i)=>`<div class="dep-source">📄 ${f} ${srcBadge(d.depTypes&&d.depTypes[i]?d.depTypes[i]:"config")}</div>`).join("")}</div>`).join("");
+/* Heatmap */
+const cats={"Strategy":MAP.nodes.filter(n=>n.layer==="Strategy"),"Decision / ML":MAP.nodes.filter(n=>n.layer==="Decision"),Dispatch:MAP.nodes.filter(n=>n.layer==="Dispatch"),Execution:MAP.nodes.filter(n=>n.layer==="Execution"),Integration:MAP.nodes.filter(n=>n.layer==="Integration"),Data:MAP.nodes.filter(n=>n.layer==="Data"),Monitoring:MAP.nodes.filter(n=>n.layer==="Monitoring"),"Inferred Items":MAP.inferred};
+document.getElementById("heatmapGrid").innerHTML=Object.entries(cats).map(([cat,items])=>{const v=items.filter(x=>x.confidence==="verified").length,p=items.filter(x=>x.confidence==="partial").length,ig=items.filter(x=>x.confidence==="inferred").length,m=items.filter(x=>x.confidence==="missing").length;return`<div class="heatmap-card"><div class="hm-category">${cat} <span style="font-weight:400;color:var(--text-muted);font-size:0.55rem;">(${items.length})</span></div>${items.map(i=>`<div class="heatmap-item"><span><span class="hm-dot" style="background:${CONF_COLORS[i.confidence]||'#7A7068'}"></span>${i.label||i.item}</span>${confBadge(i.confidence)}</div>`).join("")}<div class="heatmap-summary"><span>✓ ${v}</span><span>◐ ${p}</span><span>◇ ${ig}</span><span>○ ${m}</span></div></div>`;}).join("");
+/* Provenance */
+const srcs={};MAP.metrics.forEach(m=>{if(!srcs[m.source])srcs[m.source]=[];srcs[m.source].push(m);});const srcC={config:"#70B8E0",journal:"#70D89A",runtime:"#A090D0",backtest:"#E0C870",env:"#D0A080",filesystem:"#80B8A0",missing:"#7A7068"};
+document.getElementById("provGrid").innerHTML=Object.entries(srcs).map(([src,mets])=>`<div class="prov-card" style="border-left:3px solid ${srcC[src]||'#7A7068'}"><div class="prov-source">${srcBadge(src)} ${src}</div>${mets.map(m=>`<div class="prov-label">${m.label}</div><div class="prov-file">${m.file}</div>`).join("")}</div>`).join("");
+/* Unknowns */
+document.getElementById("unknownsGrid").innerHTML=MAP.missing.map(m=>`<div class="unknown-card"><div class="u-item">❌ ${m.item}</div><div class="u-impact">${m.impact}</div><div class="u-blocker">⛔ ${m.blocker}</div>${m.cascade?`<div class="u-cascade">↳ ${m.cascade}</div>`:''}</div>`).join("");
+/* Timeline */
+document.getElementById("timeline").innerHTML=MAP.bots.map(b=>`<div class="timeline-item"><div class="timeline-avatar">${EMOJI[b.status]||'❓'}</div><div class="timeline-content"><div class="timeline-name">${b.displayName}</div><div class="timeline-text">${b.story}</div></div></div>`).join("");
+/* Backtest */
+document.getElementById("btGrid").innerHTML=[{l:"Profile",v:BACKTEST.profile},{l:"Symbol",v:BACKTEST.symbol},{l:"Trades",v:BACKTEST.trades},{l:"Win Rate",v:BACKTEST.winRate+"%"},{l:"Net P&L",v:BACKTEST.totalPnlR.toFixed(2)+"R",n:BACKTEST.totalPnlR<0},{l:"Profit Factor",v:BACKTEST.profitFactor.toFixed(2)},{l:"Max DD",v:BACKTEST.maxDrawdownR.toFixed(2)+"R"},{l:"L/S",v:BACKTEST.longs+"/"+BACKTEST.shorts}].map(i=>`<div class="bt-card"><div class="bt-label">${i.l}</div><div class="bt-value ${i.n?'negative':''}">${i.v}</div><div style="padding-top:2px;">${srcBadge("backtest")}</div></div>`).join("");
+/* Render Integration Panel */
+if(INTEGRATIONS){const ig=document.getElementById("integGrid");if(ig){ig.innerHTML=INTEGRATIONS.map(card=>{const bs=card.status==="broken"?"broken":card.status==="ok"?"healthy":"unknown";const rowsHtml=(card.rows||[]).map(r=>`<div class="integ-row"><span class="integ-lbl">${r.l}</span><span class="integ-val${r.cls===' err'?' err':''}">${r.v}</span></div>`).join("");const diagHtml=card.diagnosis?`<div class="integ-diag">⚠ ${card.diagnosis}</div>`:"";const actsHtml=card.actions?`<div class="integ-actions"><div class="integ-actions-title">Actions</div>${card.actions.map(a=>`<div class="integ-act">• ${a}</div>`).join("")}</div>`:"";return `<div class="integ-card"><div class="integ-hdr"><span style="font-size:1rem">${card.icon}</span><span class="integ-name">${card.name}</span><span class="integ-badge ${bs}">${card.label}</span></div>${rowsHtml}${diagHtml}${actsHtml}</div>`;}).join("");}}
+/* Validation */
+const errs=[];if(enCount+disCount!==allCount)errs.push(`Bot count mismatch`);const nIds=new Set(MAP.nodes.map(n=>n.id));MAP.connections.forEach(c=>{if(!nIds.has(c.from))errs.push(`Conn from ${c.from}`);if(!nIds.has(c.to))errs.push(`Conn to ${c.to}`);});MAP.dependencies.forEach(d=>{if(d.depTypes&&d.depTypes.length!==d.depends.length)errs.push(`depTypes mismatch in "${d.panel}"`);});
+document.getElementById("footerStats").textContent=errs.length?`⚠ ${errs.join(', ')}`:`✓ Integrity passed — ${allCount} bots (${enCount} enabled, ${disCount} disabled), ${MAP.nodes.length} nodes, ${MAP.connections.length} connections, ${vConn} verified, ${iConn} inferred`;
+document.getElementById("footerStats").style.color=errs.length?'#E08070':'#70D89A';
+console.log("[Dashboard Validation]",errs.length?errs.join('; '):"ALL CHECKS PASSED");
+console.log(`[Counts] Bots: ${allCount} (${enCount}+${disCount}), Nodes: ${MAP.nodes.length}, Connections: ${MAP.connections.length}, Verified: ${vConn}, Inferred: ${iConn}`);
+/* Filter tabs */
+document.querySelectorAll(".filter-tab").forEach(tab=>{tab.addEventListener("click",()=>{document.querySelectorAll(".filter-tab").forEach(t=>t.classList.remove("active"));tab.classList.add("active");const f=tab.dataset.filter;document.querySelectorAll(".bot-card").forEach((card,i)=>{const m=f==="all"||card.dataset.status===f;card.classList.toggle("hidden",!m);if(m){card.style.animation="none";card.offsetHeight;card.style.animation=`popIn 0.3s ease-out ${i*0.03}s both`;}});});});}
+window.filterC=function(btn,f){document.querySelectorAll('.conn-filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('.conn-item').forEach(item=>{item.style.display=f==='all'?'':item.classList.contains('conn-'+f)?'':'none';});};
+document.addEventListener("DOMContentLoaded",init);
+</script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+{
+  "strategy_four": {
+    "total": 1029,
+    "closed": 1023,
+    "open": 6,
+    "tp": 459,
+    "sl": 564,
+    "be": 0,
+    "win_rate": 44.9,
+    "net_r": -105.0,
+    "avg_r": -0.103,
+    "profit_factor": 0.81,
+    "symbols": ["AUD_USD", "EUR_USD", "GBP_JPY", "NAS100_USD", "NZD_USD", "SPX500_USD", "UK100_GBP", "USD_JPY"],
+    "sides": {"short": 404, "long": 625},
+    "latest_timestamp": "2026-06-12T14:30:00+00:00",
+    "source": "journal",
+    "journal_file": "platform_output/strategy_four/signal_journal.json",
+    "runtime": {
+      "status": "error",
+      "dispatch_errors": 1,
+      "last_cycle": "2026-06-13T07:05:39+00:00",
+      "signals_found": 0,
+      "error_message": "OANDA API 401 Unauthorized — check API key"
+    }
+  },
+  "little_rzy": {
+    "total": 2,
+    "closed": 2,
+    "open": 0,
+    "tp": 0,
+    "sl": 2,
+    "be": 0,
+    "win_rate": 0.0,
+    "net_r": -2.0,
+    "avg_r": -1.0,
+    "profit_factor": 0.0,
+    "symbols": ["BCO_USD", "WTICO_USD"],
+    "sides": {"short": 2},
+    "latest_timestamp": "2026-04-21 05:00:00+00:00",
+    "source": "journal",
+    "journal_file": "platform_output/little_rzy/signal_journal.json",
+    "runtime": {
+      "status": "error",
+      "dispatch_errors": 1,
+      "last_cycle": "2026-06-13T06:56:17+00:00",
+      "signals_found": 0,
+      "error_message": "OANDA API 401 Unauthorized"
+    }
+  },
+  "strategy_two": {
+    "total": 0,
+    "closed": 0,
+    "open": 0,
+    "tp": 0,
+    "sl": 0,
+    "be": 0,
+    "win_rate": 0.0,
+    "net_r": 0.0,
+    "avg_r": 0.0,
+    "profit_factor": null,
+    "symbols": [],
+    "sides": {},
+    "source": "journal",
+    "journal_file": "platform_output/strategy_two/signal_journal.json",
+    "runtime": {
+      "status": "idle",
+      "dispatch_errors": 0,
+      "last_cycle": "2026-06-13T06:57:01+00:00",
+      "signals_found": 0,
+      "error_message": null
+    }
+  },
+  "strategy_five": {
+    "total": 0,
+    "source": "unavailable",
+    "error": "file_not_found",
+    "runtime": {
+      "status": "idle",
+      "dispatch_errors": 0,
+      "last_cycle": "2026-06-12T10:55:48+00:00",
+      "signals_found": 0,
+      "error_message": null
+    }
+  }
+}

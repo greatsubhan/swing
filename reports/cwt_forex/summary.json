@@ -1,0 +1,478 @@
+[
+  {
+    "symbol": "EUR_USD",
+    "execution_timeframe": "5m",
+    "exit_mode": "rr1",
+    "date_range": {
+      "start": "2025-01-01",
+      "end": "2026-04-01"
+    },
+    "trades": 1091,
+    "win_rate": 51.7,
+    "avg_r": 0.046,
+    "profit_factor": 1.11,
+    "total_r": 50.021,
+    "avg_bars_held": 30.85,
+    "scenario1_entries": 663,
+    "scenario2_entries": 428
+  },
+  {
+    "symbol": "EUR_USD",
+    "execution_timeframe": "5m",
+    "exit_mode": "jaw_trail",
+    "date_range": {
+      "start": "2025-01-01",
+      "end": "2026-04-01"
+    },
+    "trades": 1410,
+    "win_rate": 23.33,
+    "avg_r": 0.071,
+    "profit_factor": 1.29,
+    "total_r": 99.509,
+    "avg_bars_held": 13.88,
+    "scenario1_entries": 615,
+    "scenario2_entries": 795
+  },
+  {
+    "symbol": "EUR_USD",
+    "execution_timeframe": "15m",
+    "exit_mode": "rr1",
+    "date_range": {
+      "start": "2025-01-01",
+      "end": "2026-04-01"
+    },
+    "trades": 435,
+    "win_rate": 50.8,
+    "avg_r": 0.046,
+    "profit_factor": 1.11,
+    "total_r": 20.091,
+    "avg_bars_held": 36.11,
+    "scenario1_entries": 304,
+    "scenario2_entries": 131
+  },
+  {
+    "symbol": "EUR_USD",
+    "execution_timeframe": "15m",
+    "exit_mode": "jaw_trail",
+    "date_range": {
+      "start": "2025-01-01",
+      "end": "2026-04-01"
+    },
+    "trades": 531,
+    "win_rate": 23.73,
+    "avg_r": -0.028,
+    "profit_factor": 0.9,
+    "total_r": -15.084,
+    "avg_bars_held": 15.24,
+    "scenario1_entries": 288,
+    "scenario2_entries": 243
+  },
+  {
+    "symbol": "GBP_USD",
+    "execution_timeframe": "5m",
+    "exit_mode": "rr1",
+    "date_range": {
+      "start": "2025-01-01",
+      "end": "2026-04-01"
+    },
+    "trades": 1096,
+    "win_rate": 52.19,
+    "avg_r": 0.052,
+    "profit_factor": 1.12,
+    "total_r": 57.135,
+    "avg_bars_held": 31.7,
+    "scenario1_entries": 683,
+    "scenario2_entries": 413
+  },
+  {
+    "symbol": "GBP_USD",
+    "execution_timeframe": "5m",
+    "exit_mode": "jaw_trail",
+    "date_range": {
+      "start": "2025-01-01",
+      "end": "2026-04-01"
+    },
+    "trades": 1411,
+    "win_rate": 25.09,
+    "avg_r": 0.024,
+    "profit_factor": 1.09,
+    "total_r": 34.251,
+    "avg_bars_held": 14.22,
+    "scenario1_entries": 642,
+    "scenario2_entries": 769
+  },
+  {
+    "symbol": "GBP_USD",
+    "execution_timeframe": "15m",
+    "exit_mode": "rr1",
+    "date_range": {
+      "start": "2025-01-01",
+      "end": "2026-04-01"
+    },
+    "trades": 435,
+    "win_rate": 51.26,
+    "avg_r": 0.039,
+    "profit_factor": 1.09,
+    "total_r": 16.841,
+    "avg_bars_held": 33.18,
+    "scenario1_entries": 302,
+    "scenario2_entries": 133
+  },
+  {
+    "symbol": "GBP_USD",
+    "execution_timeframe": "15m",
+    "exit_mode": "jaw_trail",
+    "date_range": {
+      "start": "2025-01-01",
+      "end": "2026-04-01"
+    },
+    "trades": 524,
+    "win_rate": 22.52,
+    "avg_r": -0.025,
+    "profit_factor": 0.91,
+    "total_r": -13.294,
+    "avg_bars_held": 15.84,
+    "scenario1_entries": 294,
+    "scenario2_entries": 230
+  },
+  {
+    "symbol": "USD_JPY",
+    "execution_timeframe": "5m",
+    "exit_mode": "rr1",
+    "date_range": {
+      "start": "2025-01-01",
+      "end": "2026-04-01"
+    },
+    "trades": 1124,
+    "win_rate": 55.87,
+    "avg_r": 0.124,
+    "profit_factor": 1.31,
+    "total_r": 139.662,
+    "avg_bars_held": 32.23,
+    "scenario1_entries": 648,
+    "scenario2_entries": 476
+  },
+  {
+    "symbol": "USD_JPY",
+    "execution_timeframe": "5m",
+    "exit_mode": "jaw_trail",
+    "date_range": {
+      "start": "2025-01-01",
+      "end": "2026-04-01"
+    },
+    "trades": 1444,
+    "win_rate": 24.65,
+    "avg_r": 0.125,
+    "profit_factor": 1.54,
+    "total_r": 180.122,
+    "avg_bars_held": 14.39,
+    "scenario1_entries": 602,
+    "scenario2_entries": 842
+  },
+  {
+    "symbol": "USD_JPY",
+    "execution_timeframe": "15m",
+    "exit_mode": "rr1",
+    "date_range": {
+      "start": "2025-01-01",
+      "end": "2026-04-01"
+    },
+    "trades": 422,
+    "win_rate": 52.61,
+    "avg_r": 0.044,
+    "profit_factor": 1.1,
+    "total_r": 18.711,
+    "avg_bars_held": 34.37,
+    "scenario1_entries": 308,
+    "scenario2_entries": 114
+  },
+  {
+    "symbol": "USD_JPY",
+    "execution_timeframe": "15m",
+    "exit_mode": "jaw_trail",
+    "date_range": {
+      "start": "2025-01-01",
+      "end": "2026-04-01"
+    },
+    "trades": 519,
+    "win_rate": 26.2,
+    "avg_r": 0.048,
+    "profit_factor": 1.18,
+    "total_r": 25.066,
+    "avg_bars_held": 16.37,
+    "scenario1_entries": 293,
+    "scenario2_entries": 226
+  },
+  {
+    "symbol": "AUD_USD",
+    "execution_timeframe": "5m",
+    "exit_mode": "rr1",
+    "date_range": {
+      "start": "2025-01-01",
+      "end": "2026-04-01"
+    },
+    "trades": 1076,
+    "win_rate": 52.51,
+    "avg_r": 0.055,
+    "profit_factor": 1.13,
+    "total_r": 59.531,
+    "avg_bars_held": 32.61,
+    "scenario1_entries": 645,
+    "scenario2_entries": 431
+  },
+  {
+    "symbol": "AUD_USD",
+    "execution_timeframe": "5m",
+    "exit_mode": "jaw_trail",
+    "date_range": {
+      "start": "2025-01-01",
+      "end": "2026-04-01"
+    },
+    "trades": 1413,
+    "win_rate": 24.13,
+    "avg_r": 0.034,
+    "profit_factor": 1.14,
+    "total_r": 47.459,
+    "avg_bars_held": 13.64,
+    "scenario1_entries": 594,
+    "scenario2_entries": 819
+  },
+  {
+    "symbol": "AUD_USD",
+    "execution_timeframe": "15m",
+    "exit_mode": "rr1",
+    "date_range": {
+      "start": "2025-01-01",
+      "end": "2026-04-01"
+    },
+    "trades": 394,
+    "win_rate": 51.27,
+    "avg_r": 0.024,
+    "profit_factor": 1.05,
+    "total_r": 9.416,
+    "avg_bars_held": 34.87,
+    "scenario1_entries": 282,
+    "scenario2_entries": 112
+  },
+  {
+    "symbol": "AUD_USD",
+    "execution_timeframe": "15m",
+    "exit_mode": "jaw_trail",
+    "date_range": {
+      "start": "2025-01-01",
+      "end": "2026-04-01"
+    },
+    "trades": 505,
+    "win_rate": 23.37,
+    "avg_r": -0.087,
+    "profit_factor": 0.7,
+    "total_r": -44.11,
+    "avg_bars_held": 14.84,
+    "scenario1_entries": 298,
+    "scenario2_entries": 207
+  },
+  {
+    "symbol": "USD_CAD",
+    "execution_timeframe": "5m",
+    "exit_mode": "rr1",
+    "date_range": {
+      "start": "2025-01-01",
+      "end": "2026-04-01"
+    },
+    "trades": 1064,
+    "win_rate": 52.44,
+    "avg_r": 0.068,
+    "profit_factor": 1.16,
+    "total_r": 72.634,
+    "avg_bars_held": 34.07,
+    "scenario1_entries": 642,
+    "scenario2_entries": 422
+  },
+  {
+    "symbol": "USD_CAD",
+    "execution_timeframe": "5m",
+    "exit_mode": "jaw_trail",
+    "date_range": {
+      "start": "2025-01-01",
+      "end": "2026-04-01"
+    },
+    "trades": 1420,
+    "win_rate": 23.87,
+    "avg_r": 1.62,
+    "profit_factor": 7.55,
+    "total_r": 2300.69,
+    "avg_bars_held": 14.53,
+    "scenario1_entries": 617,
+    "scenario2_entries": 803
+  },
+  {
+    "symbol": "USD_CAD",
+    "execution_timeframe": "15m",
+    "exit_mode": "rr1",
+    "date_range": {
+      "start": "2025-01-01",
+      "end": "2026-04-01"
+    },
+    "trades": 403,
+    "win_rate": 52.85,
+    "avg_r": 0.06,
+    "profit_factor": 1.14,
+    "total_r": 24.162,
+    "avg_bars_held": 37.05,
+    "scenario1_entries": 273,
+    "scenario2_entries": 130
+  },
+  {
+    "symbol": "USD_CAD",
+    "execution_timeframe": "15m",
+    "exit_mode": "jaw_trail",
+    "date_range": {
+      "start": "2025-01-01",
+      "end": "2026-04-01"
+    },
+    "trades": 525,
+    "win_rate": 25.14,
+    "avg_r": 0.034,
+    "profit_factor": 1.12,
+    "total_r": 17.697,
+    "avg_bars_held": 15.6,
+    "scenario1_entries": 273,
+    "scenario2_entries": 252
+  },
+  {
+    "symbol": "NZD_USD",
+    "execution_timeframe": "5m",
+    "exit_mode": "rr1",
+    "date_range": {
+      "start": "2025-01-01",
+      "end": "2026-04-01"
+    },
+    "trades": 1065,
+    "win_rate": 53.43,
+    "avg_r": 0.069,
+    "profit_factor": 1.16,
+    "total_r": 73.228,
+    "avg_bars_held": 32.97,
+    "scenario1_entries": 653,
+    "scenario2_entries": 412
+  },
+  {
+    "symbol": "NZD_USD",
+    "execution_timeframe": "5m",
+    "exit_mode": "jaw_trail",
+    "date_range": {
+      "start": "2025-01-01",
+      "end": "2026-04-01"
+    },
+    "trades": 1385,
+    "win_rate": 26.71,
+    "avg_r": 0.097,
+    "profit_factor": 1.42,
+    "total_r": 134.447,
+    "avg_bars_held": 14.56,
+    "scenario1_entries": 571,
+    "scenario2_entries": 814
+  },
+  {
+    "symbol": "NZD_USD",
+    "execution_timeframe": "15m",
+    "exit_mode": "rr1",
+    "date_range": {
+      "start": "2025-01-01",
+      "end": "2026-04-01"
+    },
+    "trades": 437,
+    "win_rate": 49.43,
+    "avg_r": 0.005,
+    "profit_factor": 1.01,
+    "total_r": 1.994,
+    "avg_bars_held": 33.81,
+    "scenario1_entries": 312,
+    "scenario2_entries": 125
+  },
+  {
+    "symbol": "NZD_USD",
+    "execution_timeframe": "15m",
+    "exit_mode": "jaw_trail",
+    "date_range": {
+      "start": "2025-01-01",
+      "end": "2026-04-01"
+    },
+    "trades": 529,
+    "win_rate": 22.5,
+    "avg_r": -0.033,
+    "profit_factor": 0.89,
+    "total_r": -17.529,
+    "avg_bars_held": 15.34,
+    "scenario1_entries": 296,
+    "scenario2_entries": 233
+  },
+  {
+    "symbol": "USD_CHF",
+    "execution_timeframe": "5m",
+    "exit_mode": "rr1",
+    "date_range": {
+      "start": "2025-01-01",
+      "end": "2026-04-01"
+    },
+    "trades": 1106,
+    "win_rate": 51.45,
+    "avg_r": 0.04,
+    "profit_factor": 1.09,
+    "total_r": 44.108,
+    "avg_bars_held": 30.68,
+    "scenario1_entries": 665,
+    "scenario2_entries": 441
+  },
+  {
+    "symbol": "USD_CHF",
+    "execution_timeframe": "5m",
+    "exit_mode": "jaw_trail",
+    "date_range": {
+      "start": "2025-01-01",
+      "end": "2026-04-01"
+    },
+    "trades": 1394,
+    "win_rate": 23.74,
+    "avg_r": 0.482,
+    "profit_factor": 2.83,
+    "total_r": 672.113,
+    "avg_bars_held": 13.73,
+    "scenario1_entries": 603,
+    "scenario2_entries": 791
+  },
+  {
+    "symbol": "USD_CHF",
+    "execution_timeframe": "15m",
+    "exit_mode": "rr1",
+    "date_range": {
+      "start": "2025-01-01",
+      "end": "2026-04-01"
+    },
+    "trades": 426,
+    "win_rate": 50.47,
+    "avg_r": 0.035,
+    "profit_factor": 1.08,
+    "total_r": 14.882,
+    "avg_bars_held": 34.6,
+    "scenario1_entries": 300,
+    "scenario2_entries": 126
+  },
+  {
+    "symbol": "USD_CHF",
+    "execution_timeframe": "15m",
+    "exit_mode": "jaw_trail",
+    "date_range": {
+      "start": "2025-01-01",
+      "end": "2026-04-01"
+    },
+    "trades": 527,
+    "win_rate": 25.24,
+    "avg_r": 0.06,
+    "profit_factor": 1.23,
+    "total_r": 31.803,
+    "avg_bars_held": 15.33,
+    "scenario1_entries": 280,
+    "scenario2_entries": 247
+  }
+]

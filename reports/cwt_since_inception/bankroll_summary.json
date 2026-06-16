@@ -1,0 +1,101 @@
+{
+  "config": {
+    "starting_capital": 100000.0,
+    "ladder_pct": [
+      0.07,
+      0.2,
+      0.45,
+      1.0
+    ],
+    "input_csv": "C:\\Users\\Seeker\\Documents\\swing-pr1\\reports\\cwt_since_inception\\replay_signals.csv",
+    "sizing_rule": "risk_pct_of_current_equity",
+    "ladder_scope": "per_symbol",
+    "open_trade_treatment": "excluded_from_realized_bankroll"
+  },
+  "portfolio": {
+    "closed_trades": 277,
+    "wins": 136,
+    "losses": 141,
+    "win_rate_pct": 49.1,
+    "ending_equity": 75687.0,
+    "net_pnl_dollars": -24313.0,
+    "return_pct": -24.31,
+    "profit_factor": 0.54,
+    "max_drawdown_dollars": 26291.61,
+    "max_drawdown_pct": 26.29,
+    "gross_profit": 29085.5,
+    "gross_loss": 53398.49,
+    "step_use_counts": {
+      "0.07%": 140,
+      "0.20%": 44,
+      "0.45%": 33,
+      "1.00%": 60
+    }
+  },
+  "per_symbol": {
+    "AUD_USD": {
+      "trades": 27,
+      "wins": 12,
+      "losses": 15,
+      "win_rate_pct": 44.44,
+      "net_pnl_dollars": -476.21,
+      "max_step_used_pct": 1.0
+    },
+    "EUR_USD": {
+      "trades": 46,
+      "wins": 23,
+      "losses": 23,
+      "win_rate_pct": 50.0,
+      "net_pnl_dollars": -4498.13,
+      "max_step_used_pct": 1.0
+    },
+    "GBP_JPY": {
+      "trades": 32,
+      "wins": 25,
+      "losses": 7,
+      "win_rate_pct": 78.12,
+      "net_pnl_dollars": 1834.8,
+      "max_step_used_pct": 0.45
+    },
+    "NAS100_USD": {
+      "trades": 27,
+      "wins": 8,
+      "losses": 19,
+      "win_rate_pct": 29.63,
+      "net_pnl_dollars": -6015.39,
+      "max_step_used_pct": 1.0
+    },
+    "NZD_USD": {
+      "trades": 43,
+      "wins": 21,
+      "losses": 22,
+      "win_rate_pct": 48.84,
+      "net_pnl_dollars": -5473.16,
+      "max_step_used_pct": 1.0
+    },
+    "SPX500_USD": {
+      "trades": 38,
+      "wins": 18,
+      "losses": 20,
+      "win_rate_pct": 47.37,
+      "net_pnl_dollars": -2677.44,
+      "max_step_used_pct": 1.0
+    },
+    "UK100_GBP": {
+      "trades": 14,
+      "wins": 1,
+      "losses": 13,
+      "win_rate_pct": 7.14,
+      "net_pnl_dollars": -7411.01,
+      "max_step_used_pct": 1.0
+    },
+    "USD_JPY": {
+      "trades": 50,
+      "wins": 28,
+      "losses": 22,
+      "win_rate_pct": 56.0,
+      "net_pnl_dollars": 403.55,
+      "max_step_used_pct": 1.0
+    }
+  }
+}

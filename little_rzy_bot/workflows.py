@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict
+import json
 from pathlib import Path
 from typing import Optional
 
@@ -11,6 +12,7 @@ import pandas as pd
 from .backtest_adapter import simulate_signals, to_trade_log_df
 from .config import EngineConfig
 from .data_interface import load_ohlcv_csv
+from .filters import filter_signals
 from .profiles import apply_market_profile
 from .reporting import summarize
 from .signal_engine import SignalEngine
@@ -53,13 +55,16 @@ def run_backtest(
     """Run full signal->trade->summary pipeline and return artifacts."""
     cfg = config or EngineConfig()
     if use_market_profile:
-        cfg = apply_market_profile(cfg, symbol)
+        variant = "1h" if timeframe.lower() == "1h" else "4h"
+        cfg = apply_market_profile(cfg, symbol, timeframe=timeframe, variant=variant)
     engine = SignalEngine(cfg)
     signals = engine.run(df, symbol, asset_class, timeframe, higher_timeframe)
-    trades = simulate_signals(df, signals, cfg)
+    signals, filtered_signals = filter_signals(signals, cfg)
+    trades, diagnostics = simulate_signals(df, signals, cfg)
+    diagnostics.skipped_filters = len(filtered_signals)
     trade_log = to_trade_log_df(trades)
-    summary = summarize(trade_log)
-    return signals, trade_log, summary
+    summary = summarize(trade_log, diagnostics)
+    return signals, trade_log, summary, diagnostics
 
 
 def run_backtest_from_csv(csv_path: str | Path, timestamp_col: str = "timestamp"):
@@ -71,8 +76,19 @@ def save_backtest_outputs(
     output_dir: str | Path,
     trade_log: pd.DataFrame,
     summary,
+    diagnostics=None,
+    signals=None,
+    export_trades_csv: str | Path | None = None,
 ) -> None:
     out = Path(output_dir)
     out.mkdir(parents=True, exist_ok=True)
     trade_log.to_csv(out / "trade_log.csv", index=False)
+    if export_trades_csv:
+        export_path = Path(export_trades_csv)
+        export_path.parent.mkdir(parents=True, exist_ok=True)
+        trade_log.to_csv(export_path, index=False)
     pd.DataFrame([asdict(summary)]).to_json(out / "summary.json", orient="records", indent=2)
+    if diagnostics is not None:
+        (out / "diagnostics.json").write_text(json.dumps(asdict(diagnostics), indent=2))
+    if signals is not None:
+        (out / "signals.json").write_text(json.dumps([signal.to_dict() for signal in signals], indent=2))
