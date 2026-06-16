@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import csv
 import json
+import logging
 import os
 import time
 from dataclasses import replace
@@ -10,6 +11,8 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import traceback
+
+logger = logging.getLogger(__name__)
 
 import numpy as np
 
@@ -54,6 +57,7 @@ from .reinforcement import (
 )
 from .registry import get_strategy
 from .strategies import StrategyScanRequest
+from .oanda_execution import OandaClient, OandaConfig, execute_signal, OrderResult
 
 
 @dataclass
@@ -204,6 +208,73 @@ def _predictions_log_path(output_dir: Path) -> Path:
     return output_dir / "predictions.jsonl"
 
 
+def _check_daily_circuit_breaker(
+    journal_entries: list,
+    *,
+    max_daily_loss_pct: float = 5.0,
+    max_consecutive_losses: int = 5,
+    account_equity: float = 100_000.0,
+) -> dict[str, object]:
+    """Check if daily loss limits or consecutive loss limits have been breached.
+    
+    Returns dict with:
+        halted: bool — whether trading should stop
+        reason: str — why trading was halted
+        today_pnl: float — today's realized P&L
+        consecutive_losses: int — current losing streak
+        today_closed_count: int — trades closed today
+    """
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    today_closed = []
+    consecutive_losses = 0
+    max_consecutive = 0
+
+    for entry in reversed(journal_entries):
+        if entry.status != "closed" or not entry.outcome_timestamp:
+            continue
+        entry_date = entry.outcome_timestamp[:10]
+        if entry_date == today:
+            today_closed.append(entry)
+
+    today_pnl = sum(entry.realized_r() or 0.0 for entry in today_closed)
+    today_loss_pct = abs(today_pnl) * (risk_per_pct_to_loss(account_equity, 1.0)) if today_pnl < 0 else 0
+
+    # Count consecutive losses from most recent
+    for entry in reversed(journal_entries):
+        if entry.status != "closed" or not entry.outcome:
+            continue
+        if entry.outcome == "sl_hit":
+            consecutive_losses += 1
+            max_consecutive = max(max_consecutive, consecutive_losses)
+        else:
+            break
+
+    max_daily_loss_r = -(max_daily_loss_pct / 100.0) * (account_equity / max(account_equity, 1.0)) * 100
+
+    halted = False
+    reason = ""
+
+    if today_pnl <= max_daily_loss_r:
+        halted = True
+        reason = f"Daily loss limit breached: {today_pnl:.2f}R (limit: {max_daily_loss_r:.2f}R)"
+    elif consecutive_losses >= max_consecutive_losses:
+        halted = True
+        reason = f"Consecutive loss limit breached: {consecutive_losses} losses in a row"
+
+    return {
+        "halted": halted,
+        "reason": reason,
+        "today_pnl_r": round(today_pnl, 2),
+        "consecutive_losses": consecutive_losses,
+        "today_closed_count": len(today_closed),
+    }
+
+
+def risk_per_pct_to_loss(equity: float, pct: float) -> float:
+    """Convert risk percentage to R-value loss per unit."""
+    return equity * (pct / 100.0) / max(equity, 1.0)
+
+
 def _send_discord_signal_with_ml(
     route: StrategyRoute,
     strategy: Any,
@@ -352,7 +423,7 @@ def _train_route_ml_models(
     route: StrategyRoute,
     *,
     test_fraction: float = 0.2,
-    min_closed_samples: int = 20,
+    min_closed_samples: int = 100,
 ) -> dict[str, object]:
     """Train ML models from journal entries if sufficient data exists.
     
@@ -556,7 +627,9 @@ def run_route(route: StrategyRoute, environment: str, price: str, token: str | N
     delivered_reinforcement: list[PlatformSignal] = []
     recovered_delivered_reinforcement: list[PlatformSignal] = []
     outcomes_sent = 0
-    if route.dispatch == "discord":
+    oanda_results: list[dict] = []
+    oanda_enabled = route.dispatch in ("discord_and_oanda",)
+    if route.dispatch in ("discord", "discord_and_oanda"):
         if not route.discord_webhook_url:
             raise ValueError(f"Route {route.strategy_id} uses discord dispatch but has no webhook URL.")
         for outcome in outcomes_to_send:
@@ -680,7 +753,110 @@ def run_route(route: StrategyRoute, environment: str, price: str, token: str | N
                 else:
                     report_state["monthly"] = monthly_key
             save_report_state(route.report_state_file, report_state)
-    elif route.dispatch == "none":
+
+    # --- OANDA Order Execution ---
+    if oanda_enabled:
+        try:
+            oanda_config = OandaConfig.from_env()
+            oanda_config.enabled = True
+            oanda_config.environment = environment
+            oanda_config.price_mode = price
+            client = OandaClient(oanda_config)
+
+            # --- Circuit Breaker Check ---
+            circuit_breaker = _check_daily_circuit_breaker(
+                journal_entries,
+                max_daily_loss_pct=oanda_config.max_daily_loss_pct,
+                max_consecutive_losses=5,
+                account_equity=float(client.get_account_summary().nav) if client.test_connection().get("ok") else 100_000.0,
+            )
+
+            if circuit_breaker["halted"]:
+                logger.warning(
+                    "CIRCUIT BREAKER ACTIVE for %s: %s — skipping OANDA execution",
+                    route.strategy_id, circuit_breaker["reason"],
+                )
+                dispatch_errors.append(f"circuit_breaker:{circuit_breaker['reason']}")
+                oanda_results.append({
+                    "action": "circuit_breaker_halt",
+                    "reason": circuit_breaker["reason"],
+                    "today_pnl_r": circuit_breaker["today_pnl_r"],
+                    "consecutive_losses": circuit_breaker["consecutive_losses"],
+                    "today_closed_count": circuit_breaker["today_closed_count"],
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                })
+            elif client.test_connection().get("ok"):
+                acct = client.get_account_summary()
+                if acct and delivered_tradable:
+                    for signal in delivered_tradable:
+                        try:
+                            # Calculate trailing stop distance using ATR-based 2R trail
+                            trailing_stop_pips = None
+                            if signal.stop_loss and signal.entry:
+                                sl_distance = abs(float(signal.entry) - float(signal.stop_loss))
+                                trailing_stop_pips = round(sl_distance / 0.01, 1) if sl_distance > 0 else None
+
+                            order_result = execute_signal(
+                                client=client,
+                                instrument=signal.symbol,
+                                side=signal.side.upper(),
+                                entry_price=float(signal.entry or 0),
+                                stop_loss_price=float(signal.stop_loss or 0),
+                                take_profit_price=float(signal.target_1) if signal.target_1 else None,
+                                account_equity=acct.nav,
+                                risk_per_trade_pct=oanda_config.risk_per_trade_pct,
+                                max_units=oanda_config.max_units_per_trade,
+                                trailing_stop_pips=trailing_stop_pips,
+                            )
+                            oanda_results.append({
+                                "instrument": signal.symbol,
+                                "side": signal.side,
+                                "units": order_result.units,
+                                "order_id": order_result.order_id,
+                                "fill_price": order_result.fill_price,
+                                "fill_units": order_result.fill_units,
+                                "stop_loss": order_result.stop_loss,
+                                "take_profit": order_result.take_profit,
+                                "success": order_result.success,
+                                "error_code": order_result.error_code,
+                                "error_message": order_result.error_message,
+                                "trailing_stop_pips": trailing_stop_pips,
+                                "raw_response": order_result.raw_response,
+                                "account_id": oanda_config.account_id,
+                                "environment": oanda_config.environment,
+                                "timestamp": order_result.timestamp,
+                            })
+                            if order_result.success:
+                                sent_setup_ids.add(signal.setup_id)
+                        except Exception as oexc:
+                            oanda_results.append({
+                                "instrument": signal.symbol,
+                                "side": signal.side,
+                                "success": False,
+                                "error": str(oexc),
+                                "timestamp": datetime.now(timezone.utc).isoformat(),
+                            })
+            else:
+                logger.warning("OANDA connection test failed for route %s", route.strategy_id)
+        except Exception as oanda_exc:
+            logger.error("OANDA execution block failed: %s", oanda_exc)
+            dispatch_errors.append(f"oanda:{oanda_exc}")
+
+    # Persist OANDA diagnostics for each run when OANDA is enabled
+    if oanda_enabled and oanda_results:
+        oanda_diag_path = output_dir / "oanda_diagnostics.jsonl"
+        try:
+            with open(oanda_diag_path, "a", encoding="utf-8") as f:
+                for entry in oanda_results:
+                    entry["route"] = route.strategy_id
+                    entry["logged_at"] = datetime.now(timezone.utc).isoformat()
+                    f.write(json.dumps(entry) + "\n")
+        except Exception as diag_exc:
+            logger.warning("Failed to write OANDA diagnostics: %s", diag_exc)
+
+    elif route.dispatch in ("none", "discord", "discord_and_oanda"):
+        # "discord" and "discord_and_oanda" already handled in the Discord dispatch block above;
+        # "none" silently skips dispatch.  Only truly unknown types should raise.
         pass
     else:
         raise ValueError(f"Unsupported dispatch type: {route.dispatch}")

@@ -42,19 +42,25 @@ WATCHLISTS: dict[str, list[str]] = {
     ],
 }
 
+# Research-backed minimum timeframes for Alligator strategies.
+# Bill Williams Alligator works best on H4/Daily; M30-H1 acceptable for
+# day trading.  M5 is avoided because intraday noise degrades Alligator
+# signals (Liberated Stock Trader backtests show M1-M5 underperform).
+# Indices get M15 (tighter execution needed for volatility); forex gets
+# M30 (wider structure, cleaner Alligator geometry).
 MINIMUM_TIMEFRAME_BY_SYMBOL: dict[str, str] = {
-    "NAS100_USD": "5m",
-    "SPX500_USD": "5m",
-    "UK100_GBP": "5m",
-    "USD_JPY": "5m",
-    "NZD_USD": "5m",
-    "AUD_USD": "5m",
-    "EUR_USD": "5m",
+    "NAS100_USD": "15m",
+    "SPX500_USD": "15m",
+    "UK100_GBP": "15m",
+    "USD_JPY": "30m",
+    "NZD_USD": "30m",
+    "AUD_USD": "30m",
+    "EUR_USD": "30m",
     "GBP_JPY": "15m",
-    "FR40_EUR": "5m",
-    "GBP_USD": "5m",
-    "US30_USD": "5m",
-    "USD_CHF": "5m",
+    "FR40_EUR": "15m",
+    "GBP_USD": "30m",
+    "US30_USD": "15m",
+    "USD_CHF": "30m",
     "GBP_NZD": "15m",
     "NZD_JPY": "15m",
     "XAG_USD": "15m",
@@ -90,7 +96,7 @@ def resolve_watchlist(name: str) -> list[str]:
 
 
 def minimum_timeframe_for(symbol: str) -> str:
-    return MINIMUM_TIMEFRAME_BY_SYMBOL.get(symbol.upper(), "5m")
+    return MINIMUM_TIMEFRAME_BY_SYMBOL.get(symbol.upper(), "15m")
 
 
 def asset_class_for(symbol: str) -> str:

@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from functools import lru_cache
+import time
 from pathlib import Path
 from typing import Any
 
@@ -68,9 +68,21 @@ def score_signal_with_ml(
     return score
 
 
-@lru_cache(maxsize=8)
-def _load_model_predictor(model_dir: Path | str) -> ModelPredictor:
-    return ModelPredictor(model_dir)
+_MODEL_CACHE: dict[str, tuple[float, "ModelPredictor"]] = {}
+_MODEL_CACHE_TTL_SECONDS: int = 300  # refresh every 5 minutes
+
+
+def _load_model_predictor(model_dir: Path | str) -> "ModelPredictor":
+    """Load and cache model predictor with time-based invalidation."""
+    key = str(model_dir)
+    now = time.time()
+    if key in _MODEL_CACHE:
+        cached_time, cached_predictor = _MODEL_CACHE[key]
+        if (now - cached_time) < _MODEL_CACHE_TTL_SECONDS:
+            return cached_predictor
+    predictor = ModelPredictor(model_dir)
+    _MODEL_CACHE[key] = (now, predictor)
+    return predictor
 
 
 def _extract_features_from_signal(signal: PlatformSignal) -> dict[str, float | int | str]:

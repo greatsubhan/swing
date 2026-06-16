@@ -10,7 +10,12 @@ import pandas as pd
 
 from little_rzy_bot.market_data import fetch_oanda_ohlcv
 from research.cwt_forex_backtest import (
+    ADX_STRONG_TREND,
+    ADX_TREND_THRESHOLD,
     BUFFER_ATR_FRACTION,
+    alligator_awakening,
+    alligator_sleeping,
+    alligator_mouth_width,
     compute_bias_series,
     compute_mt5_zigzag,
     project_cambist_levels,
@@ -28,8 +33,32 @@ OANDA_CACHE_DIR = Path("research_data/cwt_live")
 STATE_FILE_NAME = "ladder_state.json"
 LADDER_SEQUENCE = [0.07, 0.20, 0.45, 1.00]
 LOOKBACK_DAYS = 240
-TIMEFRAME_TO_OANDA = {"5m": "M5", "15m": "M15"}
+TIMEFRAME_TO_OANDA = {"5m": "M5", "15m": "M15", "30m": "M30", "1h": "H1", "4h": "H4"}
 NOISE_LOOKBACK_BARS = 6
+
+# Default bias timeframe — research shows H4/Daily far superior to H1 for
+# Alligator-based strategies.  H1 is kept as a fallback for assets that
+# require tighter execution.
+DEFAULT_BIAS_TIMEFRAME = "H4"
+BIAS_TIMEFRAME_TO_OANDA = {"1h": "H1", "4h": "H4", "D": "D"}
+
+
+@dataclass(frozen=True)
+class CwtRegimeConfig:
+    """Controls whether regime-based filtering is applied.
+
+    When enabled the scanner will:
+    - Skip entries when the ADX on the bias timeframe is below `min_adx`
+      (ranging market, Alligator historically underperforms).
+    - Skip entries when the Alligator is sleeping on the execution timeframe
+      (lines intertwined, no directional edge).
+    - Flag entries that occur during an Alligator awakening (highest-probability
+      window per research).
+    """
+    enabled: bool = True
+    min_adx: float = ADX_TREND_THRESHOLD  # 20.0 — below this, markets are ranging
+    strong_adx: float = ADX_STRONG_TREND  # 25.0 — above this, strong trend confirmed
+    bias_timeframe: str = DEFAULT_BIAS_TIMEFRAME  # "H4" preferred per research
 
 
 @dataclass(frozen=True)
@@ -70,6 +99,28 @@ def fwm_config_from_extra(extra: dict[str, object] | None) -> CwtFwmConfig:
         enabled_symbols=frozenset(str(symbol) for symbol in enabled_symbols),
         swing_lookback_bars=int(payload.get("swing_lookback_bars", 8)),
         order_valid_bars=int(payload.get("order_valid_bars", 2)),
+    )
+
+
+def regime_config_from_extra(extra: dict[str, object] | None) -> CwtRegimeConfig:
+    """Build a CwtRegimeConfig from the strategy's extra config block.
+
+    Example config (in the platform route JSON):
+        "regime": {
+            "enabled": true,
+            "min_adx": 20.0,
+            "strong_adx": 25.0,
+            "bias_timeframe": "H4"
+        }
+    """
+    payload = (extra or {}).get("regime", {})
+    if not isinstance(payload, dict):
+        return CwtRegimeConfig()
+    return CwtRegimeConfig(
+        enabled=bool(payload.get("enabled", True)),
+        min_adx=float(payload.get("min_adx", ADX_TREND_THRESHOLD)),
+        strong_adx=float(payload.get("strong_adx", ADX_STRONG_TREND)),
+        bias_timeframe=str(payload.get("bias_timeframe", DEFAULT_BIAS_TIMEFRAME)),
     )
 
 
@@ -319,13 +370,20 @@ def scan_symbol(
     ladder_info: dict[str, object],
     quality_layer: CwtQualityLayerConfig | None = None,
     fwm_config: CwtFwmConfig | None = None,
+    regime_config: CwtRegimeConfig | None = None,
     catch_up_since: datetime | None = None,
 ) -> dict[str, object]:
     quality_layer = quality_layer or CwtQualityLayerConfig()
     fwm_config = fwm_config or CwtFwmConfig()
+    regime_config = regime_config or CwtRegimeConfig()
     execution_granularity = TIMEFRAME_TO_OANDA[minimum_timeframe]
     execution = with_indicators(load_history(symbol, execution_granularity, environment, token, price))
-    bias_frame = with_indicators(load_history(symbol, "H1", environment, token, price))
+
+    # --- Bias timeframe: configurable, defaults to H4 per research ---
+    bias_tf_label = regime_config.bias_timeframe  # "H4", "1h", etc.
+    bias_tf_oanda = BIAS_TIMEFRAME_TO_OANDA.get(bias_tf_label, "H4")
+    bias_frame = with_indicators(load_history(symbol, bias_tf_oanda, environment, token, price))
+
     pivot_high, pivot_low = compute_mt5_zigzag(execution, symbol)
     cambist = project_cambist_levels(execution, pivot_high, pivot_low)
     bias_frame = bias_frame.copy()
@@ -346,6 +404,26 @@ def scan_symbol(
     execution["active_blue"] = cambist["active_blue"]
     execution["active_red"] = cambist["active_red"]
 
+    # --- ADX from bias timeframe merged into execution for regime filtering ---
+    adx_lookup = bias_frame[["adx14"]].sort_index().copy()
+    adx_lookup["ts_key"] = pd.Index(adx_lookup.index).asi8
+    execution = execution.sort_index().copy()
+    if "ts_key" not in execution.columns:
+        execution["timestamp"] = execution.index
+        execution["ts_key"] = pd.Index(execution.index).asi8
+    execution = pd.merge_asof(
+        execution,
+        adx_lookup[["ts_key", "adx14"]],
+        on="ts_key",
+        direction="backward",
+        suffixes=("", "_bias"),
+    )
+    execution = execution.set_index("timestamp").drop(columns=["ts_key"]) if "timestamp" in execution.columns else execution.drop(columns=["ts_key"], errors="ignore")
+    # Prefer the bias-timeframe ADX for regime decisions
+    if "adx14_bias" in execution.columns:
+        execution["adx14"] = execution["adx14_bias"].fillna(execution.get("adx14", 0))
+        execution = execution.drop(columns=["adx14_bias"], errors="ignore")
+
     if len(execution) < 130:
         return {
             "symbol": symbol,
@@ -365,6 +443,18 @@ def scan_symbol(
         bias = int(row["bias_signal"])
         active_blue = float(row["active_blue"]) if pd.notna(row["active_blue"]) else None
         active_red = float(row["active_red"]) if pd.notna(row["active_red"]) else None
+
+        # --- Regime filter (research-backed) ---
+        setup_bar_adx = float(row["adx14"]) if pd.notna(row.get("adx14")) else None
+        setup_bar_sleeping = bool(row["alligator_sleeping"]) if "alligator_sleeping" in row.index else False
+        setup_bar_mouth_width = float(row["mouth_width"]) if "mouth_width" in row.index else None
+        is_awakening = alligator_awakening(setup_idx, execution) if regime_config.enabled else False
+
+        if regime_config.enabled:
+            if setup_bar_adx is not None and setup_bar_adx < regime_config.min_adx:
+                return None, "regime_ranging_low_adx"
+            if setup_bar_sleeping:
+                return None, "alligator_sleeping"
 
         if symbol in fwm_config.enabled_symbols:
             for candidate_idx in range(max(1, entry_idx - fwm_config.order_valid_bars), entry_idx):
@@ -537,13 +627,43 @@ def scan_symbol(
             return None, "invalid_stop"
 
         quality_score, quality_grade = _quality(signal, row)
+
+        # --- Regime quality boost: strong ADX + wide mouth + awakening = A-grade ---
+        if regime_config.enabled and setup_bar_adx is not None:
+            if setup_bar_adx >= regime_config.strong_adx:
+                quality_score = min(quality_score + 8, 95)
+            if is_awakening:
+                quality_score = min(quality_score + 5, 95)
+            if setup_bar_mouth_width is not None and setup_bar_mouth_width > 0.10:
+                quality_score = min(quality_score + 3, 95)
+            if quality_score >= 85:
+                quality_grade = "A"
+            elif quality_score >= 75:
+                quality_grade = "B"
+            elif quality_score >= 65:
+                quality_grade = "C"
+            else:
+                quality_grade = "D"
+
         stop_distance_pct = abs(stop_price - entry_price) / abs(entry_price) * 100.0 if entry_price else None
         risk_pct = float(ladder_info["risk_pct"])
         previous_outcome = str(ladder_info.get("last_outcome", "none"))
         setup_id = f"cwt-{symbol.lower()}-{minimum_timeframe}-{signal['scenario']}-{side}-{entry_time.strftime('%Y%m%d%H%M')}"
         scenario_label = signal["scenario"].replace("scenario", "Scenario ").title()
+
+        # Build regime context string for the reason summary
+        regime_context = ""
+        if regime_config.enabled:
+            adx_str = f"ADX {setup_bar_adx:.1f}" if setup_bar_adx is not None else "ADX n/a"
+            regime_parts = [adx_str]
+            if is_awakening:
+                regime_parts.append("Alligator awakening")
+            if setup_bar_mouth_width is not None:
+                regime_parts.append(f"mouth {setup_bar_mouth_width:.3f}")
+            regime_context = f" [{', '.join(regime_parts)}]"
+
         reason_summary = (
-            f"{scenario_label} continuation in line with H1 bias. "
+            f"{scenario_label} continuation in line with {bias_tf_label} bias.{regime_context} "
             f"Entry uses the {'confirmation bar close' if quality_layer.require_followthrough else 'next bar open after the completed setup candle'}, "
             f"stop sits beyond the structural invalidation, and target is fixed at 1R."
         )
@@ -569,7 +689,7 @@ def scan_symbol(
             "target_1": round(target_1, 6),
             "scenario": signal["scenario"],
             "scenario_label": scenario_label,
-            "bias_timeframe": "1h",
+            "bias_timeframe": bias_tf_label,
             "execution_granularity": execution_granularity,
             "risk_fraction": risk_pct / 100.0,
             "risk_label": "Recommended Risk Step",
@@ -591,6 +711,13 @@ def scan_symbol(
             "direction_flips_pre_entry": noise_metrics["direction_flips"],
             "compression_atr_pre_entry": noise_metrics["compression_atr"],
             "high_noise_session": bool(noise_metrics["high_noise"]),
+            # --- Regime metrics ---
+            "adx": round(setup_bar_adx, 2) if setup_bar_adx is not None else None,
+            "alligator_sleeping": setup_bar_sleeping,
+            "alligator_mouth_width": round(setup_bar_mouth_width, 4) if setup_bar_mouth_width is not None else None,
+            "alligator_awakening": is_awakening,
+            "regime_filtered": regime_config.enabled,
+            "regime_strong_trend": setup_bar_adx is not None and setup_bar_adx >= regime_config.strong_adx,
         }, "signal"
 
     latest_signal, latest_reason = signal_for_entry_index(len(execution) - 1)
@@ -659,6 +786,7 @@ def run_live_cycle(
     output_dir: str | Path,
     quality_layer: CwtQualityLayerConfig | None = None,
     fwm_config: CwtFwmConfig | None = None,
+    regime_config: CwtRegimeConfig | None = None,
     catch_up_since: datetime | None = None,
 ) -> tuple[list[dict[str, object]], list[dict[str, object]], dict[str, object]]:
     state = load_state(output_dir)
@@ -684,6 +812,7 @@ def run_live_cycle(
             ladder_info,
             quality_layer=quality_layer,
             fwm_config=fwm_config,
+            regime_config=regime_config,
             catch_up_since=catch_up_since,
         )
         rows.append(row)

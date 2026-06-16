@@ -181,12 +181,20 @@ class ExecutionLog:
 def _format_price(price: float, instrument: str) -> str:
     """Format price with correct precision for the instrument.
     
-    Indices (NAS100, SPX500, etc.) use 2 decimal places.
-    Forex pairs use 5 decimal places.
+    OANDA instrument precision rules:
+    - Index CFDs: 1 decimal place (NAS100, SPX500, UK100, US30, DAX, etc.)
+    - JP225: 0 decimal places (whole units)
+    - XAU/XAG: 2 decimal places
+    - JPY forex pairs: 3 decimal places
+    - All other forex: 5 decimal places
     """
     upper = instrument.upper()
-    if any(idx in upper for idx in ("NAS100", "SPX500", "UK100", "US30", "DJ30", "DAX", "JP225", "AU200", "DE30")):
-        return f"{price:.2f}"
+    # JP225 requires whole-number precision (0 decimals)
+    if "JP225" in upper:
+        return f"{price:.0f}"
+    # All other indices use 1 decimal place
+    if any(idx in upper for idx in ("NAS100", "SPX500", "UK100", "US30", "DJ30", "DAX", "AU200", "DE30")):
+        return f"{price:.1f}"
     if "XAU" in upper or "XAG" in upper:
         return f"{price:.2f}"
     if "JPY" in upper:
@@ -596,7 +604,7 @@ class OandaClient:
                 timeout=15,
             )
 
-            if resp.status_code == 200:
+            if resp.status_code in (200, 201):
                 data = resp.json()
                 txn = data.get("orderFillTransaction", {})
                 return OrderResult(

@@ -64,6 +64,13 @@ ALLIGATOR_SPREAD_FRACTION = 0.08
 BUFFER_ATR_FRACTION = 0.05
 MAX_BARS_HELD = 96
 
+# --- Regime & Alligator quality constants (research-backed) ---
+ADX_PERIOD = 14
+ADX_TREND_THRESHOLD = 20.0  # ADX >= 20 indicates a trending market
+ADX_STRONG_TREND = 25.0     # ADX >= 25 indicates a strong trend
+ALLIGATOR_SLEEP_THRESHOLD = 0.03  # mouth spread as fraction of ATR; below this = sleeping
+ALLIGATOR_AWAKENING_BARS = 3      # bars since sleep ended to qualify as awakening
+
 
 @dataclass
 class Position:
@@ -118,6 +125,83 @@ def heikin_ashi(df: pd.DataFrame) -> pd.DataFrame:
     return ha
 
 
+def adx(df: pd.DataFrame, period: int = ADX_PERIOD) -> pd.Series:
+    """Compute Average Directional Index (ADX) for regime detection.
+
+    ADX measures trend strength regardless of direction.
+    - ADX < 20: ranging / no clear trend (Alligator should sleep)
+    - ADX 20-25: emerging trend
+    - ADX >= 25: strong trend (Alligator conditions favorable)
+    """
+    high = df["high"]
+    low = df["low"]
+    close = df["close"]
+
+    plus_dm = high.diff()
+    minus_dm = -low.diff()
+    plus_dm = plus_dm.where((plus_dm > minus_dm) & (plus_dm > 0), 0.0)
+    minus_dm = minus_dm.where((minus_dm > plus_dm) & (minus_dm > 0), 0.0)
+
+    tr1 = high - low
+    tr2 = (high - close.shift(1)).abs()
+    tr3 = (low - close.shift(1)).abs()
+    true_range = pd.concat([tr1, tr2, tr3], axis=1).max(axis=1)
+
+    atr_smooth = true_range.ewm(alpha=1.0 / period, min_periods=period, adjust=False).mean()
+    plus_di = 100 * (plus_dm.ewm(alpha=1.0 / period, min_periods=period, adjust=False).mean() / atr_smooth)
+    minus_di = 100 * (minus_dm.ewm(alpha=1.0 / period, min_periods=period, adjust=False).mean() / atr_smooth)
+
+    dx = (plus_di - minus_di).abs() / (plus_di + minus_di).replace(0, 1e-10) * 100
+    adx_value = dx.ewm(alpha=1.0 / period, min_periods=period, adjust=False).mean()
+    return adx_value.rename("adx14")
+
+
+def alligator_mouth_width(row: pd.Series) -> float:
+    """Measure Alligator mouth width as lips-jaw spread normalised by ATR.
+
+    A wider mouth indicates a stronger, more established trend.
+    Returns a dimensionless ratio: spread / ATR.
+    """
+    if pd.isna(row["jaw"]) or pd.isna(row["lips"]) or pd.isna(row["atr14"]) or row["atr14"] == 0:
+        return 0.0
+    return abs(float(row["lips"]) - float(row["jaw"])) / float(row["atr14"])
+
+
+def alligator_sleeping(row: pd.Series) -> bool:
+    """Detect if the Alligator is 'sleeping' (lines intertwined / flat).
+
+    Bill Williams described this as the mouth being closed — the three lines
+    are close together or crossing each other. In this state the Alligator
+    gives no directional signal and any trade based on it is noise.
+
+    The detection uses the mouth-width normalised by ATR: if the spread
+    between lips and jaw is smaller than ALLIGATOR_SLEEP_THRESHOLD * ATR,
+    the Alligator is sleeping.
+    """
+    width = alligator_mouth_width(row)
+    return width < ALLIGATOR_SLEEP_THRESHOLD
+
+
+def alligator_awakening(idx: int, frame: pd.DataFrame, lookback: int = ALLIGATOR_AWAKENING_BARS) -> bool:
+    """Detect when the Alligator transitions from sleeping to waking.
+
+    Returns True if the current bar has a mouth width above the sleep
+    threshold AND at least one of the previous `lookback` bars was sleeping.
+    This marks the earliest moments of a new trend — historically the
+    highest-probability entry window for Alligator-based strategies.
+    """
+    if idx < lookback:
+        return False
+    current_row = frame.iloc[idx]
+    if alligator_sleeping(current_row):
+        return False
+    for back in range(1, lookback + 1):
+        prev_row = frame.iloc[idx - back]
+        if alligator_sleeping(prev_row):
+            return True
+    return False
+
+
 def with_indicators(df: pd.DataFrame) -> pd.DataFrame:
     enriched = df.copy()
     median_price = (enriched["high"] + enriched["low"]) / 2
@@ -128,6 +212,12 @@ def with_indicators(df: pd.DataFrame) -> pd.DataFrame:
     ha = heikin_ashi(enriched)
     for column in ha.columns:
         enriched[column] = ha[column]
+
+    # --- Regime & Alligator quality columns ---
+    enriched["adx14"] = adx(enriched, ADX_PERIOD)
+    enriched["mouth_width"] = enriched.apply(alligator_mouth_width, axis=1)
+    enriched["alligator_sleeping"] = enriched.apply(alligator_sleeping, axis=1)
+
     return enriched
 
 
